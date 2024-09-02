@@ -298,6 +298,8 @@
             zoom.transform(svg, d3.zoomIdentity);
         }
 
+
+
         function zoomed(event) {
             contentGroup.attr('transform', event.transform);
         }
@@ -309,6 +311,9 @@
                 d3.zoomTransform(svg.node()).invert([svgWidth / 2, svgHeight / 2])
             );
         }
+
+
+
         // END SVG Rendering and linking
         //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 
