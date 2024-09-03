@@ -43,6 +43,7 @@
             flex: 1;
             display: flex;
             flex-direction: column;
+            height: 840px;
         }
 
         .container {
@@ -51,18 +52,20 @@
         }
 
         #info-container {
-            min-height: 350px;
+            flex: 4;
+            display: flex;
+            flex-direction: column;
             padding: 10px;
         }
 
         #info {
-            margin-bottom: 20px;
+            /* margin-bottom: 20px; */
+            /* height: 550px; */
+            flex: 1;
             padding: 10px;
             border: 1px solid #444;
-            border-radius: 5px;
             font-size: 16px;
             line-height: 1.5;
-            height: 800px;
             border-radius: 15px;
             overflow: hidden;
             background-color: #2a2a2a;
@@ -97,6 +100,52 @@
             cursor: pointer;
         }
 
+        /* References */
+        #references-container {
+            /* height: 250px; */
+            flex: 1;
+            display: flex;
+            flex-direction: row;
+            padding: 0px 10px 10px 10px;
+        }
+
+        #references {
+            /* height: 220px; */
+            flex: 1;
+            padding: 10px;
+            background-color: #2a2a2a;
+            border: 1px solid #444;
+            border-radius: 15px;
+        }
+
+        #references-container h3 {
+            margin-top: 0;
+            color: #b4b4b4;
+        }
+
+        #references-list {
+            height: 150px;
+            list-style-type: none;
+            padding: 5px;
+            overflow-y: auto;
+            margin: 0;
+        }
+
+        #references-list li {
+            margin-bottom: 10px;
+        }
+
+        #references-list a {
+            color: #b4b4b4;
+            text-decoration: none;
+        }
+
+        #references-list a:hover {
+            color: #00ffff;
+            text-decoration: underline;
+        }
+
+
         /* text {
             fill: #e0e0e0;
         } */
@@ -116,18 +165,22 @@
      -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-->
     <div id="main-container">
         <div id="svg-container">
-            <!-- TODO  -->
             <svg id="svg" width="1200" height="800">
                 <g id="content-layer"></g>
                 <g id="navigation-layer"></g>
             </svg>
-            <!-- <div id="hidden-content" style="display: none;"></div> -->
         </div>
         <div id="right-container">
             <div id="info-container">
                 <div id="info"></div>
-            </div>
 
+            </div>
+            <div id="references-container">
+                <div id="references">
+                    <h3>References</h3>
+                    <ul id="references-list"></ul>
+                </div>
+            </div>
         </div>
     </div>
     <div id="reporting-container">
@@ -232,7 +285,45 @@
 
                 paths: [
                     { x: 700, y: 100, width: 100, height: 100, pathD: positionalEncodingPath, color: '#ffffff', info: "Positional Encoding", link: 'box1' }
+                ],
+
+                // References
+                references: [
+                    {
+                        title: "Attention Is All You Need",
+                        // authors: "A. Vaswani, N. Shazeer, N. Parmar, J. Uszkoreit, L. Jones, A. N. Gomez, L. Kaiser, I. Polosukhin",
+                        authors: [
+                            "Ashish Vaswani",
+                            "Noam Shazeer",
+                            "Niki Parmari",
+                            "Jakob Uszkoreit",
+                            "Llion Jones",
+                            "Aidan N. Gomez",
+                            "Lukasz Kaiser",
+                            "Illia Polosukhin",
+                        ],
+                        link: "https://arxiv.org/abs/1706.03762",
+                        info: "The original paper introducing the Transformer architecture.",
+                        refType: "arxiv"
+                    },
+                    {
+                        title: "nanoGPT",
+                        // authors: "Andrej Karpathy",
+                        authors: ["Andrej Karpathy"],
+                        link: "https://github.com/karpathy/nanoGPT/blob/master/model.py",
+                        info: "A minimal implementation of GPT in PyTorch.",
+                        refType: "github"
+                    },
+                    {
+                        title: "\"Let's build GPT: from scratch, in code, spelled out\"",
+                        // authors: "Andrej Karpathy",
+                        authors: ["Andrej Karpathy"],
+                        link: "https://www.youtube.com/watch?v=kCc8FmEb1nY",
+                        info: "A detailed video tutorial on building a GPT model from scratch.",
+                        refType: "youtube"
+                    }
                 ]
+
             },
         };
         // END SVG Definition
@@ -445,31 +536,6 @@
         }
 
 
-        // function drawArrow(start, end, color) {
-        //     const arrowSize = 10;
-        //     const angle = Math.atan2(end.y - start.y, end.x - start.x);
-
-        //     // Calculate the position of the arrowhead
-        //     const arrowX = end.x - arrowSize * Math.cos(angle);
-        //     const arrowY = end.y - arrowSize * Math.sin(angle);
-
-        //     // Draw the line
-        //     const line = contentGroup.append('line')
-        //         .attr('x1', start.x)
-        //         .attr('y1', start.y)
-        //         .attr('x2', end.x)
-        //         .attr('y2', end.y)
-        //         .attr('stroke', color)
-        //         .attr('stroke-width', 2);
-
-        //     const arrowhead = contentGroup.append('path')
-        //         .attr('d', `M${end.x},${end.y} L${arrowX - arrowSize * Math.cos(angle - Math.PI / 6)},${arrowY - arrowSize * Math.sin(angle - Math.PI / 6)} L${arrowX - arrowSize * Math.cos(angle + Math.PI / 6)},${arrowY - arrowSize * Math.sin(angle + Math.PI / 6)} Z`)
-        //         .attr('fill', color);
-
-        //     return contentGroup.selectAll('line, path').filter(function () {
-        //         return this === line.node() || this === arrowhead.node();
-        //     });
-        // }
         function drawArrow(start, end, color) {
             const arrowSize = 10;
             const angle = Math.atan2(end.y - start.y, end.x - start.x);
@@ -623,6 +689,7 @@
         function updateView() {
             drawNavigation();
             drawContent(currentView);
+            renderReferences(currentView);
         }
         // END SVG Navigation
         //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
@@ -775,6 +842,31 @@
         }
         // END Display detailed info top-right
         //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+
+        // Display references bot right
+        function renderReferences(view) {
+            const referencesList = document.getElementById('references-list');
+            referencesList.innerHTML = '';
+
+            if (svgContent[view] && svgContent[view].references) {
+                svgContent[view].references.forEach(ref => {
+                    const li = document.createElement('li');
+                    const a = document.createElement('a');
+                    a.href = ref.link;
+                    a.target = "_blank";
+                    a.textContent = ref.title;
+                    a.addEventListener('mouseover', () => showInfo({ currentTarget: a }));
+                    a.addEventListener('mouseout', clearInfo);
+                    li.appendChild(a);
+                    // if (ref.authors) {
+                    //     const authors = document.createTextNode(` (${ref.authors})`);
+                    //     li.appendChild(authors);
+                    // }
+                    referencesList.appendChild(li);
+                });
+            }
+        }
+
 
         // For debugging or general message to user
         function logMessage(message) {
