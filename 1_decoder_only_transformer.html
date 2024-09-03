@@ -97,9 +97,9 @@
             cursor: pointer;
         }
 
-        text {
+        /* text {
             fill: #e0e0e0;
-        }
+        } */
     </style>
     <!-- for LaTeX -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css">
@@ -155,10 +155,8 @@
             back: "M20,5 L5,15 L20,25 Z",
             forward: "M10,5 L25,15 L10,25 Z",
             reset: "M15,5 A10,10 0 1,0 15,25 A10,10 0 1,0 15,5 "
-            // reset: "M15,5 A10,10 0 1,0 25,15 M25,10 L21,16 M25,10 L29,16"
-            // reset: "M5.5,2 A8,8 0 0,1 17,10"
-
         };
+        const positionalEncodingPath = "M15,5 A10,10 0 1,0 15,25 A10,10 0 1,0 15,5 M5,15 Q10,10 15,15 Q20,20 25,15";
 
         // Color constants
         const BACKGROUND_COLOR = '#2a2a2a';
@@ -174,6 +172,8 @@
         const DISABLED_BUTTON_STROKE_COLOR = '#3a3a3a';
         const DISABLED_BUTTON_ARROW_COLOR = '#4a4a4a';
         const LATEX_LINK_HOVER_COLOR = "#00ffff";
+        const LINK_COLOR = '#00ffff';
+
 
         const LATEX_FONT_SIZE = 16;
 
@@ -208,19 +208,30 @@
                 boxes: [
                 ],
                 latexLabels: [
-                    { x: 150, y: 250, text: '\\mathbf{X}', color: '#ffffff', info: "Input matrix", link: "root" },
+                    { x: 150, y: 250, text: 'X', color: '#ffffff', info: "Input matrix", link: "root" },
                     { x: 450, y: 250, text: '\\hat{y}', color: '#ffffff', info: "Output prediction" }
                 ]
             },
             'root': {
                 boxes: [
                     { x: 100, y: 100, width: 200, height: 100, text: 'Box1', link: 'box1', info: "Go to Box1" },
-                    { x: 400, y: 100, width: 200, height: 100, text: 'Box2', link: 'box2', info: "Go to Box2" }
+                    { x: 400, y: 100, width: 200, height: 100, text: '', link: 'box2', info: "Go to Box2", opacity: 0.5 },
+                    // { x: 400, y: 105, width: 205, height: 100, text: 'Box2', link: 'box2', info: "Go to Box2", opacity: 1 }
                 ],
                 latexLabels: [
-                    { x: 150, y: 250, text: '\\mathbf{X}', color: '#ffffff', info: "Input matrix", width: 50, height: 50, link: "root" },
+                    { x: 150, y: 250, text: 'X', color: '#ffffff', info: "Input matrix", width: 50, height: 50, link: 'box1' },
                     // { x: 450, y: 250, text: '\\hat{y}', color: '#ffffff', info: "Output prediction", width: 50, height: 50 }
-                    { x: 450, y: 250, text: '\\hat{y}', color: '#ffffff', info: "Output prediction", link: "root" }
+                    { x: 450, y: 250, text: '\\hat{y}', color: '#ffffff', info: "Output prediction", link: 'box1' }
+                ],
+                textLabels: [
+                    { x: 350, y: 130, text: 'feedforward', color: '#ffffff', info: "Feedforward connection", link: 'box1' }
+                ],
+                arrows: [
+                    { start: { x: 300, y: 150 }, end: { x: 400, y: 150 }, color: '#ffffff', info: "Connection from Box1 to Box2", link: 'box1' }
+                ],
+
+                paths: [
+                    { x: 700, y: 100, width: 100, height: 100, pathD: positionalEncodingPath, color: '#ffffff', info: "Positional Encoding", link: 'box1' }
                 ]
             },
         };
@@ -228,56 +239,8 @@
         //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 
         //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
-        // SVG Rendering and linking
+        // SVG Rendering and Event Handling
         //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
-        // function preRenderContent() {
-        //     for (let view in svgContent) {
-        //         const group = hiddenContent.append('g')
-        //             .attr('id', `content-${view}`)
-        //             .attr('class', 'content');
-
-        //         // Render boxes
-        //         if (svgContent[view].boxes) {
-        //             svgContent[view].boxes.forEach(item => {
-        //                 const rect = group.append('rect')
-        //                     .attr('x', item.x)
-        //                     .attr('y', item.y)
-        //                     .attr('width', item.width)
-        //                     .attr('height', item.height)
-        //                     .attr('fill', RECT_FILL_COLOR)
-        //                     .attr('stroke', RECT_STROKE_COLOR);
-
-        //                 group.append('text')
-        //                     .attr('x', item.x + item.width / 2)
-        //                     .attr('y', item.y + item.height / 2)
-        //                     .attr('text-anchor', 'middle')
-        //                     .attr('dominant-baseline', 'central')
-        //                     .attr('fill', TEXT_COLOR)
-        //                     .text(item.text);
-        //             });
-        //         }
-
-        //         // Render LaTeX labels
-        //         if (svgContent[view].latexLabels) {
-        //             svgContent[view].latexLabels.forEach(label => {
-        //                 group.append(() => createLatexLabel(label.x, label.y, label.text, label.color, label.info));
-        //             });
-        //         }
-        //     }
-        // }
-
-
-        // function showContent(view) {
-        //     contentGroup.selectAll('*').remove();
-        //     const content = hiddenContent.select(`#content-${view}`).node();
-        //     if (content) {
-        //         contentGroup.html(content.innerHTML);
-        //         attachEventListeners(view);
-        //     } else {
-        //         logMessage(`No content found for view: ${view}`);
-        //     }
-        // }
-
         function drawContent(view) {
             contentGroup.selectAll('*').remove();
 
@@ -291,7 +254,8 @@
                             .attr('width', item.width)
                             .attr('height', item.height)
                             .attr('fill', RECT_FILL_COLOR)
-                            .attr('stroke', RECT_STROKE_COLOR);
+                            .attr('stroke', RECT_STROKE_COLOR)
+                            .attr('opacity', item.opacity !== undefined ? item.opacity : 1);
 
                         contentGroup.append('text')
                             .attr('x', item.x + item.width / 2)
@@ -299,7 +263,33 @@
                             .attr('text-anchor', 'middle')
                             .attr('dominant-baseline', 'central')
                             .attr('fill', TEXT_COLOR)
+                            .attr('opacity', item.opacity !== undefined ? item.opacity : 1)
                             .text(item.text);
+                    });
+                }
+
+                // Render directed arrow connections
+                if (svgContent[view].arrows) {
+                    svgContent[view].arrows.forEach(arrow => {
+                        const arrowElement = drawArrow(arrow.start, arrow.end, arrow.color);
+                        arrowElement.attr('data-info', arrow.info)
+                            .attr('data-link', arrow.link);
+                    });
+                }
+
+
+                // Render custom paths
+                if (svgContent[view].paths) {
+                    svgContent[view].paths.forEach(path => {
+                        contentGroup.append('path')
+                            .attr('d', path.pathD)
+                            .attr('transform', `translate(${path.x}, ${path.y}) scale(${path.width / 30}, ${path.height / 30})`)
+                            .attr('fill', 'none')
+                            .attr('stroke', path.color)
+                            .attr('stroke-width', 2)
+                            .attr('class', 'custom-path')
+                            .attr('data-info', path.info)
+                            .attr('data-link', path.link)
                     });
                 }
 
@@ -319,36 +309,113 @@
                     });
                 }
 
-                attachEventListeners(view);
+                // Render text labels
+                if (svgContent[view].textLabels) {
+                    svgContent[view].textLabels.forEach(label => {
+                        contentGroup.append(() => createTextLabel(
+                            label.x,
+                            label.y,
+                            label.text,
+                            label.color,
+                            label.info,
+                            label.link
+                        ));
+                    });
+                }
+
+                attachEventListenersForView(view);
             } else {
                 logMessage(`No content found for view: ${view}`);
             }
         }
 
 
-
-        function attachEventListeners(view) {
+        function attachEventListenersForView(view) {
+            // Add listeners to boxes
             if (svgContent[view].boxes) {
                 svgContent[view].boxes.forEach(item => {
                     const rect = contentLayer.select(`rect[x="${item.x}"][y="${item.y}"]`);
                     const text = contentLayer.select(`text[x="${item.x + item.width / 2}"][y="${item.y + item.height / 2}"]`);
 
+                    addDefaultEventListeners(rect.node(), item.link);
+                    addDefaultEventListeners(text.node(), item.link);
+
                     if (item.link) {
-                        rect.classed('clickable', true);
-                        text.classed('clickable', true);
+                        const originalRectStroke = rect.attr('stroke');
+                        const originalTextFill = text.attr('fill');
 
-                        rect.on('click', () => navigateTo(item.link));
-                        text.on('click', () => navigateTo(item.link));
+                        rect.on('mouseover', function () { rect.attr('stroke', LINK_COLOR); })
+                            .on('mouseout', function () { rect.attr('stroke', originalRectStroke); });
+
+                        text.on('mouseover', function () { rect.attr('stroke', LINK_COLOR); })
+                            .on('mouseout', function () { rect.attr('stroke', originalTextFill); });
                     }
-
-                    addDefaultEventListeners(rect.node());
-                    addDefaultEventListeners(text.node());
                 });
             }
 
+            // Add listeners to latex labels
             if (svgContent[view].latexLabels) {
                 contentLayer.selectAll('.latex-label').each(function () {
-                    addDefaultEventListeners(this);
+                    const label = d3.select(this);
+                    const link = label.attr('data-link');
+                    addDefaultEventListeners(this, link);
+                    if (link) {
+                        const originalColor = label.select('div').style('color');
+                        label.on('mouseover', function () { label.select('div').style('color', LINK_COLOR); })
+                            .on('mouseout', function () { label.select('div').style('color', originalColor); });
+                    }
+                });
+            }
+
+            // Add listeners to text labels
+            if (svgContent[view].textLabels) {
+                contentLayer.selectAll('.text-label').each(function () {
+                    const label = d3.select(this);
+                    const link = label.attr('data-link');
+                    addDefaultEventListeners(this, link);
+                    if (link) {
+                        const originalFill = label.attr('fill');
+                        label.on('mouseover', function () {
+                            label.attr('fill', LINK_COLOR);
+                            showInfo({ currentTarget: this });
+                        })
+                            .on('mouseout', function () {
+                                label.attr('fill', originalFill);
+                                clearInfo();
+                            })
+                    }
+                });
+            }
+
+            // Add listeners to arrows
+            if (svgContent[view].arrows) {
+                contentLayer.selectAll('.arrow').each(function () {
+                    const arrow = d3.select(this);
+                    const link = arrow.attr('data-link');
+                    addDefaultEventListeners(arrow.node(), link);
+                    if (link) {
+                        const originalColor = arrow.attr('stroke');
+                        arrow.on('mouseover', function () {
+                            arrow.attr('stroke', LINK_COLOR).attr('fill', LINK_COLOR);
+                        })
+                            .on('mouseout', function () {
+                                arrow.attr('stroke', originalColor).attr('fill', originalColor);
+                            });
+                    }
+                });
+            }
+
+            // Add listeners to custom paths
+            if (svgContent[view].paths) {
+                contentLayer.selectAll('.custom-path').each(function () {
+                    const path = d3.select(this);
+                    const link = path.attr('data-link');
+                    addDefaultEventListeners(path.node(), link);
+                    if (link) {
+                        const originalStroke = path.attr('stroke');
+                        path.on('mouseover', function () { path.attr('stroke', LINK_COLOR); })
+                            .on('mouseout', function () { path.attr('stroke', originalStroke); });
+                    }
                 });
             }
 
@@ -359,19 +426,85 @@
         }
 
 
-        function addDefaultEventListeners(element) {
+        function addDefaultEventListeners(element, link) {
             element.addEventListener('mouseover', showInfo);
             element.addEventListener('mouseout', clearInfo);
             element.addEventListener('click', function (event) {
-                // showInfo(event);
+                if (link) {
+                    navigateTo(link);
+                }
                 clearInfo(event);
             });
 
             // Keyboard events
             element.addEventListener('focus', showInfo);
             element.addEventListener('blur', clearInfo);
+
+            // Update cursor style
+            element.style.cursor = link ? 'pointer' : 'default';
         }
 
+
+        // function drawArrow(start, end, color) {
+        //     const arrowSize = 10;
+        //     const angle = Math.atan2(end.y - start.y, end.x - start.x);
+
+        //     // Calculate the position of the arrowhead
+        //     const arrowX = end.x - arrowSize * Math.cos(angle);
+        //     const arrowY = end.y - arrowSize * Math.sin(angle);
+
+        //     // Draw the line
+        //     const line = contentGroup.append('line')
+        //         .attr('x1', start.x)
+        //         .attr('y1', start.y)
+        //         .attr('x2', end.x)
+        //         .attr('y2', end.y)
+        //         .attr('stroke', color)
+        //         .attr('stroke-width', 2);
+
+        //     const arrowhead = contentGroup.append('path')
+        //         .attr('d', `M${end.x},${end.y} L${arrowX - arrowSize * Math.cos(angle - Math.PI / 6)},${arrowY - arrowSize * Math.sin(angle - Math.PI / 6)} L${arrowX - arrowSize * Math.cos(angle + Math.PI / 6)},${arrowY - arrowSize * Math.sin(angle + Math.PI / 6)} Z`)
+        //         .attr('fill', color);
+
+        //     return contentGroup.selectAll('line, path').filter(function () {
+        //         return this === line.node() || this === arrowhead.node();
+        //     });
+        // }
+        function drawArrow(start, end, color) {
+            const arrowSize = 10;
+            const angle = Math.atan2(end.y - start.y, end.x - start.x);
+
+            // Calculate the position of the arrowhead
+            const arrowX = end.x - arrowSize * Math.cos(angle);
+            const arrowY = end.y - arrowSize * Math.sin(angle);
+
+            // Create a group for the arrow
+            const arrowGroup = contentGroup.append('g')
+                .attr('class', 'arrow')
+                .attr('stroke', color)
+                .attr('fill', color);
+
+            // Draw the line
+            arrowGroup.append('line')
+                .attr('x1', start.x)
+                .attr('y1', start.y)
+                .attr('x2', end.x)
+                .attr('y2', end.y)
+                .attr('stroke-width', 2);
+
+            // Draw the arrowhead
+            arrowGroup.append('path')
+                .attr('d', `M${end.x},${end.y} L${arrowX - arrowSize * Math.cos(angle - Math.PI / 6)},${arrowY - arrowSize * Math.sin(angle - Math.PI / 6)} L${arrowX - arrowSize * Math.cos(angle + Math.PI / 6)},${arrowY - arrowSize * Math.sin(angle + Math.PI / 6)} Z`);
+
+            return arrowGroup;
+        }
+
+        // END SVG Rendering and Event Handling
+        //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+
+        //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+        // SVG Zoom
+        //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
         function setupZoom() {
             zoom = d3.zoom()
                 .scaleExtent([0.5, 2])
@@ -400,7 +533,7 @@
                 d3.zoomTransform(svg.node()).invert([svgWidth / 2, svgHeight / 2])
             );
         }
-        // END SVG Rendering and linking
+        // END SVG Zoom
         //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 
         //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
@@ -457,8 +590,11 @@
         }
 
 
-
         function navigateTo(view) {
+            if (currentView == view) {
+                logMessage("repeat navigateTo. exiting");
+                return;
+            }
             undoNavigationHistory.push(currentView);
             redoNavigationHistory = []; // Clear redo history
             currentView = view;
@@ -484,26 +620,15 @@
             }
         }
 
-        // function updateView() {
-        //     drawNavigation();
-        //     showContent(currentView);
-        // }
         function updateView() {
             drawNavigation();
             drawContent(currentView);
-        }
-
-        // For debugging
-        function logMessage(message) {
-            const logContainer = document.getElementById('log-container');
-            logContainer.innerHTML += `<p>${message}</p>`;
-            logContainer.scrollTop = logContainer.scrollHeight;
         }
         // END SVG Navigation
         //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 
         //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
-        // LaTeX labels
+        // LaTeX and plaintext labels
         //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
         function createLatexLabel(x, y, text, color, labelInfo, link, width = 250, height = 40) {
             const foreignObject = document.createElementNS('http://www.w3.org/2000/svg', 'foreignObject');
@@ -517,7 +642,7 @@
 
             if (link) {
                 foreignObject.dataset.link = link;
-                foreignObject.style.cursor = 'pointer';
+                // foreignObject.style.cursor = 'pointer';
             }
 
             const div = document.createElement('div');
@@ -533,21 +658,27 @@
             });
 
             foreignObject.appendChild(div);
-            foreignObject.addEventListener('mouseover', showInfo);
-            foreignObject.addEventListener('mouseout', clearInfo);
-            foreignObject.addEventListener('click', handleLatexClick);
 
             return foreignObject;
         }
 
-        function handleLatexClick(event) {
-            const target = event.currentTarget;
-            const link = target.dataset.link;
+
+        function createTextLabel(x, y, text, color, labelInfo, link) {
+            const textElement = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+            textElement.setAttribute('x', x);
+            textElement.setAttribute('y', y);
+            textElement.setAttribute('fill', color);
+            textElement.textContent = text;
+            textElement.classList.add('text-label');
+            textElement.dataset.info = labelInfo;
+            // textElement.setAttribute('data-info', labelInfo);
             if (link) {
-                navigateTo(link);
+                textElement.dataset.link = link;
+                // textElement.setAttribute('data-link', link);
             }
+            return textElement;
         }
-        // END LaTeX labels
+        // END LaTeX and plaintext labels
         //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 
         //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
@@ -556,10 +687,12 @@
         function showInfo(event) {
             const target = event.currentTarget;
             let content = '';
-            // logMessage(target.classList)
-            // logMessage(target.classList.contains('latex-label'))
 
-            if (target.classList.contains('nav-button')) {
+            if (target.classList.contains('custom-path')) {
+                content = target.getAttribute('data-info') || "Custom path";
+            } else if (target.classList.contains('arrow')) {
+                content = target.getAttribute('data-info') || "Arrow connection";
+            } else if (target.classList.contains('nav-button')) {
                 if (target.id === 'back-button') {
                     content = "Navigate back to the previous view.";
                 } else if (target.id === 'forward-button') {
@@ -568,7 +701,10 @@
                     content = "Reset zoom and pan to the initial position.";
                 }
             } else if (target.classList.contains('latex-label')) {
-                content = target.dataset.info;
+                // content = target.dataset.info;
+                content = target.getAttribute('data-info');
+            } else if (target.classList.contains('text-label')) {
+                content = target.getAttribute('data-info');
             } else if (target.tagName === 'rect' || target.tagName === 'text') {
                 const item = svgContent[currentView].boxes.find(i =>
                     i.x == target.getAttribute('x') ||
@@ -580,7 +716,6 @@
             }
             renderInfoContent(document.getElementById('info'), content);
         }
-
 
 
         function renderInfoContent(element, content) {
@@ -641,6 +776,12 @@
         // END Display detailed info top-right
         //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 
+        // For debugging or general message to user
+        function logMessage(message) {
+            const logContainer = document.getElementById('log-container');
+            logContainer.innerHTML += `<p>${message}</p>`;
+            logContainer.scrollTop = logContainer.scrollHeight;
+        }
         //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
         // Main
         //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
