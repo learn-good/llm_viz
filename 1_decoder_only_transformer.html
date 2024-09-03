@@ -89,6 +89,13 @@
             border: 1px solid #444;
         }
 
+        .latex-label:hover {
+            cursor: default;
+        }
+
+        .latex-label[data-link]:hover {
+            cursor: pointer;
+        }
 
         text {
             fill: #e0e0e0;
@@ -114,7 +121,7 @@
                 <g id="content-layer"></g>
                 <g id="navigation-layer"></g>
             </svg>
-            <div id="hidden-content" style="display: none;"></div>
+            <!-- <div id="hidden-content" style="display: none;"></div> -->
         </div>
         <div id="right-container">
             <div id="info-container">
@@ -166,8 +173,9 @@
         const DISABLED_BUTTON_FILL_COLOR = '#2a2a2a';
         const DISABLED_BUTTON_STROKE_COLOR = '#3a3a3a';
         const DISABLED_BUTTON_ARROW_COLOR = '#4a4a4a';
+        const LATEX_LINK_HOVER_COLOR = "#00ffff";
 
-
+        const LATEX_FONT_SIZE = 16;
 
         //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
         // SVG Definition
@@ -181,25 +189,40 @@
 
         const contentLayer = d3.select("#content-layer");
         const navigationLayer = d3.select("#navigation-layer");
-        const hiddenContent = d3.select("#hidden-content");
+        // const hiddenContent = d3.select("#hidden-content");
 
         const svgContent = {
-            'root': [
-                { x: 100, y: 100, width: 200, height: 100, text: 'Box1', link: 'box1', info: "Go to Box1" },
-                { x: 400, y: 100, width: 200, height: 100, text: 'Box2', link: 'box2', info: "Go to Box2" }
-            ],
-            'box1': [
-                { x: 100, y: 100, width: 200, height: 100, text: 'Box1a', link: 'box1a', info: "Go to box1a" },
-                { x: 400, y: 100, width: 200, height: 100, text: 'Box1b', link: 'box1b', info: "Go to box1b" }
-            ],
-            'box2': [
-                { x: 100, y: 100, width: 200, height: 100, text: 'Box2a', link: 'box2a', info: "Go to box2a" },
-                { x: 400, y: 100, width: 200, height: 100, text: 'Box2b', link: 'box2b', info: "Go to box2b" }
-            ],
-            'box1a': [{ x: 250, y: 250, width: 200, height: 100, text: 'Box1a', info: "This is box1a" }],
-            'box1b': [{ x: 250, y: 250, width: 200, height: 100, text: 'Box1b', info: "This is box1b" }],
-            'box2a': [{ x: 250, y: 250, width: 200, height: 100, text: 'Box2a', info: "This is box2a" }],
-            'box2b': [{ x: 250, y: 250, width: 200, height: 100, text: 'Box2b', info: "This is box2b" }]
+            // 'root': [
+            //     // 0. Data preparation and tokenization
+            //     // 1. x_tokenized
+            //     // 2a. Positional Encoding
+            //     // 2b. Token Embedding (Tokenizer)
+            //     // 3. Dropout
+            //     // 4. LayerNorm
+            //     // 5. Repeated Self-Attention Blocks
+            //     // 6. Feed Forward MLP
+            //     // 7. Residual Connections 
+            //     // 8. Configurations (n_embd, block_size, activation fn, etc.)
+            // ],
+            'box1': {
+                boxes: [
+                ],
+                latexLabels: [
+                    { x: 150, y: 250, text: '\\mathbf{X}', color: '#ffffff', info: "Input matrix", link: "root" },
+                    { x: 450, y: 250, text: '\\hat{y}', color: '#ffffff', info: "Output prediction" }
+                ]
+            },
+            'root': {
+                boxes: [
+                    { x: 100, y: 100, width: 200, height: 100, text: 'Box1', link: 'box1', info: "Go to Box1" },
+                    { x: 400, y: 100, width: 200, height: 100, text: 'Box2', link: 'box2', info: "Go to Box2" }
+                ],
+                latexLabels: [
+                    { x: 150, y: 250, text: '\\mathbf{X}', color: '#ffffff', info: "Input matrix", width: 50, height: 50, link: "root" },
+                    // { x: 450, y: 250, text: '\\hat{y}', color: '#ffffff', info: "Output prediction", width: 50, height: 50 }
+                    { x: 450, y: 250, text: '\\hat{y}', color: '#ffffff', info: "Output prediction", link: "root" }
+                ]
+            },
         };
         // END SVG Definition
         //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
@@ -207,37 +230,95 @@
         //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
         // SVG Rendering and linking
         //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
-        function preRenderContent() {
-            for (let view in svgContent) {
-                const group = hiddenContent.append('g')
-                    .attr('id', `content-${view}`)
-                    .attr('class', 'content');
+        // function preRenderContent() {
+        //     for (let view in svgContent) {
+        //         const group = hiddenContent.append('g')
+        //             .attr('id', `content-${view}`)
+        //             .attr('class', 'content');
 
-                svgContent[view].forEach(item => {
-                    const rect = group.append('rect')
-                        .attr('x', item.x)
-                        .attr('y', item.y)
-                        .attr('width', item.width)
-                        .attr('height', item.height)
-                        .attr('fill', RECT_FILL_COLOR)
-                        .attr('stroke', RECT_STROKE_COLOR);
+        //         // Render boxes
+        //         if (svgContent[view].boxes) {
+        //             svgContent[view].boxes.forEach(item => {
+        //                 const rect = group.append('rect')
+        //                     .attr('x', item.x)
+        //                     .attr('y', item.y)
+        //                     .attr('width', item.width)
+        //                     .attr('height', item.height)
+        //                     .attr('fill', RECT_FILL_COLOR)
+        //                     .attr('stroke', RECT_STROKE_COLOR);
 
-                    group.append('text')
-                        .attr('x', item.x + item.width / 2)
-                        .attr('y', item.y + item.height / 2)
-                        .attr('text-anchor', 'middle')
-                        .attr('dominant-baseline', 'central')
-                        .attr('fill', TEXT_COLOR)
-                        .text(item.text);
-                });
-            }
-        }
+        //                 group.append('text')
+        //                     .attr('x', item.x + item.width / 2)
+        //                     .attr('y', item.y + item.height / 2)
+        //                     .attr('text-anchor', 'middle')
+        //                     .attr('dominant-baseline', 'central')
+        //                     .attr('fill', TEXT_COLOR)
+        //                     .text(item.text);
+        //             });
+        //         }
 
-        function showContent(view) {
+        //         // Render LaTeX labels
+        //         if (svgContent[view].latexLabels) {
+        //             svgContent[view].latexLabels.forEach(label => {
+        //                 group.append(() => createLatexLabel(label.x, label.y, label.text, label.color, label.info));
+        //             });
+        //         }
+        //     }
+        // }
+
+
+        // function showContent(view) {
+        //     contentGroup.selectAll('*').remove();
+        //     const content = hiddenContent.select(`#content-${view}`).node();
+        //     if (content) {
+        //         contentGroup.html(content.innerHTML);
+        //         attachEventListeners(view);
+        //     } else {
+        //         logMessage(`No content found for view: ${view}`);
+        //     }
+        // }
+
+        function drawContent(view) {
             contentGroup.selectAll('*').remove();
-            const content = hiddenContent.select(`#content-${view}`).node();
-            if (content) {
-                contentGroup.html(content.innerHTML);
+
+            if (svgContent[view]) {
+                // Render boxes
+                if (svgContent[view].boxes) {
+                    svgContent[view].boxes.forEach(item => {
+                        const rect = contentGroup.append('rect')
+                            .attr('x', item.x)
+                            .attr('y', item.y)
+                            .attr('width', item.width)
+                            .attr('height', item.height)
+                            .attr('fill', RECT_FILL_COLOR)
+                            .attr('stroke', RECT_STROKE_COLOR);
+
+                        contentGroup.append('text')
+                            .attr('x', item.x + item.width / 2)
+                            .attr('y', item.y + item.height / 2)
+                            .attr('text-anchor', 'middle')
+                            .attr('dominant-baseline', 'central')
+                            .attr('fill', TEXT_COLOR)
+                            .text(item.text);
+                    });
+                }
+
+                // Render LaTeX labels
+                if (svgContent[view].latexLabels) {
+                    svgContent[view].latexLabels.forEach(label => {
+                        contentGroup.append(() => createLatexLabel(
+                            label.x,
+                            label.y,
+                            label.text,
+                            label.color,
+                            label.info,
+                            label.link,
+                            label.width,
+                            label.height
+                        ));
+                    });
+                }
+
                 attachEventListeners(view);
             } else {
                 logMessage(`No content found for view: ${view}`);
@@ -245,28 +326,38 @@
         }
 
 
+
         function attachEventListeners(view) {
-            svgContent[view].forEach(item => {
-                const rect = contentLayer.select(`rect[x="${item.x}"][y="${item.y}"]`);
-                const text = contentLayer.select(`text[x="${item.x + item.width / 2}"][y="${item.y + item.height / 2}"]`);
+            if (svgContent[view].boxes) {
+                svgContent[view].boxes.forEach(item => {
+                    const rect = contentLayer.select(`rect[x="${item.x}"][y="${item.y}"]`);
+                    const text = contentLayer.select(`text[x="${item.x + item.width / 2}"][y="${item.y + item.height / 2}"]`);
 
-                if (item.link) {
-                    rect.classed('clickable', true);
-                    text.classed('clickable', true);
+                    if (item.link) {
+                        rect.classed('clickable', true);
+                        text.classed('clickable', true);
 
-                    rect.on('click', () => navigateTo(item.link));
-                    text.on('click', () => navigateTo(item.link));
-                }
+                        rect.on('click', () => navigateTo(item.link));
+                        text.on('click', () => navigateTo(item.link));
+                    }
 
-                addDefaultEventListeners(rect.node());
-                addDefaultEventListeners(text.node());
-            });
+                    addDefaultEventListeners(rect.node());
+                    addDefaultEventListeners(text.node());
+                });
+            }
+
+            if (svgContent[view].latexLabels) {
+                contentLayer.selectAll('.latex-label').each(function () {
+                    addDefaultEventListeners(this);
+                });
+            }
 
             // Add listeners to navigation buttons
             navigationLayer.selectAll('.nav-button').each(function () {
                 addDefaultEventListeners(this);
             });
         }
+
 
         function addDefaultEventListeners(element) {
             element.addEventListener('mouseover', showInfo);
@@ -319,8 +410,7 @@
             navigationLayer.selectAll('.nav-button').remove();
             drawArrowButton('back-button', 5, 5, arrowPaths.back, navigateBack, undoNavigationHistory.length > 0);
             drawArrowButton('forward-button', 55, 5, arrowPaths.forward, navigateForward, redoNavigationHistory.length > 0);
-            // drawArrowButton('reset-button', 105, 5, arrowPaths.reset, resetZoom, true); // Always enabled
-            drawArrowButton('reset-button', svgWidth - 45, 5, arrowPaths.reset, resetZoom, true); // Always enabled and positioned in the top-right corner
+            drawArrowButton('reset-button', svgWidth - 45, 5, arrowPaths.reset, resetZoom, true);
         }
 
 
@@ -373,6 +463,7 @@
             redoNavigationHistory = []; // Clear redo history
             currentView = view;
             updateView();
+            resetZoom();
         }
 
         function navigateBack() {
@@ -380,6 +471,7 @@
                 redoNavigationHistory.push(currentView);
                 currentView = undoNavigationHistory.pop();
                 updateView();
+                resetZoom();
             }
         }
 
@@ -388,12 +480,17 @@
                 undoNavigationHistory.push(currentView);
                 currentView = redoNavigationHistory.pop();
                 updateView();
+                resetZoom();
             }
         }
 
+        // function updateView() {
+        //     drawNavigation();
+        //     showContent(currentView);
+        // }
         function updateView() {
             drawNavigation();
-            showContent(currentView);
+            drawContent(currentView);
         }
 
         // For debugging
@@ -406,11 +503,61 @@
         //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 
         //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+        // LaTeX labels
+        //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+        function createLatexLabel(x, y, text, color, labelInfo, link, width = 250, height = 40) {
+            const foreignObject = document.createElementNS('http://www.w3.org/2000/svg', 'foreignObject');
+            foreignObject.setAttribute('x', x - (width / 2));
+            foreignObject.setAttribute('y', y - 20);
+            foreignObject.setAttribute('width', width);
+            foreignObject.setAttribute('height', height);
+            foreignObject.classList.add('latex-label');
+            foreignObject.dataset.latex = text;
+            foreignObject.dataset.info = labelInfo;
+
+            if (link) {
+                foreignObject.dataset.link = link;
+                foreignObject.style.cursor = 'pointer';
+            }
+
+            const div = document.createElement('div');
+            div.style.fontSize = LATEX_FONT_SIZE + 'px';
+            div.style.color = color;
+            div.style.display = 'flex';
+            div.style.justifyContent = 'center';
+            div.style.alignItems = 'center';
+            div.style.height = '100%';
+
+            katex.render(text, div, {
+                throwOnError: true
+            });
+
+            foreignObject.appendChild(div);
+            foreignObject.addEventListener('mouseover', showInfo);
+            foreignObject.addEventListener('mouseout', clearInfo);
+            foreignObject.addEventListener('click', handleLatexClick);
+
+            return foreignObject;
+        }
+
+        function handleLatexClick(event) {
+            const target = event.currentTarget;
+            const link = target.dataset.link;
+            if (link) {
+                navigateTo(link);
+            }
+        }
+        // END LaTeX labels
+        //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+
+        //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
         // Display detailed info top-right
         //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
         function showInfo(event) {
             const target = event.currentTarget;
             let content = '';
+            // logMessage(target.classList)
+            // logMessage(target.classList.contains('latex-label'))
 
             if (target.classList.contains('nav-button')) {
                 if (target.id === 'back-button') {
@@ -420,8 +567,10 @@
                 } else if (target.id === 'reset-button') {
                     content = "Reset zoom and pan to the initial position.";
                 }
+            } else if (target.classList.contains('latex-label')) {
+                content = target.dataset.info;
             } else if (target.tagName === 'rect' || target.tagName === 'text') {
-                const item = svgContent[currentView].find(i =>
+                const item = svgContent[currentView].boxes.find(i =>
                     i.x == target.getAttribute('x') ||
                     (target.tagName === 'text' && i.x + i.width / 2 == target.getAttribute('x'))
                 );
@@ -429,9 +578,9 @@
                     content = item.info;
                 }
             }
-
             renderInfoContent(document.getElementById('info'), content);
         }
+
 
 
         function renderInfoContent(element, content) {
@@ -496,7 +645,6 @@
         // Main
         //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
         window.onload = function () {
-            preRenderContent();
             setupZoom();
             updateView();
         }
