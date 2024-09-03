@@ -312,7 +312,7 @@
                         authors: ["Andrej Karpathy"],
                         link: "https://github.com/karpathy/nanoGPT/blob/master/model.py",
                         info: "A minimal implementation of GPT in PyTorch.",
-                        refType: "github"
+                        refType: "Github"
                     },
                     {
                         title: "\"Let's build GPT: from scratch, in code, spelled out\"",
@@ -320,7 +320,7 @@
                         authors: ["Andrej Karpathy"],
                         link: "https://www.youtube.com/watch?v=kCc8FmEb1nY",
                         info: "A detailed video tutorial on building a GPT model from scratch.",
-                        refType: "youtube"
+                        refType: "YouTube"
                     }
                 ]
 
@@ -755,7 +755,12 @@
             const target = event.currentTarget;
             let content = '';
 
-            if (target.classList.contains('custom-path')) {
+            if (target.tagName === 'A' && target.parentElement.parentElement.id === 'references-list') {
+                const ref = svgContent[currentView].references.find(r => r.title === target.textContent);
+                if (ref) {
+                    content = formatReferenceInfo(ref);
+                }
+            } else if (target.classList.contains('custom-path')) {
                 content = target.getAttribute('data-info') || "Custom path";
             } else if (target.classList.contains('arrow')) {
                 content = target.getAttribute('data-info') || "Arrow connection";
@@ -840,6 +845,16 @@
             const defaultStr = "";
             document.getElementById('info').textContent = defaultStr;
         }
+
+        function formatReferenceInfo(ref) {
+            let content = ref.info + '\n\n';
+            content += `Link type: ${ref.refType}\n\n`;
+            content += 'Authors:\n';
+            ref.authors.forEach(author => {
+                content += `• ${author}\n`;
+            });
+            return content;
+        }
         // END Display detailed info top-right
         //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 
@@ -855,18 +870,13 @@
                     a.href = ref.link;
                     a.target = "_blank";
                     a.textContent = ref.title;
-                    a.addEventListener('mouseover', () => showInfo({ currentTarget: a }));
+                    a.addEventListener('mouseover', showInfo);
                     a.addEventListener('mouseout', clearInfo);
                     li.appendChild(a);
-                    // if (ref.authors) {
-                    //     const authors = document.createTextNode(` (${ref.authors})`);
-                    //     li.appendChild(authors);
-                    // }
                     referencesList.appendChild(li);
                 });
             }
         }
-
 
         // For debugging or general message to user
         function logMessage(message) {
@@ -874,6 +884,7 @@
             logContainer.innerHTML += `<p>${message}</p>`;
             logContainer.scrollTop = logContainer.scrollHeight;
         }
+
         //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
         // Main
         //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
