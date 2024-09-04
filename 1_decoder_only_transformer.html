@@ -209,6 +209,7 @@
             forward: "M10,5 L25,15 L10,25 Z",
             reset: "M15,5 A10,10 0 1,0 15,25 A10,10 0 1,0 15,5 "
         };
+        const repeatPath = "M15,5 A10,10 0 1,0 25,15 M25,10 L21,16 M25,10 L29,16";
         const positionalEncodingPath = "M15,5 A10,10 0 1,0 15,25 A10,10 0 1,0 15,5 M5,15 Q10,10 15,15 Q20,20 25,15";
 
         // Color constants
@@ -226,9 +227,12 @@
         const DISABLED_BUTTON_ARROW_COLOR = '#4a4a4a';
         const LATEX_LINK_HOVER_COLOR = "#00ffff";
         const LINK_COLOR = '#00ffff';
+        const LATEX_LABEL_COLOR = "#ffffff";
+        const ARROW_COLOR = "#999";
+        const POS_ENC_COLOR = "#bbb";
 
 
-        const LATEX_FONT_SIZE = 16;
+        const LATEX_FONT_SIZE = 18;
 
         //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
         // SVG Definition
@@ -243,6 +247,32 @@
         const contentLayer = d3.select("#content-layer");
         const navigationLayer = d3.select("#navigation-layer");
         // const hiddenContent = d3.select("#hidden-content");
+
+        const SINGLE_LATEX_CHAR_HEIGHT = 50;
+        const SINGLE_LATEX_CHAR_WIDTH = 50;
+        const SINGLE_VECTOR_WIDTH = 24;
+        const SINGLE_VECTOR_HEIGHT = 400;
+        const MIN_SEP_HORIZONTAL = 200;
+
+        const x_raw_info = "todo Raw data for the transformer model exp"
+        const x_raw_link = "" // "x_raw"
+        const x_tok_info = "todo Tokenized data exp"
+        const x_tok_link =  "" //"x_tok"
+        const x_embd_info = "todo Embedded data exp"
+        const x_embd_link = "" // "x_embd"
+        const tokenization_info = "todo tokenz exp"
+        const tokenization_link = "tokenization"
+        const token_embd_info = "todo token embedz exp"
+        const token_embd_link = "token_embedding"
+        const pos_enc_info = "todo position encoding exp"
+        const pos_enc_link = "position_encoding"
+        // const est_prob_dist_i = "position_encoding"
+        
+        const logits_info = "todo explain logits"
+        const est_prob_dist_info = "todo explain output as estimated probability distribution over the vocab size given the previous tokens"
+        const dropout_info = "todo dropout exp"
+        const lin_prj_info = "todo linear projection exp"
+        const softmax_info = "todo softmax exp"
 
         const svgContent = {
             // 'root': [
@@ -261,37 +291,194 @@
                 boxes: [
                 ],
                 latexLabels: [
-                    { x: 150, y: 250, text: 'X', color: '#ffffff', info: "Input matrix", link: "root" },
+                    { x: 150, y: 250, text: 'X', color: LATEX_LABEL_COLOR, info: "Input matrix", link: "root" },
                     { x: 450, y: 250, text: '\\hat{y}', color: '#ffffff', info: "Output prediction" }
                 ]
             },
             'root': {
                 boxes: [
-                    { x: 100, y: 100, width: 200, height: 100, text: 'Box1', link: 'box1', info: "Go to Box1" },
-                    { x: 400, y: 100, width: 200, height: 100, text: '', link: 'box2', info: "Go to Box2", opacity: 0.5 },
-                    // { x: 400, y: 105, width: 205, height: 100, text: 'Box2', link: 'box2', info: "Go to Box2", opacity: 1 }
+                    { 
+                        x: 50, y: 130, text: '', width: SINGLE_VECTOR_WIDTH, height: SINGLE_VECTOR_HEIGHT + 200, 
+                        info: x_raw_info, link: x_raw_link, opacity: 0.4
+                    },
+                    { 
+                        x: 50 + MIN_SEP_HORIZONTAL, y: 130, text: '', width: SINGLE_VECTOR_WIDTH, height: SINGLE_VECTOR_HEIGHT, 
+                        info: x_tok_info, link: x_tok_link, opacity: 0.4
+                    },
+                    { 
+                        x: 50 + 2*MIN_SEP_HORIZONTAL, y: 130, text: '', width: SINGLE_VECTOR_WIDTH*4, height: SINGLE_VECTOR_HEIGHT, 
+                        info: x_embd_info, link: x_embd_link, opacity: 0.4
+                    },
+                    { 
+                        x: 50 + 3*MIN_SEP_HORIZONTAL - (SINGLE_LATEX_CHAR_WIDTH / 2), 
+                        y: 130 + (SINGLE_VECTOR_HEIGHT / 2) - (SINGLE_LATEX_CHAR_HEIGHT / 2), 
+                        text: '', width: SINGLE_LATEX_CHAR_WIDTH, height: SINGLE_LATEX_CHAR_HEIGHT,
+                        info: "Addition", opacity: 0.2
+                    },
+                    { 
+                        x: 50 + 3*MIN_SEP_HORIZONTAL + 150, 
+                        y: 130 + (SINGLE_VECTOR_HEIGHT / 2) - (50), 
+                        text: 'Succesive applications of self-attention blocks', 
+                        width: 350, height: 100,
+                        link: "block", 
+                        opacity: 1
+                    },
+                    { 
+                        x: 50 + 4*MIN_SEP_HORIZONTAL + 450, 
+                        y: 130 + (SINGLE_VECTOR_HEIGHT / 2) - (50), 
+                        text: 'Logits', 
+                        width: 100, height: 100,
+                        opacity: 0.4,
+                        info: logits_info
+                    },
+                    { 
+                        x: 50 + 5*MIN_SEP_HORIZONTAL + 450, 
+                        y: 130 + (SINGLE_VECTOR_HEIGHT / 2) - (50), 
+                        text: 'Output Probabilities for next token', 
+                        width: 280, height: 100,
+                        opacity: 0.4,
+                        info: est_prob_dist_info
+                    },
                 ],
                 latexLabels: [
-                    { x: 150, y: 250, text: 'X', color: '#ffffff', info: "Input matrix", width: 50, height: 50, link: 'box1' },
-                    // { x: 450, y: 250, text: '\\hat{y}', color: '#ffffff', info: "Output prediction", width: 50, height: 50 }
-                    { x: 450, y: 250, text: '\\hat{y}', color: '#ffffff', info: "Output prediction", link: 'box1' }
+                    { 
+                        x: 50 + (SINGLE_VECTOR_WIDTH / 2), y: 100, 
+                        text: 'x_{raw}', 
+                        color: LATEX_LABEL_COLOR, width: SINGLE_LATEX_CHAR_WIDTH, height: SINGLE_LATEX_CHAR_HEIGHT, 
+                        info: x_raw_info, link: x_raw_link 
+                    },
+                    { 
+                        x: 50 + MIN_SEP_HORIZONTAL + (SINGLE_VECTOR_WIDTH / 2), y: 100, 
+                        text: 'x_{tok}', 
+                        color: LATEX_LABEL_COLOR, width: SINGLE_LATEX_CHAR_WIDTH, height: SINGLE_LATEX_CHAR_HEIGHT, 
+                        info: x_tok_info, link: x_tok_link 
+                    },
+                    { 
+                        x: 50 + 2*MIN_SEP_HORIZONTAL + (SINGLE_VECTOR_WIDTH * 2), y: 100, 
+                        text: 'x_{embd}', 
+                        color: LATEX_LABEL_COLOR, width: SINGLE_LATEX_CHAR_WIDTH, height: SINGLE_LATEX_CHAR_HEIGHT, 
+                        info: x_embd_info, link: x_embd_link 
+                    },
+                    { 
+                        x: 50 + 3*MIN_SEP_HORIZONTAL, y: 130 + (SINGLE_VECTOR_HEIGHT / 2) -8, 
+                        text: '\\boldsymbol{+}',
+                        width: SINGLE_LATEX_CHAR_WIDTH, height: SINGLE_LATEX_CHAR_HEIGHT, info: "Addition"
+                    },
+                    { 
+                        x: 50 + 3*MIN_SEP_HORIZONTAL + 985, 
+                        y: 250, 
+                        text: '\\hat{P}( x_{tok}^{(t+1)} | x_{tok}^{(...t)} )', 
+                        color: LATEX_LABEL_COLOR, width: 4*SINGLE_LATEX_CHAR_WIDTH, height: SINGLE_LATEX_CHAR_HEIGHT, 
+                        info: est_prob_dist_info
+                    },
+                    // { x: 450, y: 250, text: '\\hat{y}', color: '#ffffff', info: "Output prediction", link: 'box1' }
                 ],
                 textLabels: [
-                    { x: 350, y: 130, text: 'feedforward', color: '#ffffff', info: "Feedforward connection", link: 'box1' }
+                    { 
+                        x: 50 + SINGLE_VECTOR_WIDTH + 40,
+                        y: 130 + (SINGLE_VECTOR_HEIGHT / 2) - 10, 
+                        text: 'Tokenization', 
+                        color: '#ffffff', 
+                        info: tokenization_info,
+                        link: tokenization_link
+                    },
+                    { 
+                        x: 50 + MIN_SEP_HORIZONTAL + SINGLE_VECTOR_WIDTH + 20,
+                        y: 130 + (SINGLE_VECTOR_HEIGHT / 2) - 10, 
+                        text: 'Token Embedding', 
+                        color: '#ffffff', 
+                        info: token_embd_info,
+                        link: token_embd_link
+                    },
+                    { 
+                        x: 50 + 3*MIN_SEP_HORIZONTAL - SINGLE_LATEX_CHAR_WIDTH - 20,
+                        y: 130 + (SINGLE_VECTOR_HEIGHT / 2) + 260, 
+                        text: 'Positional Encoding', 
+                        color: '#ffffff', 
+                        info: pos_enc_info,
+                        link: pos_enc_link
+                    },
+                    { 
+                        x: 50 + 3*MIN_SEP_HORIZONTAL + 50,
+                        y: 130 + (SINGLE_VECTOR_HEIGHT / 2) - 10, 
+                        text: 'Dropout', 
+                        color: '#ffffff', 
+                        info: dropout_info
+                    },
+                    { 
+                        x: 50 + 3*MIN_SEP_HORIZONTAL + 512,
+                        y: 130 + (SINGLE_VECTOR_HEIGHT / 2) - 10, 
+                        text: 'Linear Projection', 
+                        color: '#ffffff', 
+                        info: lin_prj_info
+                    },
+                    { 
+                        x: 50 + 3*MIN_SEP_HORIZONTAL + 770,
+                        y: 130 + (SINGLE_VECTOR_HEIGHT / 2) - 10, 
+                        text: 'Softmax', 
+                        color: '#ffffff', 
+                        info: softmax_info
+
+                    },
                 ],
                 arrows: [
-                    { start: { x: 300, y: 150 }, end: { x: 400, y: 150 }, color: '#ffffff', info: "Connection from Box1 to Box2", link: 'box1' }
+                    { 
+                        start: { x: 50 + SINGLE_VECTOR_WIDTH, y: 130 + (SINGLE_VECTOR_HEIGHT / 2) }, 
+                        end:   { x: 50 + MIN_SEP_HORIZONTAL, y: 130 + (SINGLE_VECTOR_HEIGHT / 2) }, 
+                        color: ARROW_COLOR,
+                        info: tokenization_info,
+                        link: tokenization_link
+                    },
+                    { 
+                        start: { x: 50 + MIN_SEP_HORIZONTAL + SINGLE_VECTOR_WIDTH, y: 130 + (SINGLE_VECTOR_HEIGHT / 2) }, 
+                        end:   { x: 50 + 2*MIN_SEP_HORIZONTAL, y: 130 + (SINGLE_VECTOR_HEIGHT / 2) }, 
+                        color: ARROW_COLOR,
+                        info: token_embd_info,
+                        link: token_embd_link
+                    },
+                    { 
+                        start: { x: 50 + 2*MIN_SEP_HORIZONTAL + 4*SINGLE_VECTOR_WIDTH, y: 130 + (SINGLE_VECTOR_HEIGHT / 2) }, 
+                        end:   { x: 50 + 3*MIN_SEP_HORIZONTAL - SINGLE_LATEX_CHAR_WIDTH/2, y: 130 + (SINGLE_VECTOR_HEIGHT / 2) }, 
+                        color: ARROW_COLOR, info: "Apply positional encoding to input via addition",
+                    },
+                    { 
+                        start: { x: 50 + 3*MIN_SEP_HORIZONTAL, y: 130 + (SINGLE_VECTOR_HEIGHT / 2) + 170  }, 
+                        end:   { x: 50 + 3*MIN_SEP_HORIZONTAL, y: 130 + (SINGLE_VECTOR_HEIGHT / 2) + SINGLE_LATEX_CHAR_HEIGHT/2 }, 
+                        color: ARROW_COLOR, info: "Apply positional encoding to input via addition",
+                    },
+                    { 
+                        start: { x: 50 + 3*MIN_SEP_HORIZONTAL + 25, y: 130 + (SINGLE_VECTOR_HEIGHT / 2) }, 
+                        end:   { x: 50 + 3*MIN_SEP_HORIZONTAL + 150, y: 130 + (SINGLE_VECTOR_HEIGHT / 2) }, 
+                        color: ARROW_COLOR,
+                        info: dropout_info
+                    },
+                    { 
+                        start: { x: 50 + 3*MIN_SEP_HORIZONTAL + 500, y: 130 + (SINGLE_VECTOR_HEIGHT / 2) }, 
+                        end:   { x: 50 + 3*MIN_SEP_HORIZONTAL + 650, y: 130 + (SINGLE_VECTOR_HEIGHT / 2) }, 
+                        color: ARROW_COLOR,
+                        info: lin_prj_info
+                    },
+                    { 
+                        start: { x: 50 + 3*MIN_SEP_HORIZONTAL + 750, y: 130 + (SINGLE_VECTOR_HEIGHT / 2) }, 
+                        end:   { x: 50 + 3*MIN_SEP_HORIZONTAL + 850, y: 130 + (SINGLE_VECTOR_HEIGHT / 2) }, 
+                        color: ARROW_COLOR,
+                        info: softmax_info
+                    },
                 ],
 
                 paths: [
-                    { x: 700, y: 100, width: 100, height: 100, pathD: positionalEncodingPath, color: '#ffffff', info: "Positional Encoding", link: 'box1' }
+                    {
+                        x: 50 + 3*MIN_SEP_HORIZONTAL - SINGLE_LATEX_CHAR_WIDTH, y: 130 + (SINGLE_VECTOR_HEIGHT / 2) + 150, 
+                        width: 100, height: 100, pathD: positionalEncodingPath, color: POS_ENC_COLOR, 
+                        info: pos_enc_info,
+                        link: pos_enc_link
+                    }
                 ],
 
                 // References
                 references: [
                     {
                         title: "Attention Is All You Need",
-                        // authors: "A. Vaswani, N. Shazeer, N. Parmar, J. Uszkoreit, L. Jones, A. N. Gomez, L. Kaiser, I. Polosukhin",
                         authors: [
                             "Ashish Vaswani",
                             "Noam Shazeer",
@@ -308,20 +495,32 @@
                     },
                     {
                         title: "nanoGPT",
-                        // authors: "Andrej Karpathy",
-                        authors: ["Andrej Karpathy"],
+                        authors: ["Andrej Karpathy", "Github contributors"],
                         link: "https://github.com/karpathy/nanoGPT/blob/master/model.py",
                         info: "A minimal implementation of GPT in PyTorch.",
                         refType: "Github"
                     },
                     {
                         title: "\"Let's build GPT: from scratch, in code, spelled out\"",
-                        // authors: "Andrej Karpathy",
                         authors: ["Andrej Karpathy"],
                         link: "https://www.youtube.com/watch?v=kCc8FmEb1nY",
                         info: "A detailed video tutorial on building a GPT model from scratch.",
                         refType: "YouTube"
+                    },
+                    {
+                        title: "Dropout: A Simple Way to Prevent Neural Networks from Overfitting",
+                        authors: [
+                            "Nitish Srivastava",
+                            "Geoffrey Hinton",
+                            "Alex Krizhevsky",
+                            "Ilya Sutskever",
+                            "Ruslan Salakhutdinov"
+                        ],
+                        link: "https://www.cs.toronto.edu/~rsalakhu/papers/srivastava14a.pdf",
+                        info: "This seminal paper introduces the dropout technique, a simple yet effective method to reduce overfitting in neural networks by randomly 'dropping out' a proportion of neurons during training.",
+                        refType: "PDF"
                     }
+
                 ]
 
             },
@@ -354,7 +553,7 @@
                             .attr('text-anchor', 'middle')
                             .attr('dominant-baseline', 'central')
                             .attr('fill', TEXT_COLOR)
-                            .attr('opacity', item.opacity !== undefined ? item.opacity : 1)
+                            // .attr('opacity', item.opacity !== undefined ? item.opacity : 1)
                             .text(item.text);
                     });
                 }
@@ -845,20 +1044,24 @@
             const defaultStr = "";
             document.getElementById('info').textContent = defaultStr;
         }
-
-        function formatReferenceInfo(ref) {
-            let content = ref.info + '\n\n';
-            content += `Link type: ${ref.refType}\n\n`;
-            content += 'Authors:\n';
-            ref.authors.forEach(author => {
-                content += `• ${author}\n`;
-            });
-            return content;
-        }
         // END Display detailed info top-right
         //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 
+        //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
         // Display references bot right
+        //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+        function formatReferenceInfo(ref) {
+            let content = "";
+            content += `**Reference Name:** ${ref.title}\n\n`;
+            content += `**Description:** ${ref.info}\n\n`
+            content += '**Authors:**\n';
+            ref.authors.forEach(author => {
+                content += `• ${author}\n`;
+            });
+            content += `\n**Link type:** ${ref.refType}\n\n`;
+            return content;
+        }
+
         function renderReferences(view) {
             const referencesList = document.getElementById('references-list');
             referencesList.innerHTML = '';
