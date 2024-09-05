@@ -322,6 +322,7 @@ To try out tokenization in your browser, check out the tiktokenizer web app.`
 2. **Learned representations**: These embeddings are learned during the training process, capturing semantic and syntactic information about tokens.
 
 3. **Dimensionality**: The embedding dimension ($$d_{model}$$) is typically used to set the hidden dimension of the feedforward MLPs in the self-attention blocks that come later in the network (e.g., $$d_{ff} = 4 * d_{model}$$).
+[[TODO say something about weight sharing with linear projection]]
 
 The embedding process can be represented as:
 
@@ -441,7 +442,7 @@ Token embeddings provide a dense, continuous representation of discrete tokens, 
                         x: 50 + 5 * MIN_SEP_HORIZONTAL + 830,
                         y: 130 + (SINGLE_VECTOR_HEIGHT / 2) - (SINGLE_LATEX_CHAR_HEIGHT / 2) - 10,
                         text: '', width: SINGLE_LATEX_CHAR_WIDTH + 10, height: SINGLE_LATEX_CHAR_HEIGHT + 10,
-                        info: x_tok_t_plus_1_info, 
+                        info: x_tok_t_plus_1_info,
                         opacity: 0.4
                     },
                 ],
@@ -477,7 +478,7 @@ Token embeddings provide a dense, continuous representation of discrete tokens, 
                         info: est_prob_dist_info
                     },
                     {
-                        x: 50 + 3 * MIN_SEP_HORIZONTAL + 1265,
+                        x: 50 + 3 * MIN_SEP_HORIZONTAL + 1262,
                         y: 130 + (SINGLE_VECTOR_HEIGHT / 2) - 12,
                         text: 'x_{tok}^{(t+1)}',
                         color: LATEX_LABEL_COLOR, width: SINGLE_LATEX_CHAR_WIDTH, height: SINGLE_LATEX_CHAR_HEIGHT,
@@ -647,6 +648,13 @@ Token embeddings provide a dense, continuous representation of discrete tokens, 
                         refType: "Github"
                     },
                     {
+                        title: "llm.c",
+                        authors: ["Andrej Karpathy"],
+                        link: "https://github.com/karpathy/llm.c",
+                        info: "TODO",
+                        refType: "Github"
+                    },
+                    {
                         title: "\"Let's build GPT: from scratch, in code, spelled out\"",
                         authors: ["Andrej Karpathy"],
                         link: "https://www.youtube.com/watch?v=kCc8FmEb1nY",
@@ -674,6 +682,20 @@ Token embeddings provide a dense, continuous representation of discrete tokens, 
                         link: "https://tiktokenizer.vercel.app/",
                         info: "An interactive application to tokenize text using different tokenizers",
                         refType: "web app"
+                    },
+                    {
+                        title: "\"Let's reproduce GPT-2 (124M)\"",
+                        authors: ["Andrej Karpathy"],
+                        link: "https://www.youtube.com/watch?v=l8pRSuU81PU",
+                        info: "A video tutorial on reproducing the GPT-2 (124M) model.",
+                        refType: "YouTube"
+                    },
+                    {
+                        title: "Using the Output Embedding to Improve Language Models",
+                        authors: ["Ofir Press", "Lior Wolf"],
+                        link: "https://arxiv.org/abs/1608.05859",
+                        info: "A paper discussing techniques to improve language models using output embeddings.",
+                        refType: "arXiv"
                     },
                     {
                         title: "The Llama 3 Herd of Models",
@@ -989,7 +1011,7 @@ Token embeddings provide a dense, continuous representation of discrete tokens, 
                 line.attr('y1', separator.y)
                     .attr('y2', separator.y)
                     .attr('x1', separator.x1 || -100)
-                    .attr('x2', separator.x2 || 2*svgWidth);
+                    .attr('x2', separator.x2 || 2 * svgWidth);
             }
 
             if (separator.type === 'dashed') {
