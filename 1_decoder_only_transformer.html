@@ -379,7 +379,6 @@ For non-text data types, appropriate preprocessing steps would be applied before
         const x_tok_info = `The tokenized input $$x_{tok}$$ serves as the starting point for the transformer's processing, capturing the structure and content of the input text in a format that is usable by the neural network.
 
 **About tokenized data:**
-
 1. **Vocabulary size**: Tokens are drawn from a fixed vocabulary, e.g. \`vocab_size\` $$ = d_{vocab} = 64128$$.
 
 2. **Special tokens**: These include tokens like \`[START]\`, \`[END]\`, \`[PAD]\`, \`[UNK]\` for start of sequence, end of sequence, padding, and unknown words respectively.
@@ -393,7 +392,6 @@ For non-text data types, appropriate preprocessing steps would be applied before
         const x_embd_info = `$$x_{embd}$$ represents the embedded data that serves a the enriched input data for the transformer model.
 
 **About embedded input:**
-
 1. **Shape**: $$x_{embd}$$ has shape $$(d_{seq} \\times d_{model})$$, where $$d_{seq}$$ is the sequence length and $$d_{model}$$ is the embedding dimension.
 
 2. **Learned token embeddings**: The embedding matrix learns richer representations of tokens than just the token ID present in $$x_{tok}$$, capturing semantic meaning about the input tokens.
