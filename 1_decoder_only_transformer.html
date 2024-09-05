@@ -368,8 +368,6 @@
         //    if after that visual help still useful, make a link
         const x_raw_info = `$$x_{raw}$$ represents the raw input data for the transformer model.
 
-While transformers can potentially handle various data types (e.g., images, audio), Large Language Models (LLMs) primarily work with text input.
-
 **During training**: The input is usually a large corpus of text data, such as books, articles, or web pages. This can be several terabytes of data. It gets tokenized and split into manageable sequences (e.g., 1024 tokens) for batch processing.
 
 **During inference**: The input is typically a prompt or partial sequence provided by the user. This can range from a few words to several paragraphs, depending on the task. This input is then tokenized and the model then generates a continuation based on this input.
@@ -378,11 +376,11 @@ The input can include various languages, special characters, and formatting, whi
 
 For non-text data types, appropriate preprocessing steps would be applied before feeding the input into the transformer architecture.`
         const x_raw_link = "" // "x_raw"
-        const x_tok_info = `$$x_{tok}$$ represents the tokenized input data for the transformer model.
+        const x_tok_info = `The tokenized input $$x_{tok}$$ serves as the starting point for the transformer's processing, capturing the structure and content of the input text in a format that is usable by the neural network.
 
 **About tokenized data:**
 
-1. **Vocabulary**: Tokens are drawn from a fixed vocabulary, usually containing on the order of tens of thousands of tokens for language models, e.g. \`vocab_size\` $$ = d_{vocab} = 64128$$.
+1. **Vocabulary size**: Tokens are drawn from a fixed vocabulary, e.g. \`vocab_size\` $$ = d_{vocab} = 64128$$.
 
 2. **Special tokens**: These include tokens like \`[START]\`, \`[END]\`, \`[PAD]\`, \`[UNK]\` for start of sequence, end of sequence, padding, and unknown words respectively.
 
@@ -390,9 +388,7 @@ For non-text data types, appropriate preprocessing steps would be applied before
 
 4. **Sequence length**: Tokenized sequences are typically padded or truncated to a fixed length (e.g., 512 or 4096 tokens). We will refer to this number as $$d_{seq}$$.
 
-5. **Token IDs**: Each token is represented by a unique integer ID, which is used as input to the embedding layer.
-
-The tokenized input $$x_{tok}$$ serves as the starting point for the transformer's processing, capturing the structure and content of the input text in a format suitable for the neural network.`
+5. **Token IDs**: Each token is represented by a unique integer ID, which is used as input to the embedding layer.`
         const x_tok_link = "" //"x_tok"
         const x_embd_info = `$$x_{embd}$$ represents the embedded data that serves a the enriched input data for the transformer model.
 
@@ -410,36 +406,27 @@ The tokenized input $$x_{tok}$$ serves as the starting point for the transformer
         const x_embd_link = "" // "x_embd"
         const tokenization_info = `Tokenization bridges the gap between human-readable text and the numerical input required by transformer models. The tokenizer converts raw text into a sequence of integers, or token IDs, which the model can then process. The tokenizer is constructed separately from the rest of the transformer, potentially using different data.
 
-**Common tokenization methods include**:
- • **BPE** (Byte Pair Encoding): Starts with individual characters and iteratively merges the most frequent pairs to form new tokens.
- • **WordPiece** and **SentencePiece**
+**BPE** (Byte Pair Encoding) is a popular tokenization method that starts with individual characters and iteratively merges the most frequent pairs to form new tokens, while other approaches like WordPiece and SentencePiece offer alternative strategies.
 
 **Some of the potential issues with tokenization**:
- • Out-of-vocabulary words: Rare or unseen words may be split into suboptimal subwords.
- • Contextual meaning loss: Splitting words can sometimes lose important context.
- • Inconsistent tokenization: The same word might be tokenized differently depending on context.
 
-To learn more about the topic, I recommended checking out Andrej Karpathy's video \"Let's build the GPT Tokenizer\".
-
-To try out tokenization in your browser, check out the tiktokenizer web app.`
+1. **Out-of-vocabulary words**: Rare or unseen words may be split into suboptimal subwords.
+2. **Contextual meaning loss**: Splitting words into subwords and inadvertant groupings can sometimes cause loss of important context.
+3. **Inconsistent tokenization**: The same word might be tokenized differently depending on the characters around it.`
         const tokenization_link = "" // "tokenization"
-        const token_embd_info = `Token embedding converts tokenized input into dense vector representations, allowing for a richer representation for each token.
+        const token_embd_info = `Token embedding converts tokenized input into dense vector representations, allowing for the model to learn a richer representation for each token.
 
 **Key aspects of token embedding:**
 1. **Lookup table**: Each token is mapped to a unique vector in a high-dimensional space, (e.g., $$d_{model}=512$$, where $$d_{model}$$ is commonly used to refer to the embedding dimension). When $$x_{tok}$$ is one-hot encoded, it is expanded such that the index pertaining the the token ID is set to $$1,$$ and all others are set to $$0,$$ which leads to that index \"looking up\" its higher dimensional representation via matrix multiplication.
 
 2. **Learned representations**: These embeddings are learned during the training process, capturing semantic and syntactic information about tokens.
 
-3. **Dimensionality**: The embedding dimension ($$d_{model}$$) is typically used to set the hidden dimension of the feedforward MLPs in the self-attention blocks that come later in the network (e.g., $$d_{ff} = 4 * d_{model}$$).
-[[TODO say something about weight sharing with linear projection]]
+3. **Weight tying**: The embedding matrix is often shared with the final linear projection layer in the model's output, reducing the number of parameters and improving generalization. The intuition is that the process of generating a word (output) should be closely related to the process of understanding a word (input).
 
-The embedding process can be represented as:
-
+The embedding process can be represented as: 
 $$x_{embd} = x_{tok} \\cdot W_{embd} $$
 
-Where $$x_{tok}$$ is one-hot encoded from shape $$( d_{seq} \\times 1 )$$ to $$( d_{seq} \\times d_{vocab} )$$, and $$W_{embd}$$ is the embedding matrix of shape: $$( d_{vocab} \\times d_{model} )$$. The result $$x_{embd}$$ is shape $$( d_{seq} \\times d_{model} )$$.
-
-Token embeddings provide a dense, continuous representation of discrete tokens, allowing the model to process a richer representation of language.`;
+Where $$x_{tok}$$ is one-hot encoded from shape $$( d_{seq} \\times 1 )$$ to $$( d_{seq} \\times d_{vocab} )$$, and $$W_{embd}$$ is the embedding matrix of shape: $$( d_{vocab} \\times d_{model} )$$. The result $$x_{embd}$$ is shape $$( d_{seq} \\times d_{model} )$$.`;
 
         const token_embd_link = "" //"token_embedding"
         const pos_enc_info = "todo position encoding exp"
