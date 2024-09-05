@@ -386,12 +386,16 @@ Token embeddings provide a dense, continuous representation of discrete tokens, 
             //     ],
             // },
             'attention': {
-                boxes: [
+                textLabels: [
                     {
-                        x: 50 + MIN_SEP_HORIZONTAL, y: 130, text: 'attn', width: SINGLE_VECTOR_WIDTH, height: SINGLE_VECTOR_HEIGHT,
-                        info: x_tok_info, link: x_tok_link, opacity: 0.4
-                    },
-                ],
+                        x: 50 + SINGLE_VECTOR_WIDTH + 40,
+                        y: 130 + (SINGLE_VECTOR_HEIGHT / 2) - 10,
+                        text: '"I tried to pay attention, but attention paid me" - Lil Wayne',
+                        color: LATEX_LABEL_COLOR,
+                        info: "Self attention stuff goes here",
+                    }
+                ]
+
             },
             'root': {
                 boxes: [
