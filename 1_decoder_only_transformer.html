@@ -229,7 +229,7 @@
         const LINK_COLOR = '#00ffff';
         const LATEX_LABEL_COLOR = "#ffffff";
         const ARROW_COLOR = "#999";
-        const POS_ENC_COLOR = "#bbb";
+        const POS_ENC_COLOR = "#666";
 
 
         const LATEX_FONT_SIZE = 18;
@@ -257,15 +257,80 @@
         // Rule for whether something can have a link:
         //    try to explain in allotted space with text
         //    if after that visual help still useful, make a link
-        const x_raw_info = "todo Raw data for the transformer model exp"
+        const x_raw_info = `$$x_{raw}$$ represents the raw input data for the transformer model.
+
+While transformers can potentially handle various data types (e.g., images, audio), Large Language Models (LLMs) primarily work with text input.
+
+**During training**: The input is usually a large corpus of text data, such as books, articles, or web pages. This can be several terabytes of data. It gets tokenized and split into manageable sequences (e.g., 1024 tokens) for batch processing.
+
+**During inference**: The input is typically a prompt or partial sequence provided by the user. This can range from a few words to several paragraphs, depending on the task. This input is then tokenized and the model then generates a continuation based on this input.
+
+The input can include various languages, special characters, and formatting, which the subsequent tokenization step will process.
+
+For non-text data types, appropriate preprocessing steps would be applied before feeding the input into the transformer architecture.`
         const x_raw_link = "" // "x_raw"
-        const x_tok_info = "todo Tokenized data exp"
+        const x_tok_info = `$$x_{tok}$$ represents the tokenized input data for the transformer model.
+
+**About tokenized data:**
+
+1. **Vocabulary**: Tokens are drawn from a fixed vocabulary, usually containing on the order of tens of thousands of tokens for language models, e.g. \`vocab_size\` $$ = d_{vocab} = 64128$$.
+
+2. **Special tokens**: These include tokens like \`[START]\`, \`[END]\`, \`[PAD]\`, \`[UNK]\` for start of sequence, end of sequence, padding, and unknown words respectively.
+
+3. **Subword tokenization**: Most modern tokenizers (e.g., BPE, WordPiece, SentencePiece) use subword units.
+
+4. **Sequence length**: Tokenized sequences are typically padded or truncated to a fixed length (e.g., 512 or 4096 tokens). We will refer to this number as $$d_{seq}$$.
+
+5. **Token IDs**: Each token is represented by a unique integer ID, which is used as input to the embedding layer.
+
+The tokenized input $$x_{tok}$$ serves as the starting point for the transformer's processing, capturing the structure and content of the input text in a format suitable for the neural network.`
         const x_tok_link = "" //"x_tok"
-        const x_embd_info = "todo Embedded data exp"
+        const x_embd_info = `$$x_{embd}$$ represents the embedded data that serves a the enriched input data for the transformer model.
+
+**About embedded input:**
+
+1. **Shape**: $$x_{embd}$$ has shape $$(d_{seq} \\times d_{model})$$, where $$d_{seq}$$ is the sequence length and $$d_{model}$$ is the embedding dimension.
+
+2. **Learned token embeddings**: The embedding matrix learns richer representations of tokens than just the token ID present in $$x_{tok}$$, capturing semantic meaning about the input tokens.
+
+3. **Dimensionality**: $$d_{model}$$ is a hyperparameter, often set to values like 512, 1024, 2048, or 4096 in practice.
+
+4. **Input to attention layers**: $$x_{embd} + PE$$ serves as the initial input to the self-attention mechanism in the transformer, where $$PE$$ is the positional encoding used to capture information about a token's position in the sequence.
+
+5. **Why do we need to add positional encoding?**: The self-attention mechanism in transformers is permutation-invariant, meaning it treats the input as a set rather than a sequence. RoPE`;
         const x_embd_link = "" // "x_embd"
-        const tokenization_info = "todo tokenz exp"
+        const tokenization_info = `Tokenization bridges the gap between human-readable text and the numerical input required by transformer models. The tokenizer converts raw text into a sequence of integers, or token IDs, which the model can then process. The tokenizer is constructed separately from the rest of the transformer, potentially using different data.
+
+**Common tokenization methods include**:
+ • **BPE** (Byte Pair Encoding): Starts with individual characters and iteratively merges the most frequent pairs to form new tokens.
+ • **WordPiece** and **SentencePiece**
+
+**Some of the potential issues with tokenization**:
+ • Out-of-vocabulary words: Rare or unseen words may be split into suboptimal subwords.
+ • Contextual meaning loss: Splitting words can sometimes lose important context.
+ • Inconsistent tokenization: The same word might be tokenized differently depending on context.
+
+To learn more about the topic, I recommended checking out Andrej Karpathy's video \"Let's build the GPT Tokenizer\".
+
+To try out tokenization in your browser, check out the tiktokenizer web app.`
         const tokenization_link = "" // "tokenization"
-        const token_embd_info = "todo token embedz exp"
+        const token_embd_info = `Token embedding converts tokenized input into dense vector representations, allowing for a richer representation for each token.
+
+**Key aspects of token embedding:**
+1. **Lookup table**: Each token is mapped to a unique vector in a high-dimensional space, (e.g., $$d_{model}=512$$, where $$d_{model}$$ is commonly used to refer to the embedding dimension). When $$x_{tok}$$ is one-hot encoded, it is expanded such that the index pertaining the the token ID is set to $$1,$$ and all others are set to $$0,$$ which leads to that index \"looking up\" its higher dimensional representation via matrix multiplication.
+
+2. **Learned representations**: These embeddings are learned during the training process, capturing semantic and syntactic information about tokens.
+
+3. **Dimensionality**: The embedding dimension ($$d_{model}$$) is typically used to set the hidden dimension of the feedforward MLPs in the self-attention blocks that come later in the network (e.g., $$d_{ff} = 4 * d_{model}$$).
+
+The embedding process can be represented as:
+
+$$x_{embd} = x_{tok} \\cdot W_{embd} $$
+
+Where $$x_{tok}$$ is one-hot encoded from shape $$( d_{seq} \\times 1 )$$ to $$( d_{seq} \\times d_{vocab} )$$, and $$W_{embd}$$ is the embedding matrix of shape: $$( d_{vocab} \\times d_{model} )$$. The result $$x_{embd}$$ is shape $$( d_{seq} \\times d_{model} )$$.
+
+Token embeddings provide a dense, continuous representation of discrete tokens, allowing the model to process a richer representation of language.`;
+
         const token_embd_link = "" //"token_embedding"
         const pos_enc_info = "todo position encoding exp"
         const pos_enc_link = "" // "position_encoding"
@@ -278,6 +343,8 @@
         const dropout_info = "todo dropout exp"
         const lin_prj_info = "todo linear projection exp"
         const softmax_info = "todo softmax exp"
+        const x_tok_t_plus_1_info = "todo x tok t plus 1"
+        const sampling_info = "todo sampling"
 
         const svgContent = {
             // 'root': [
@@ -292,31 +359,31 @@
             //     // 7. Residual Connections 
             //     // 8. Configurations (n_embd, block_size, activation fn, etc.)
             // ],
-            'tokenization': {
-                boxes: [
-                    {
-                        x: 50 + MIN_SEP_HORIZONTAL, y: 130, text: 'tok', width: SINGLE_VECTOR_WIDTH, height: SINGLE_VECTOR_HEIGHT,
-                        info: x_tok_info, link: x_tok_link, opacity: 0.4
-                    },
-                ],
-                references: [
-                    {
-                        title: "\"Let's build the GPT Tokenizer\"",
-                        authors: ["Andrej Karpathy"],
-                        link: "https://www.youtube.com/watch?v=zduSFxRajkE",
-                        info: "A detailed video tutorial on tokenization in GPT models",
-                        refType: "YouTube"
-                    }
-                ]
-            },
-            'position_encoding': {
-                boxes: [
-                    {
-                        x: 50 + MIN_SEP_HORIZONTAL, y: 130, text: 'posemb', width: SINGLE_VECTOR_WIDTH, height: SINGLE_VECTOR_HEIGHT,
-                        info: x_tok_info, link: x_tok_link, opacity: 0.4
-                    },
-                ],
-            },
+            // 'tokenization': {
+            //     boxes: [
+            //         {
+            //             x: 50 + MIN_SEP_HORIZONTAL, y: 130, text: 'tok', width: SINGLE_VECTOR_WIDTH, height: SINGLE_VECTOR_HEIGHT,
+            //             info: x_tok_info, link: x_tok_link, opacity: 0.4
+            //         },
+            //     ],
+            //     references: [
+            //         {
+            //             title: "\"Let's build the GPT Tokenizer\"",
+            //             authors: ["Andrej Karpathy"],
+            //             link: "https://www.youtube.com/watch?v=zduSFxRajkE",
+            //             info: "A detailed video tutorial on tokenization in GPT models",
+            //             refType: "YouTube"
+            //         }
+            //     ]
+            // },
+            // 'position_encoding': {
+            //     boxes: [
+            //         {
+            //             x: 50 + MIN_SEP_HORIZONTAL, y: 130, text: 'posemb', width: SINGLE_VECTOR_WIDTH, height: SINGLE_VECTOR_HEIGHT,
+            //             info: x_tok_info, link: x_tok_link, opacity: 0.4
+            //         },
+            //     ],
+            // },
             'attention': {
                 boxes: [
                     {
@@ -328,7 +395,7 @@
             'root': {
                 boxes: [
                     {
-                        x: 50, y: 130, text: '', width: SINGLE_VECTOR_WIDTH, height: SINGLE_VECTOR_HEIGHT + 200,
+                        x: 50, y: 130, text: '', width: SINGLE_VECTOR_WIDTH, height: SINGLE_VECTOR_HEIGHT * 2,
                         info: x_raw_info, link: x_raw_link, opacity: 0.4
                     },
                     {
@@ -365,10 +432,17 @@
                     {
                         x: 50 + 5 * MIN_SEP_HORIZONTAL + 450,
                         y: 130 + (SINGLE_VECTOR_HEIGHT / 2) - (50),
-                        text: 'Output Probabilities for next token',
+                        text: 'Output probabilities for next token',
                         width: 280, height: 100,
                         opacity: 0.4,
                         info: est_prob_dist_info
+                    },
+                    {
+                        x: 50 + 5 * MIN_SEP_HORIZONTAL + 830,
+                        y: 130 + (SINGLE_VECTOR_HEIGHT / 2) - (SINGLE_LATEX_CHAR_HEIGHT / 2) - 10,
+                        text: '', width: SINGLE_LATEX_CHAR_WIDTH + 10, height: SINGLE_LATEX_CHAR_HEIGHT + 10,
+                        info: x_tok_t_plus_1_info, 
+                        opacity: 0.4
                     },
                 ],
                 latexLabels: [
@@ -402,6 +476,13 @@
                         color: LATEX_LABEL_COLOR, width: 4 * SINGLE_LATEX_CHAR_WIDTH, height: SINGLE_LATEX_CHAR_HEIGHT,
                         info: est_prob_dist_info
                     },
+                    {
+                        x: 50 + 3 * MIN_SEP_HORIZONTAL + 1265,
+                        y: 130 + (SINGLE_VECTOR_HEIGHT / 2) - 12,
+                        text: 'x_{tok}^{(t+1)}',
+                        color: LATEX_LABEL_COLOR, width: SINGLE_LATEX_CHAR_WIDTH, height: SINGLE_LATEX_CHAR_HEIGHT,
+                        info: x_tok_t_plus_1_info
+                    },
                     // { x: 450, y: 250, text: '\\hat{y}', color: '#ffffff', info: "Output prediction", link: 'box1' }
                 ],
                 textLabels: [
@@ -409,7 +490,7 @@
                         x: 50 + SINGLE_VECTOR_WIDTH + 40,
                         y: 130 + (SINGLE_VECTOR_HEIGHT / 2) - 10,
                         text: 'Tokenization',
-                        color: '#ffffff',
+                        color: LATEX_LABEL_COLOR,
                         info: tokenization_info,
                         link: tokenization_link
                     },
@@ -417,7 +498,7 @@
                         x: 50 + MIN_SEP_HORIZONTAL + SINGLE_VECTOR_WIDTH + 20,
                         y: 130 + (SINGLE_VECTOR_HEIGHT / 2) - 10,
                         text: 'Token Embedding',
-                        color: '#ffffff',
+                        color: LATEX_LABEL_COLOR,
                         info: token_embd_info,
                         link: token_embd_link
                     },
@@ -425,30 +506,38 @@
                         x: 50 + 3 * MIN_SEP_HORIZONTAL - SINGLE_LATEX_CHAR_WIDTH - 20,
                         y: 130 + (SINGLE_VECTOR_HEIGHT / 2) + 260,
                         text: 'Positional Encoding',
-                        color: '#ffffff',
+                        color: LATEX_LABEL_COLOR,
                         info: pos_enc_info,
                         link: pos_enc_link
                     },
                     {
                         x: 50 + 3 * MIN_SEP_HORIZONTAL + 50,
                         y: 130 + (SINGLE_VECTOR_HEIGHT / 2) - 10,
-                        text: 'Dropout',
-                        color: '#ffffff',
+                        text: '(Dropout)',
+                        color: '#444',
                         info: dropout_info
                     },
                     {
                         x: 50 + 3 * MIN_SEP_HORIZONTAL + 512,
                         y: 130 + (SINGLE_VECTOR_HEIGHT / 2) - 10,
                         text: 'Linear Projection',
-                        color: '#ffffff',
+                        color: LATEX_LABEL_COLOR,
                         info: lin_prj_info
                     },
                     {
                         x: 50 + 3 * MIN_SEP_HORIZONTAL + 770,
                         y: 130 + (SINGLE_VECTOR_HEIGHT / 2) - 10,
                         text: 'Softmax',
-                        color: '#ffffff',
+                        color: LATEX_LABEL_COLOR,
                         info: softmax_info
+
+                    },
+                    {
+                        x: 50 + 3 * MIN_SEP_HORIZONTAL + 1145,
+                        y: 130 + (SINGLE_VECTOR_HEIGHT / 2) - 10,
+                        text: 'Sampling',
+                        color: LATEX_LABEL_COLOR,
+                        info: sampling_info
 
                     },
                 ],
@@ -470,12 +559,12 @@
                     {
                         start: { x: 50 + 2 * MIN_SEP_HORIZONTAL + 4 * SINGLE_VECTOR_WIDTH, y: 130 + (SINGLE_VECTOR_HEIGHT / 2) },
                         end: { x: 50 + 3 * MIN_SEP_HORIZONTAL - SINGLE_LATEX_CHAR_WIDTH / 2, y: 130 + (SINGLE_VECTOR_HEIGHT / 2) },
-                        color: ARROW_COLOR, info: "Apply positional encoding to input via addition",
+                        color: ARROW_COLOR, info: "Apply positional encoding to embedded input via addition",
                     },
                     {
                         start: { x: 50 + 3 * MIN_SEP_HORIZONTAL, y: 130 + (SINGLE_VECTOR_HEIGHT / 2) + 170 },
                         end: { x: 50 + 3 * MIN_SEP_HORIZONTAL, y: 130 + (SINGLE_VECTOR_HEIGHT / 2) + SINGLE_LATEX_CHAR_HEIGHT / 2 },
-                        color: ARROW_COLOR, info: "Apply positional encoding to input via addition",
+                        color: ARROW_COLOR, info: "Apply positional encoding to embedded input via addition",
                     },
                     {
                         start: { x: 50 + 3 * MIN_SEP_HORIZONTAL + 25, y: 130 + (SINGLE_VECTOR_HEIGHT / 2) },
@@ -495,6 +584,31 @@
                         color: ARROW_COLOR,
                         info: softmax_info
                     },
+                    {
+                        start: { x: 50 + 3 * MIN_SEP_HORIZONTAL + 1130, y: 130 + (SINGLE_VECTOR_HEIGHT / 2) },
+                        end: { x: 50 + 3 * MIN_SEP_HORIZONTAL + 1230, y: 130 + (SINGLE_VECTOR_HEIGHT / 2) },
+                        color: ARROW_COLOR,
+                        info: sampling_info
+                    },
+                ],
+
+                separators: [
+                    {
+                        x: 220,
+                        // y1: 100,
+                        // y2: 700,
+                        type: 'dashed',
+                        info: 'This seperates the tokenization process (left) from the transformer architecture (right)',
+                        color: '#444'
+                    },
+                    {
+                        x: 1790,
+                        // y1: 100,
+                        // y2: 700,
+                        type: 'dashed',
+                        info: 'This seperates the transformer architecture (left) from the token sampling process (right)',
+                        color: '#444'
+                    },
                 ],
 
                 paths: [
@@ -505,6 +619,7 @@
                         link: pos_enc_link
                     }
                 ],
+
 
                 // References
                 references: [
@@ -522,7 +637,7 @@
                         ],
                         link: "https://arxiv.org/abs/1706.03762",
                         info: "The original paper introducing the Transformer architecture.",
-                        refType: "arxiv"
+                        refType: "arXiv"
                     },
                     {
                         title: "nanoGPT",
@@ -538,6 +653,49 @@
                         info: "A detailed video tutorial on building a GPT model from scratch.",
                         refType: "YouTube"
                     },
+
+                    {
+                        title: "\"Let's build the GPT Tokenizer\"",
+                        authors: ["Andrej Karpathy"],
+                        link: "https://www.youtube.com/watch?v=zduSFxRajkE",
+                        info: "A detailed video tutorial on tokenization in GPT models",
+                        refType: "YouTube"
+                    },
+                    {
+                        title: "Tiktoken",
+                        authors: ["OpenAI", "Shantanu Jain", "Github Contributors"],
+                        link: "https://github.com/openai/tiktoken",
+                        info: "A fast BPE tokeniser for use with OpenAI's models.",
+                        refType: "Github"
+                    },
+                    {
+                        title: "Tiktokenizer App",
+                        authors: ["David Duong"],
+                        link: "https://tiktokenizer.vercel.app/",
+                        info: "An interactive application to tokenize text using different tokenizers",
+                        refType: "web app"
+                    },
+                    {
+                        title: "The Llama 3 Herd of Models",
+                        authors: ["The Llama team at Meta"],
+                        link: "https://arxiv.org/abs/2407.21783",
+                        info: "A paper describing the Llama 3 family of large language models.",
+                        refType: "arXiv"
+                    },
+                    {
+                        title: "RoFormer: Enhanced Transformer with Rotary Position Embedding",
+                        authors: [
+                            "Jianlin Su",
+                            "Yu Lu",
+                            "Shengfeng Pan",
+                            "Ahmed Murtadha",
+                            "Bo Wen",
+                            "Yunfeng Liu"
+                        ],
+                        link: "https://arxiv.org/abs/2104.09864",
+                        info: "A paper introducing Rotary Position Embedding, an alternative to traditional positional encodings in transformer models.",
+                        refType: "arXiv"
+                    },
                     {
                         title: "Dropout: A Simple Way to Prevent Neural Networks from Overfitting",
                         authors: [
@@ -551,21 +709,6 @@
                         info: "This seminal paper introduces the dropout technique, a simple yet effective method to reduce overfitting in neural networks by randomly 'dropping out' a proportion of neurons during training.",
                         refType: "PDF"
                     },
-                    {
-                        title: "\"Let's build the GPT Tokenizer\"",
-                        authors: ["Andrej Karpathy"],
-                        link: "https://www.youtube.com/watch?v=zduSFxRajkE",
-                        info: "A detailed video tutorial on tokenization in GPT models",
-                        refType: "YouTube"
-                    },
-                    {
-                        title: "Tiktokenizer App",
-                        authors: ["David Duong"],
-                        link: "https://tiktokenizer.vercel.app/",
-                        info: "An interactive application to tokenize text using different tokenizers",
-                        refType: "WebApp"
-                    },
-
                 ]
 
             },
@@ -612,19 +755,10 @@
                     });
                 }
 
-
-                // Render custom paths
-                if (svgContent[view].paths) {
-                    svgContent[view].paths.forEach(path => {
-                        contentGroup.append('path')
-                            .attr('d', path.pathD)
-                            .attr('transform', `translate(${path.x}, ${path.y}) scale(${path.width / 30}, ${path.height / 30})`)
-                            .attr('fill', 'none')
-                            .attr('stroke', path.color)
-                            .attr('stroke-width', 2)
-                            .attr('class', 'custom-path')
-                            .attr('data-info', path.info)
-                            .attr('data-link', path.link)
+                // Render separators
+                if (svgContent[view].separators) {
+                    svgContent[view].separators.forEach(separator => {
+                        drawSeparator(separator);
                     });
                 }
 
@@ -655,6 +789,21 @@
                             label.info,
                             label.link
                         ));
+                    });
+                }
+
+                // Render custom paths
+                if (svgContent[view].paths) {
+                    svgContent[view].paths.forEach(path => {
+                        contentGroup.append('path')
+                            .attr('d', path.pathD)
+                            .attr('transform', `translate(${path.x}, ${path.y}) scale(${path.width / 30}, ${path.height / 30})`)
+                            .attr('fill', 'none')
+                            .attr('stroke', path.color)
+                            .attr('stroke-width', 2)
+                            .attr('class', 'custom-path')
+                            .attr('data-info', path.info)
+                            .attr('data-link', path.link)
                     });
                 }
 
@@ -740,6 +889,14 @@
                 });
             }
 
+            // Add listeners to separators
+            if (svgContent[view].separators) {
+                contentLayer.selectAll('line').each(function () {
+                    const separator = d3.select(this);
+                    addDefaultEventListeners(separator.node());
+                });
+            }
+
             // Add listeners to custom paths
             if (svgContent[view].paths) {
                 contentLayer.selectAll('.custom-path').each(function () {
@@ -768,6 +925,12 @@
                 if (link) {
                     navigateTo(link);
                 }
+                // const infoElement = document.getElementById('info');
+                // navigator.clipboard.writeText(infoElement.textContent).then(function () {
+                //     logMessage("Text has been copied to clipboard");
+                // }).catch(function (err) {
+                //     logMessage("Failed to copy text: ", err);
+                // });
                 clearInfo(event);
             });
 
@@ -809,6 +972,35 @@
             return arrowGroup;
         }
 
+
+        function drawSeparator(separator) {
+            const line = contentGroup.append('line')
+                .attr('stroke', separator.color || '#888')
+                .attr('stroke-width', 1);
+
+            if (separator.x !== undefined) {
+                // Vertical line
+                line.attr('x1', separator.x)
+                    .attr('x2', separator.x)
+                    .attr('y1', separator.y1 || -SINGLE_VECTOR_HEIGHT)
+                    .attr('y2', separator.y2 || svgHeight + SINGLE_VECTOR_HEIGHT);
+            } else if (separator.y !== undefined) {
+                // Horizontal line
+                line.attr('y1', separator.y)
+                    .attr('y2', separator.y)
+                    .attr('x1', separator.x1 || -100)
+                    .attr('x2', separator.x2 || 2*svgWidth);
+            }
+
+            if (separator.type === 'dashed') {
+                line.attr('stroke-dasharray', '5,5');
+            } else if (separator.type === 'dotted') {
+                line.attr('stroke-dasharray', '2,2');
+            }
+
+            line.attr('data-info', separator.info || "Separator");
+        }
+
         // END SVG Rendering and Event Handling
         //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 
@@ -817,7 +1009,7 @@
         //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
         function setupZoom() {
             zoom = d3.zoom()
-                .scaleExtent([0.5, 2])
+                .scaleExtent([0.4, 2])
                 .on('zoom', zoomed);
 
             const svg = d3.select("#svg")
@@ -1000,7 +1192,8 @@
             let content = '';
 
             if (target.tagName === 'A' && target.parentElement.parentElement.id === 'references-list') {
-                const ref = svgContent[currentView].references.find(r => r.title === target.textContent);
+                const key = target.textContent.split(" (")[0]
+                const ref = svgContent[currentView].references.find(r => r.title === key);
                 if (ref) {
                     content = formatReferenceInfo(ref);
                 }
@@ -1029,6 +1222,8 @@
                 if (item && item.info) {
                     content = item.info;
                 }
+            } else if (target.tagName === 'line') {
+                content = target.getAttribute('data-info') || "Separator";
             }
             renderInfoContent(document.getElementById('info'), content);
         }
@@ -1117,7 +1312,7 @@
                     const a = document.createElement('a');
                     a.href = ref.link;
                     a.target = "_blank";
-                    a.textContent = ref.title;
+                    a.textContent = ref.title + ` (${ref.refType})`;
                     a.addEventListener('mouseover', showInfo);
                     a.addEventListener('mouseout', clearInfo);
                     li.appendChild(a);
