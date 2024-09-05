@@ -234,6 +234,115 @@
 
         const LATEX_FONT_SIZE = 18;
 
+        const references = [
+            {
+                title: "Attention Is All You Need",
+                authors: [
+                    "Ashish Vaswani",
+                    "Noam Shazeer",
+                    "Niki Parmari",
+                    "Jakob Uszkoreit",
+                    "Llion Jones",
+                    "Aidan N. Gomez",
+                    "Lukasz Kaiser",
+                    "Illia Polosukhin",
+                ],
+                link: "https://arxiv.org/abs/1706.03762",
+                info: "The original paper introducing the Transformer architecture.",
+                refType: "arXiv"
+            },
+            {
+                title: "nanoGPT",
+                authors: ["Andrej Karpathy", "Github contributors"],
+                link: "https://github.com/karpathy/nanoGPT/blob/master/model.py",
+                info: "A minimal implementation of GPT in PyTorch.",
+                refType: "Github"
+            },
+            {
+                title: "llm.c",
+                authors: ["Andrej Karpathy", "Github contributors"],
+                link: "https://github.com/karpathy/llm.c",
+                info: "TODO",
+                refType: "Github"
+            },
+            {
+                title: "\"Let's build GPT: from scratch, in code, spelled out\"",
+                authors: ["Andrej Karpathy"],
+                link: "https://www.youtube.com/watch?v=kCc8FmEb1nY",
+                info: "A detailed video tutorial on building a GPT model from scratch.",
+                refType: "YouTube"
+            },
+            {
+                title: "\"Let's reproduce GPT-2\"",
+                authors: ["Andrej Karpathy"],
+                link: "https://www.youtube.com/watch?v=l8pRSuU81PU",
+                info: "A video tutorial on reproducing the GPT-2 (124M) model.",
+                refType: "YouTube"
+            },
+            {
+                title: "\"Let's build the GPT Tokenizer\"",
+                authors: ["Andrej Karpathy"],
+                link: "https://www.youtube.com/watch?v=zduSFxRajkE",
+                info: "A detailed video tutorial on tokenization in GPT models",
+                refType: "YouTube"
+            },
+            {
+                title: "Tiktoken",
+                authors: ["OpenAI", "Shantanu Jain", "Github Contributors"],
+                link: "https://github.com/openai/tiktoken",
+                info: "A fast BPE tokeniser for use with OpenAI's models.",
+                refType: "Github"
+            },
+            {
+                title: "Tiktokenizer App",
+                authors: ["David Duong"],
+                link: "https://tiktokenizer.vercel.app/",
+                info: "An interactive application to tokenize text using different tokenizers",
+                refType: "web app"
+            },
+            {
+                title: "Using the Output Embedding to Improve Language Models",
+                authors: ["Ofir Press", "Lior Wolf"],
+                link: "https://arxiv.org/abs/1608.05859",
+                info: "A paper discussing techniques to improve language models by tying the token input embedding and the self-attention output embedding",
+                refType: "arXiv"
+            },
+            {
+                title: "The Llama 3 Herd of Models",
+                authors: ["The Llama team at Meta"],
+                link: "https://arxiv.org/abs/2407.21783",
+                info: "A paper describing the Llama 3 family of large language models.",
+                refType: "arXiv"
+            },
+            {
+                title: "RoFormer: Enhanced Transformer with Rotary Position Embedding",
+                authors: [
+                    "Jianlin Su",
+                    "Yu Lu",
+                    "Shengfeng Pan",
+                    "Ahmed Murtadha",
+                    "Bo Wen",
+                    "Yunfeng Liu"
+                ],
+                link: "https://arxiv.org/abs/2104.09864",
+                info: "A paper introducing Rotary Position Embedding, an alternative to traditional positional encodings in transformer models.",
+                refType: "arXiv"
+            },
+            {
+                title: "Dropout: A Simple Way to Prevent Neural Networks from Overfitting",
+                authors: [
+                    "Nitish Srivastava",
+                    "Geoffrey Hinton",
+                    "Alex Krizhevsky",
+                    "Ilya Sutskever",
+                    "Ruslan Salakhutdinov"
+                ],
+                link: "https://www.cs.toronto.edu/~rsalakhu/papers/srivastava14a.pdf",
+                info: "This seminal paper introduces the dropout technique, a simple yet effective method to reduce overfitting in neural networks by randomly 'dropping out' a proportion of neurons during training.",
+                refType: "PDF"
+            },
+        ]
+
         //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
         // SVG Definition
         //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
@@ -624,117 +733,6 @@ Token embeddings provide a dense, continuous representation of discrete tokens, 
                         link: pos_enc_link
                     }
                 ],
-
-
-                // References
-                references: [
-                    {
-                        title: "Attention Is All You Need",
-                        authors: [
-                            "Ashish Vaswani",
-                            "Noam Shazeer",
-                            "Niki Parmari",
-                            "Jakob Uszkoreit",
-                            "Llion Jones",
-                            "Aidan N. Gomez",
-                            "Lukasz Kaiser",
-                            "Illia Polosukhin",
-                        ],
-                        link: "https://arxiv.org/abs/1706.03762",
-                        info: "The original paper introducing the Transformer architecture.",
-                        refType: "arXiv"
-                    },
-                    {
-                        title: "nanoGPT",
-                        authors: ["Andrej Karpathy", "Github contributors"],
-                        link: "https://github.com/karpathy/nanoGPT/blob/master/model.py",
-                        info: "A minimal implementation of GPT in PyTorch.",
-                        refType: "Github"
-                    },
-                    {
-                        title: "llm.c",
-                        authors: ["Andrej Karpathy", "Github contributors"],
-                        link: "https://github.com/karpathy/llm.c",
-                        info: "TODO",
-                        refType: "Github"
-                    },
-                    {
-                        title: "\"Let's build GPT: from scratch, in code, spelled out\"",
-                        authors: ["Andrej Karpathy"],
-                        link: "https://www.youtube.com/watch?v=kCc8FmEb1nY",
-                        info: "A detailed video tutorial on building a GPT model from scratch.",
-                        refType: "YouTube"
-                    },
-                    {
-                        title: "\"Let's reproduce GPT-2\"",
-                        authors: ["Andrej Karpathy"],
-                        link: "https://www.youtube.com/watch?v=l8pRSuU81PU",
-                        info: "A video tutorial on reproducing the GPT-2 (124M) model.",
-                        refType: "YouTube"
-                    },
-                    {
-                        title: "\"Let's build the GPT Tokenizer\"",
-                        authors: ["Andrej Karpathy"],
-                        link: "https://www.youtube.com/watch?v=zduSFxRajkE",
-                        info: "A detailed video tutorial on tokenization in GPT models",
-                        refType: "YouTube"
-                    },
-                    {
-                        title: "Tiktoken",
-                        authors: ["OpenAI", "Shantanu Jain", "Github Contributors"],
-                        link: "https://github.com/openai/tiktoken",
-                        info: "A fast BPE tokeniser for use with OpenAI's models.",
-                        refType: "Github"
-                    },
-                    {
-                        title: "Tiktokenizer App",
-                        authors: ["David Duong"],
-                        link: "https://tiktokenizer.vercel.app/",
-                        info: "An interactive application to tokenize text using different tokenizers",
-                        refType: "web app"
-                    },
-                    {
-                        title: "Using the Output Embedding to Improve Language Models",
-                        authors: ["Ofir Press", "Lior Wolf"],
-                        link: "https://arxiv.org/abs/1608.05859",
-                        info: "A paper discussing techniques to improve language models by tying the token input embedding and the self-attention output embedding",
-                        refType: "arXiv"
-                    },
-                    {
-                        title: "The Llama 3 Herd of Models",
-                        authors: ["The Llama team at Meta"],
-                        link: "https://arxiv.org/abs/2407.21783",
-                        info: "A paper describing the Llama 3 family of large language models.",
-                        refType: "arXiv"
-                    },
-                    {
-                        title: "RoFormer: Enhanced Transformer with Rotary Position Embedding",
-                        authors: [
-                            "Jianlin Su",
-                            "Yu Lu",
-                            "Shengfeng Pan",
-                            "Ahmed Murtadha",
-                            "Bo Wen",
-                            "Yunfeng Liu"
-                        ],
-                        link: "https://arxiv.org/abs/2104.09864",
-                        info: "A paper introducing Rotary Position Embedding, an alternative to traditional positional encodings in transformer models.",
-                        refType: "arXiv"
-                    },
-                    {
-                        title: "Dropout: A Simple Way to Prevent Neural Networks from Overfitting",
-                        authors: [
-                            "Nitish Srivastava",
-                            "Geoffrey Hinton",
-                            "Alex Krizhevsky",
-                            "Ilya Sutskever",
-                            "Ruslan Salakhutdinov"
-                        ],
-                        link: "https://www.cs.toronto.edu/~rsalakhu/papers/srivastava14a.pdf",
-                        info: "This seminal paper introduces the dropout technique, a simple yet effective method to reduce overfitting in neural networks by randomly 'dropping out' a proportion of neurons during training.",
-                        refType: "PDF"
-                    },
-                ]
 
             },
         };
@@ -1150,7 +1148,6 @@ Token embeddings provide a dense, continuous representation of discrete tokens, 
         function updateView() {
             drawNavigation();
             drawContent(currentView);
-            renderReferences(currentView);
         }
         // END SVG Navigation
         //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
@@ -1327,12 +1324,12 @@ Token embeddings provide a dense, continuous representation of discrete tokens, 
             return content;
         }
 
-        function renderReferences(view) {
+        function renderReferences() {
             const referencesList = document.getElementById('references-list');
             referencesList.innerHTML = '';
 
-            if (svgContent[view] && svgContent[view].references) {
-                svgContent[view].references.forEach(ref => {
+            if (references) {
+                references.forEach(ref => {
                     const li = document.createElement('li');
                     const a = document.createElement('a');
                     a.href = ref.link;
@@ -1359,6 +1356,7 @@ Token embeddings provide a dense, continuous representation of discrete tokens, 
         window.onload = function () {
             setupZoom();
             updateView();
+            renderReferences();
         }
     </script>
 </body>
