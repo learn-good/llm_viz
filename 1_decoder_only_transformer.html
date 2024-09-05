@@ -297,7 +297,7 @@ The tokenized input $$x_{tok}$$ serves as the starting point for the transformer
 
 4. **Input to attention layers**: $$x_{embd} + PE$$ serves as the initial input to the self-attention mechanism in the transformer, where $$PE$$ is the positional encoding used to capture information about a token's position in the sequence.
 
-5. **Why do we need to add positional encoding?**: The self-attention mechanism in transformers is permutation-invariant, meaning it treats the input as a set rather than a sequence. RoPE`;
+5. **Why do we need to add positional encoding?**: The self-attention mechanism in transformers is permutation-invariant, meaning it treats the input as a set rather than a sequence. [[TODO say sum bout RoPE]`;
         const x_embd_link = "" // "x_embd"
         const tokenization_info = `Tokenization bridges the gap between human-readable text and the numerical input required by transformer models. The tokenizer converts raw text into a sequence of integers, or token IDs, which the model can then process. The tokenizer is constructed separately from the rest of the transformer, potentially using different data.
 
