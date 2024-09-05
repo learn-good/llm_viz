@@ -1,0 +1,15 @@
+const x_embd_info = `$$x_{embd}$$ represents the embedded input data for the transformer model.
+
+**Key aspects of embedded input:**
+
+1. **Shape**: $$x_{embd}$$ has shape $$(d_{seq} \\times d_{model})$$, where $$d_{seq}$$ is the sequence length and $$d_{model}$$ is the embedding dimension.
+
+2. **Token embeddings**: Learned representations of tokens, capturing semantic meaning.
+
+3. **Dimensionality**: $$d_{model}$$ is a hyperparameter, often set to values like 512, 1024, 2048, or 4096 in practice.
+
+4. **Learned during training**: Token embeddings are updated during the training process to capture task-specific representations.
+
+5. **Input to attention layers**: $$x_{embd} + PE$$ serves as the initial input to the self-attention mechanism in the transformer, where $$PE$$ is the positional encoding used to capture .
+
+The embedded input $$x_{embd}$$ combines token-level semantic information with positional context, allowing the transformer to process sequences effectively.`;
