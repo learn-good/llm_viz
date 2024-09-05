@@ -1215,7 +1215,7 @@ Token embeddings provide a dense, continuous representation of discrete tokens, 
 
             if (target.tagName === 'A' && target.parentElement.parentElement.id === 'references-list') {
                 const key = target.textContent.split(" (")[0]
-                const ref = svgContent[currentView].references.find(r => r.title === key);
+                const ref = references.find(r => r.title === key);
                 if (ref) {
                     content = formatReferenceInfo(ref);
                 }
