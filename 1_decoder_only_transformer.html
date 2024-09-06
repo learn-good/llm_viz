@@ -210,7 +210,7 @@
             reset: "M15,5 A10,10 0 1,0 15,25 A10,10 0 1,0 15,5 "
         };
         const repeatPath = "M15,5 A10,10 0 1,0 25,15 M25,10 L21,16 M25,10 L29,16";
-        const positionalEncodingPath = "M15,5 A10,10 0 1,0 15,25 A10,10 0 1,0 15,5 M5,15 Q10,10 15,15 Q20,20 25,15";
+        const positionalEncodingPath = "M15,5 A10,10 0 1,0 15,25 A10,10 0 1,0 15,5 M5,15 Q10,8 15,15 Q20,22 25,15";
 
         // Color constants
         const BACKGROUND_COLOR = '#2a2a2a';
@@ -229,7 +229,7 @@
         const LINK_COLOR = '#00ffff';
         const LATEX_LABEL_COLOR = "#ffffff";
         const ARROW_COLOR = "#999";
-        const POS_ENC_COLOR = "#666";
+        const POS_ENC_COLOR = "#333";
 
 
         const LATEX_FONT_SIZE = 18;
@@ -315,6 +315,13 @@
                 refType: "arXiv"
             },
             {
+                title: "llama-models",
+                authors:  ["Meta", "Github contributors"],
+                link: "https://github.com/meta-llama/llama-models",
+                info: "Contains reference implementations and information about the Llama family of models.",
+                refType: "arXiv"
+            },
+            {
                 title: "RoFormer: Enhanced Transformer with Rotary Position Embedding",
                 authors: [
                     "Jianlin Su",
@@ -327,6 +334,15 @@
                 link: "https://arxiv.org/abs/2104.09864",
                 info: "A paper introducing Rotary Position Embedding, an alternative to traditional positional encodings in transformer models.",
                 refType: "arXiv"
+            },
+            {
+                title: "Rotary Positional Embeddings: Combining Absolute and Relative",
+                authors: [
+                    "Bai Li"
+                ],
+                link: "https://www.youtube.com/watch?v=o29P0Kpobz0",
+                info: "A video explanation of RoPE - Rotary Positional Embeddings",
+                refType: "YouTube" 
             },
             {
                 title: "Dropout: A Simple Way to Prevent Neural Networks from Overfitting",
@@ -396,20 +412,19 @@ For non-text data types, appropriate preprocessing steps would be applied before
 
 2. **Learned token embeddings**: The embedding matrix learns richer representations of tokens than just the token ID present in $$x_{tok}$$, capturing semantic meaning about the input tokens.
 
-3. **Dimensionality**: $$d_{model}$$ is a hyperparameter, often set to values like 512, 1024, 2048, or 4096 in practice.
+3. **Input to attention layers**: $$x_{embd} + PE$$ serves as the initial input to the self-attention mechanism in the transformer, where $$PE$$ is the positional encoding used to capture information about a token's position in the sequence.
 
-4. **Input to attention layers**: $$x_{embd} + PE$$ serves as the initial input to the self-attention mechanism in the transformer, where $$PE$$ is the positional encoding used to capture information about a token's position in the sequence.
-
-5. **Why do we need to add positional encoding?**: The self-attention mechanism in transformers is permutation-invariant, meaning it treats the input as a set rather than a sequence. [[TODO say sum bout RoPE]`;
+4. **Why do we need to add positional encoding?**: The self-attention mechanism in transformers is permutation-invariant, meaning it treats the input as a set rather than a sequence. There are many approaches to address this limitation, but rotary position embeddings (RoPE) currently seem the most promising based on their invariance properties and flexibility.`;
         const x_embd_link = "" // "x_embd"
         const tokenization_info = `Tokenization bridges the gap between human-readable text and the numerical input required by transformer models. The tokenizer converts raw text into a sequence of integers, or token IDs, which the model can then process. The tokenizer is constructed separately from the rest of the transformer, potentially using different data.
 
 **BPE** (Byte Pair Encoding) is a popular tokenization method that starts with individual characters and iteratively merges the most frequent pairs to form new tokens, while other approaches like WordPiece and SentencePiece offer alternative strategies.
 
 **Some of the potential issues with tokenization**:
-
 1. **Out-of-vocabulary words**: Rare or unseen words may be split into suboptimal subwords.
+
 2. **Contextual meaning loss**: Splitting words into subwords and inadvertant groupings can sometimes cause loss of important context.
+
 3. **Inconsistent tokenization**: The same word might be tokenized differently depending on the characters around it.`
         const tokenization_link = "" // "tokenization"
         const token_embd_info = `Token embedding converts tokenized input into dense vector representations, allowing for the model to learn a richer representation for each token.
@@ -440,6 +455,8 @@ Where $$x_{tok}$$ is one-hot encoded from shape $$( d_{seq} \\times 1 )$$ to $$(
         const softmax_info = "todo softmax exp"
         const x_tok_t_plus_1_info = "todo x tok t plus 1"
         const sampling_info = "todo sampling"
+        const pos_encoding_arrows_info = "Apply positional encoding to embedded input $$x_{embd}$$ via addition (only if using the original positional encoding schema, else add $$0$$ to $$x_{embd}$$)";
+        const addition_info = "Addition, if using the original positional encoding proposed but the original \"Attention is All You Need\" paper. Otherwise you can think of this as just a pass through connection for $$x_{embd}$$, or addition with $$0$$ if you'd prefer."
 
         const svgContent = {
             // 'root': [
@@ -509,7 +526,8 @@ Where $$x_{tok}$$ is one-hot encoded from shape $$( d_{seq} \\times 1 )$$ to $$(
                         x: 50 + 3 * MIN_SEP_HORIZONTAL - (SINGLE_LATEX_CHAR_WIDTH / 2),
                         y: 130 + (SINGLE_VECTOR_HEIGHT / 2) - (SINGLE_LATEX_CHAR_HEIGHT / 2),
                         text: '', width: SINGLE_LATEX_CHAR_WIDTH, height: SINGLE_LATEX_CHAR_HEIGHT,
-                        info: "Addition", opacity: 0.2
+                        info: addition_info, 
+                        opacity: 0.2
                     },
                     {
                         x: 50 + 3 * MIN_SEP_HORIZONTAL + 150,
@@ -566,7 +584,7 @@ Where $$x_{tok}$$ is one-hot encoded from shape $$( d_{seq} \\times 1 )$$ to $$(
                     {
                         x: 50 + 3 * MIN_SEP_HORIZONTAL, y: 130 + (SINGLE_VECTOR_HEIGHT / 2) - 8,
                         text: '\\boldsymbol{+}',
-                        width: SINGLE_LATEX_CHAR_WIDTH, height: SINGLE_LATEX_CHAR_HEIGHT, info: "Addition"
+                        width: SINGLE_LATEX_CHAR_WIDTH, height: SINGLE_LATEX_CHAR_HEIGHT, info: addition_info
                     },
                     {
                         x: 50 + 3 * MIN_SEP_HORIZONTAL + 985,
@@ -605,7 +623,7 @@ Where $$x_{tok}$$ is one-hot encoded from shape $$( d_{seq} \\times 1 )$$ to $$(
                         x: 50 + 3 * MIN_SEP_HORIZONTAL - SINGLE_LATEX_CHAR_WIDTH - 20,
                         y: 130 + (SINGLE_VECTOR_HEIGHT / 2) + 260,
                         text: 'Positional Encoding',
-                        color: LATEX_LABEL_COLOR,
+                        color:  "#555", //LATEX_LABEL_COLOR,
                         info: pos_enc_info,
                         link: pos_enc_link
                     },
@@ -658,12 +676,14 @@ Where $$x_{tok}$$ is one-hot encoded from shape $$( d_{seq} \\times 1 )$$ to $$(
                     {
                         start: { x: 50 + 2 * MIN_SEP_HORIZONTAL + 4 * SINGLE_VECTOR_WIDTH, y: 130 + (SINGLE_VECTOR_HEIGHT / 2) },
                         end: { x: 50 + 3 * MIN_SEP_HORIZONTAL - SINGLE_LATEX_CHAR_WIDTH / 2, y: 130 + (SINGLE_VECTOR_HEIGHT / 2) },
-                        color: ARROW_COLOR, info: "Apply positional encoding to embedded input via addition",
+                        color: ARROW_COLOR, info: pos_encoding_arrows_info,
                     },
                     {
                         start: { x: 50 + 3 * MIN_SEP_HORIZONTAL, y: 130 + (SINGLE_VECTOR_HEIGHT / 2) + 170 },
                         end: { x: 50 + 3 * MIN_SEP_HORIZONTAL, y: 130 + (SINGLE_VECTOR_HEIGHT / 2) + SINGLE_LATEX_CHAR_HEIGHT / 2 },
-                        color: ARROW_COLOR, info: "Apply positional encoding to embedded input via addition",
+                        color: "#333", 
+                        // color: ARROW_COLOR, 
+                        info: pos_encoding_arrows_info,
                     },
                     {
                         start: { x: 50 + 3 * MIN_SEP_HORIZONTAL + 25, y: 130 + (SINGLE_VECTOR_HEIGHT / 2) },
