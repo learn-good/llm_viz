@@ -355,6 +355,52 @@
                 info: "This seminal paper introduces the dropout technique, a simple yet effective method to reduce overfitting in neural networks by randomly 'dropping out' a proportion of neurons during training.",
                 refType: "PDF"
             },
+            {
+                title: "Online normalizer calculation for softmax",
+                authors: [
+                    "Maxim Milakov",
+                    "Natalia Gimelshein",
+                ],
+                link: "https://arxiv.org/abs/1805.02867",
+                info: "Proposes an online, memory-access efficient algorithm for calculating the numerically stable softmax.",
+                refType: "arXiv"
+            },
+            {
+                title: "Deep Residual Learning for Image Recognition",
+                authors: [
+                    "Kaiming He",
+                    "Xiangyu Zhang",
+                    "Shaoqing Ren",
+                    "Jian Sun"
+                ],
+                link: "https://arxiv.org/abs/1512.03385",
+                info: "Introduces residual connections for use in deep neural networks, allowing for easier optimization of very deep networks.",
+                refType: "arXiv"
+            },
+            {
+                title: "Layer Normalization",
+                authors: [
+                    "Jimmy Lei Ba",
+                    "Jamie Ryan Kiros",
+                    "Geoffrey E. Hinton"
+                ],
+                link: "https://arxiv.org/abs/1607.06450",
+                info: "This paper introduces Layer Normalization, a technique to normalize the inputs across the features, which helps in reducing the covariate shift problem in deep neural networks.",
+                refType: "arXiv"
+            },
+            {
+                title: "FlashAttention: Fast and Memory-Efficient Exact Attention with IO-Awareness",
+                authors: [
+                    "Tri Dao",
+                    "Daniel Y. Fu",
+                    "Stefano Ermon",
+                    "Atri Rudra",
+                    "Christopher Ré"
+                ],
+                link: "https://arxiv.org/abs/2205.14135",
+                info: "This paper presents FlashAttention, an IO-aware exact attention algorithm that uses tiling to reduce memory access and increase efficiency in transformer models.",
+                refType: "arXiv"
+            },
         ]
 
         //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
@@ -495,7 +541,6 @@ The linear projection prepares the model's raw predictions (logits) for the fina
 
 **About softmax:**
 1. **Formula and Temperature**: For input vector $$z$$, the softmax function is defined as:
-
    $$\\text{softmax}(z_i, T) = \\dfrac{e^{z_i/T}}{\\sum_{j=1}^K e^{z_j/T}}$$
 
    where $$K$$ is the number of classes (vocabulary size $$d_{vocab}$$ in this case). A temperature parameter $$T$$ can be applied to control the "sharpness" of the distribution.
@@ -504,7 +549,7 @@ The linear projection prepares the model's raw predictions (logits) for the fina
 
 2. **Properties**: Output values are between $$0$$ and $$1$$; sum of all outputs equals $$1$$; preserves relative ordering of inputs
 
-3. **Training vs. Inference**: Used in conjunction with cross-entropy loss for training, and used to sample the next token for inference`;
+3. **Numerical Stability and Optimization**: Softmax is often implemented with a "max trick" to prevent overflow. There is also an \"online\" version that allows for carrying out the computation with fewer memory accesses, resulting in faster performance (Milakov et al., 2018).`;
 
         const pos_encoding_arrows_info = "Apply positional encoding to embedded input $$x_{embd}$$ via addition (only if using the original positional encoding schema, else add $$0$$ to $$x_{embd}$$)";
         const addition_info = "Addition, if using the original positional encoding proposed but the original \"Attention is All You Need\" paper. Otherwise you can think of this as just a pass through connection for $$x_{embd}$$, or addition with $$0$$ if you'd prefer."
@@ -518,7 +563,7 @@ The linear projection prepares the model's raw predictions (logits) for the fina
 
 3. **Sampling**: During text generation, the next token is typically sampled from this distribution, allowing for controlled randomness in the output.`;
 
-const sampling_info = `Sampling is the process of selecting the next token based on the probability distribution output by the model.
+        const sampling_info = `Sampling is the process of selecting the next token based on the probability distribution output by the model.
 
 **Examples of sampling:**
 1. **Top-k sampling**: Only consider the $$k$$ most likely next tokens.
@@ -535,7 +580,7 @@ const sampling_info = `Sampling is the process of selecting the next token based
 
 Sampling strategies balance between diversity and quality of generated text. The choice of sampling method and its parameters can significantly affect the output, especially for longer sequences. Combining methods (e.g., Top-$$p$$ with a high-$$k$$ cutoff) can yield good results.`;
 
-const x_tok_t_plus_1_info = `$$x_{tok}^{(t+1)}$$ represents the next token in the sequence, sampled from the probability distribution output by the model.
+        const x_tok_t_plus_1_info = `$$x_{tok}^{(t+1)}$$ represents the next token in the sequence, sampled from the probability distribution output by the model.
 
 **Key points:**
 1. **Sampling process**: This token is chosen based on the probability distribution $$\\hat{P}( x_{tok}^{(t+1)} | x_{tok}^{(...t)} )$$ using a sampling strategy (e.g., greedy, top-k, top-p).
