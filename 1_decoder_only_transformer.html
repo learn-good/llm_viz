@@ -153,8 +153,6 @@
     <!-- for LaTeX -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css">
     <script src="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.js"></script>
-    <!-- for anim -->
-    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script> -->
     <!-- for plotting data -->
     <script src="https://d3js.org/d3.v7.min.js"></script>
 </head>
@@ -316,7 +314,7 @@
             },
             {
                 title: "llama-models",
-                authors:  ["Meta", "Github contributors"],
+                authors: ["Meta", "Github contributors"],
                 link: "https://github.com/meta-llama/llama-models",
                 info: "Contains reference implementations and information about the Llama family of models.",
                 refType: "arXiv"
@@ -342,7 +340,7 @@
                 ],
                 link: "https://www.youtube.com/watch?v=o29P0Kpobz0",
                 info: "A video explanation of RoPE - Rotary Positional Embeddings",
-                refType: "YouTube" 
+                refType: "YouTube"
             },
             {
                 title: "Dropout: A Simple Way to Prevent Neural Networks from Overfitting",
@@ -414,7 +412,7 @@ For non-text data types, appropriate preprocessing steps would be applied before
 
 3. **Input to attention layers**: $$x_{embd} + PE$$ serves as the initial input to the self-attention mechanism in the transformer, where $$PE$$ is the positional encoding used to capture information about a token's position in the sequence.
 
-4. **Why do we need to add positional encoding?**: The self-attention mechanism in transformers is permutation-invariant, meaning it treats the input as a set rather than a sequence. There are many approaches to address this limitation, but rotary position embeddings (RoPE) currently seem the most promising based on their invariance properties and flexibility.`;
+4. **Why do we need to add positional encoding?**: The self-attention mechanism in transformers is permutation-invariant, meaning it treats the input as a set rather than a sequence. There are many approaches to address this limitation, such as absolute (pictured), relative, and rotary position embeddings.`;
         const x_embd_link = "" // "x_embd"
         const tokenization_info = `Tokenization bridges the gap between human-readable text and the numerical input required by transformer models. The tokenizer converts raw text into a sequence of integers, or token IDs, which the model can then process. The tokenizer is constructed separately from the rest of the transformer, potentially using different data.
 
@@ -442,21 +440,114 @@ $$x_{embd} = x_{tok} \\cdot W_{embd} $$
 Where $$x_{tok}$$ is one-hot encoded from shape $$( d_{seq} \\times 1 )$$ to $$( d_{seq} \\times d_{vocab} )$$, and $$W_{embd}$$ is the embedding matrix of shape: $$( d_{vocab} \\times d_{model} )$$. The result $$x_{embd}$$ is shape $$( d_{seq} \\times d_{model} )$$.`;
 
         const token_embd_link = "" //"token_embedding"
-        const pos_enc_info = "todo position encoding exp"
+        const pos_enc_info = `The self-attention mechanism in transformers is permutation-invariant, meaning it doesn't inherently consider the order of tokens. $$PE$$ adds information about the position of each token in the sequence.
+
+        The original sinusoidal $$PE$$ (Vaswani et al., 2017) uses sine and cosine functions of different frequencies to create unique encodings for each position.
+
+**Alternative approaches:**
+1. **Learned PE**: Trainable embeddings for each position.
+
+2. **Relative PE**: Encodes relative distances between tokens instead of absolute positions.
+
+3. **Rotary PE (RoPE)**: Applies rotation to query vector $$Q$$ and key matrix $$K$$ that are generated from the token embeddings.
+
+The choice of PE can significantly impact model performance and generalization ability, especially for tasks sensitive to token order or involving extrapolation to longer sequences.`;
         const pos_enc_link = "" // "position_encoding"
-        const attn_info = "todo explain successive application of blocks"
+        const attn_info = "todo";
         const attn_link = "attention"
         // const est_prob_dist_i = "position_encoding"
 
-        const logits_info = "todo explain logits"
-        const est_prob_dist_info = "todo explain output as estimated probability distribution over the vocab size given the previous tokens"
-        const dropout_info = "todo dropout exp"
-        const lin_prj_info = "todo linear projection exp"
-        const softmax_info = "todo softmax exp"
-        const x_tok_t_plus_1_info = "todo x tok t plus 1"
-        const sampling_info = "todo sampling"
+        const logits_info = `Logits are the raw, unnormalized predictions output by the transformer model before the final softmax layer.
+
+**Key points about logits:**
+1. **Definition**: Logits are the direct output of the final linear layer in the transformer, representing the model's raw predictions for each token in the vocabulary.
+
+2. **Shape**: The logits vector has length of $$d_{vocab}$$, where $$d_{vocab}$$ is the vocabulary size.
+
+3. **Interpretation**: Each value in the logits vector represents the model's unnormalized confidence for a particular token or class.
+
+4. **Temperature**: Before converting to probabilities, logits are often divided by a temperature parameter to control the randomness of the output distribution.
+
+The logits represent the model's raw decision space before it's constrained to a probability distribution, offering a view into the model's pre-normalized predictions.`;
+
+        const dropout_info = `Dropout is a regularization technique used to prevent overfitting in neural networks, including transformers.
+
+**Key points about dropout:**
+1. **Mechanism**: During training, randomly "drops out" (sets to zero) a proportion of neurons.
+
+2. **Purpose**: Reduces co-adaptation between neurons, forcing the network to learn more robust features.
+
+3. **Original paper**: The "Attention Is All You Need" paper used dropout in several places, including after the attention and feedforward layers, and in the embedding layers.
+
+**Important note**: While dropout was used in the original transformer and is common in many models, it's not always necessary. For example, the Llama 3 family of models doesn't use dropout at all, demonstrating that high-performing models can be built without this technique.`;
+        const lin_prj_info = `The linear projection layer serves as the final transformation to recover the vocab size dimension, $$d_{vocab}$$, before the softmax operation to get next token probabilities.
+
+**About linear projection:**
+1. **Purpose**: It maps the output of the self-attention blocks to logits over the vocabulary size.
+
+2. **Operation**: It's a simple matrix multiplication.
+
+3. **Weight tying**: In many implementations, $$W_{proj}$$ is often tied (shared) with the input embedding matrix, $$W_{embd}$$, which can improve performance and reduce the number of parameters.
+
+The linear projection prepares the model's raw predictions (logits) for the final probability distribution over the vocabulary, which is then computed by the softmax function.`;
+
+        const softmax_info = `The softmax function is applied to the logits to produce a probability distribution over the vocabulary for the next token.
+
+**About softmax:**
+1. **Formula and Temperature**: For input vector $$z$$, the softmax function is defined as:
+
+   $$\\text{softmax}(z_i, T) = \\dfrac{e^{z_i/T}}{\\sum_{j=1}^K e^{z_j/T}}$$
+
+   where $$K$$ is the number of classes (vocabulary size $$d_{vocab}$$ in this case). A temperature parameter $$T$$ can be applied to control the "sharpness" of the distribution.
+    - Lower T (< 1) makes distribution more peaked (less random)
+    - Higher T (> 1) makes distribution more uniform (more random)
+
+2. **Properties**: Output values are between $$0$$ and $$1$$; sum of all outputs equals $$1$$; preserves relative ordering of inputs
+
+3. **Training vs. Inference**: Used in conjunction with cross-entropy loss for training, and used to sample the next token for inference`;
+
         const pos_encoding_arrows_info = "Apply positional encoding to embedded input $$x_{embd}$$ via addition (only if using the original positional encoding schema, else add $$0$$ to $$x_{embd}$$)";
         const addition_info = "Addition, if using the original positional encoding proposed but the original \"Attention is All You Need\" paper. Otherwise you can think of this as just a pass through connection for $$x_{embd}$$, or addition with $$0$$ if you'd prefer."
+
+        const est_prob_dist_info = `The estimated probability distribution $$\\hat{P}( x_{tok}^{(t+1)} | x_{tok}^{(...t)} )$$ represents the model's predicted probability distribution for the next token given the previous tokens in the sequence.
+
+**Key points:**
+1. **Shape**: A vector of length $$d_{vocab}$$, where each element corresponds to a token in the vocabulary.
+
+2. **Interpretation**: The value at vector index $$i$$ represents the model's estimated probability that the $$i$$-th token in the vocabulary will be the next token in the sequence.
+
+3. **Sampling**: During text generation, the next token is typically sampled from this distribution, allowing for controlled randomness in the output.`;
+
+const sampling_info = `Sampling is the process of selecting the next token based on the probability distribution output by the model.
+
+**Examples of sampling:**
+1. **Top-k sampling**: Only consider the $$k$$ most likely next tokens.
+   - Example: If $$k = 5$$, only the $$5$$ tokens with the highest probabilities are considered.
+   - Process: Sort tokens by probability; Keep only the top k tokens; Renormalize probabilities; Sample from this reduced set
+
+2. **Top-p (nucleus) sampling**: Consider the smallest set of tokens whose cumulative probability exceeds the probability p.
+   - Example: If $$p = 0.9$$, select the smallest set of tokens that sum to 90% probability.
+   - Process: Sort tokens by probability; Add tokens to the set until cumulative probability > p; Renormalize probabilities; Sample from this dynamic set
+
+**Comparison:**
+- Top-$$k$$ uses a fixed number of tokens, while Top-$$p$$ adapts based on the probability distribution.
+- Top-$$p$$ can be more flexible, especially when the model is very confident or very uncertain.
+
+Sampling strategies balance between diversity and quality of generated text. The choice of sampling method and its parameters can significantly affect the output, especially for longer sequences. Combining methods (e.g., Top-$$p$$ with a high-$$k$$ cutoff) can yield good results.`;
+
+const x_tok_t_plus_1_info = `$$x_{tok}^{(t+1)}$$ represents the next token in the sequence, sampled from the probability distribution output by the model.
+
+**Key points:**
+1. **Sampling process**: This token is chosen based on the probability distribution $$\\hat{P}( x_{tok}^{(t+1)} | x_{tok}^{(...t)} )$$ using a sampling strategy (e.g., greedy, top-k, top-p).
+
+2. **Token ID**: It's an integer corresponding to a token in the model's vocabulary.
+
+3. **Auto-regressive nature**: 
+   - In training: The model learns to predict $$x_{tok}^{(t+1)}$$ given $$x_{tok}^{(...t)}$$. This next token is known from the training data.
+   - In inference: The predicted token becomes part of the input for the next iteration.
+
+4. **Stopping criteria**: Generation typically continues until a stopping condition is met (e.g., max length, special end token).`;
+
 
         const svgContent = {
             // 'root': [
@@ -526,7 +617,7 @@ Where $$x_{tok}$$ is one-hot encoded from shape $$( d_{seq} \\times 1 )$$ to $$(
                         x: 50 + 3 * MIN_SEP_HORIZONTAL - (SINGLE_LATEX_CHAR_WIDTH / 2),
                         y: 130 + (SINGLE_VECTOR_HEIGHT / 2) - (SINGLE_LATEX_CHAR_HEIGHT / 2),
                         text: '', width: SINGLE_LATEX_CHAR_WIDTH, height: SINGLE_LATEX_CHAR_HEIGHT,
-                        info: addition_info, 
+                        info: addition_info,
                         opacity: 0.2
                     },
                     {
@@ -623,7 +714,7 @@ Where $$x_{tok}$$ is one-hot encoded from shape $$( d_{seq} \\times 1 )$$ to $$(
                         x: 50 + 3 * MIN_SEP_HORIZONTAL - SINGLE_LATEX_CHAR_WIDTH - 20,
                         y: 130 + (SINGLE_VECTOR_HEIGHT / 2) + 260,
                         text: 'Positional Encoding',
-                        color:  "#555", //LATEX_LABEL_COLOR,
+                        color: "#555", //LATEX_LABEL_COLOR,
                         info: pos_enc_info,
                         link: pos_enc_link
                     },
@@ -681,7 +772,7 @@ Where $$x_{tok}$$ is one-hot encoded from shape $$( d_{seq} \\times 1 )$$ to $$(
                     {
                         start: { x: 50 + 3 * MIN_SEP_HORIZONTAL, y: 130 + (SINGLE_VECTOR_HEIGHT / 2) + 170 },
                         end: { x: 50 + 3 * MIN_SEP_HORIZONTAL, y: 130 + (SINGLE_VECTOR_HEIGHT / 2) + SINGLE_LATEX_CHAR_HEIGHT / 2 },
-                        color: "#333", 
+                        color: "#333",
                         // color: ARROW_COLOR, 
                         info: pos_encoding_arrows_info,
                     },
