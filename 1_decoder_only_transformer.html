@@ -488,7 +488,7 @@ Where $$x_{tok}$$ is one-hot encoded from shape $$( d_{seq} \\times 1 )$$ to $$(
         const token_embd_link = "" //"token_embedding"
         const pos_enc_info = `The self-attention mechanism in transformers is permutation-invariant, meaning it doesn't inherently consider the order of tokens. $$PE$$ adds information about the position of each token in the sequence.
 
-        The original sinusoidal $$PE$$ (Vaswani et al., 2017) uses sine and cosine functions of different frequencies to create unique encodings for each position.
+        The original sinusoidal $$PE$$ (Vaswani et al., 2017) uses sine and cosine functions of different frequencies to create unique encodings for each position. This is one version of an absolute position encoding, where the encoding is based solely on the absolute position of the input.
 
 **Alternative approaches:**
 1. **Learned PE**: Trainable embeddings for each position.
