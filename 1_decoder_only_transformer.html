@@ -24,14 +24,16 @@
         }
 
         #main-container {
-            display: flex;
+            /* display: flex; */
             width: 100%;
             height: 800px;
         }
 
         #svg-container {
-            flex: 0 0 1200px;
-            z-index: 10;
+            /* flex: 0 0 1200px; */
+            /* flex: 0 0 auto;
+            z-index: 10; */
+            float: left;
         }
 
         #svg {
@@ -40,7 +42,8 @@
 
 
         #right-container {
-            flex: 1;
+            /* flex: 1; */
+            float: right;
             display: flex;
             flex-direction: column;
             height: 840px;
@@ -163,7 +166,7 @@
      -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-->
     <div id="main-container">
         <div id="svg-container">
-            <svg id="svg" width="1200" height="800">
+            <svg id="svg" height="800">
                 <g id="content-layer"></g>
                 <g id="navigation-layer"></g>
             </svg>
@@ -406,10 +409,10 @@
         //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
         // SVG Definition
         //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
-        const svgWidth = 1200;
+        let currentSvgWidth = 1200;
         const svgHeight = 800;
         const svg = d3.select("#svg")
-            .attr("width", svgWidth)
+            .attr("width", currentSvgWidth)
             .attr("height", svgHeight)
             .style("background-color", BACKGROUND_COLOR);
 
@@ -568,11 +571,11 @@ The linear projection prepares the model's raw predictions (logits) for the fina
 **Examples of sampling:**
 1. **Top-k sampling**: Only consider the $$k$$ most likely next tokens.
    - Example: If $$k = 5$$, only the $$5$$ tokens with the highest probabilities are considered.
-   - Process: Sort tokens by probability; Keep only the top k tokens; Renormalize probabilities; Sample from this reduced set
+   - Process: Sort tokens by probability; Keep only the top k tokens; Renormalize probabilities; Sample from this reduced set.
 
 2. **Top-p (nucleus) sampling**: Consider the smallest set of tokens whose cumulative probability exceeds the probability p.
    - Example: If $$p = 0.9$$, select the smallest set of tokens that sum to 90% probability.
-   - Process: Sort tokens by probability; Add tokens to the set until cumulative probability > p; Renormalize probabilities; Sample from this dynamic set
+   - Process: Sort tokens by probability; Add tokens to the set until cumulative probability > p; Renormalize probabilities; Sample from this dynamic set.
 
 **Comparison:**
 - Top-$$k$$ uses a fixed number of tokens, while Top-$$p$$ adapts based on the probability distribution.
@@ -1153,7 +1156,7 @@ Sampling strategies balance between diversity and quality of generated text. The
                 line.attr('y1', separator.y)
                     .attr('y2', separator.y)
                     .attr('x1', separator.x1 || -100)
-                    .attr('x2', separator.x2 || 2 * svgWidth);
+                    .attr('x2', separator.x2 || 2 * currentSvgWidth);
             }
 
             if (separator.type === 'dashed') {
@@ -1165,12 +1168,65 @@ Sampling strategies balance between diversity and quality of generated text. The
             line.attr('data-info', separator.info || "Separator");
         }
 
+        // function adjustSVGWidth() {
+        //     const screenWidth = window.innerWidth;
+        //     const newWidth = Math.floor(screenWidth * 0.68);
+
+        //     const svgContainer = document.getElementById('svg-container');
+        //     const svg = document.getElementById('svg');
+
+        //     svgContainer.style.width = `${newWidth}px`;
+        //     svg.setAttribute('width', newWidth);
+        //     logMessage(newWidth)
+
+        //     // Adjust other elements if necessary
+        //     const rightContainer = document.getElementById('right-container');
+        //     rightContainer.style.width = `${screenWidth - newWidth}px`;
+        // }
+        function adjustSVGWidth() {
+            const screenWidth = window.innerWidth;
+            const leftWidth = Math.floor(screenWidth * 0.7);
+            const paddingBetween = 30;
+            const rightWidth = screenWidth - leftWidth - paddingBetween;
+
+            const svgContainer = document.getElementById('svg-container');
+            const svg = document.getElementById('svg');
+            const rightContainer = document.getElementById('right-container');
+
+            svgContainer.style.width = `${leftWidth}px`;
+            svg.setAttribute('width', leftWidth);
+
+            rightContainer.style.width = `${rightWidth}px`;
+
+            // Adjust the info and references containers
+            const infoContainer = document.getElementById('info-container');
+            const referencesContainer = document.getElementById('references-container');
+
+            infoContainer.style.width = `${rightWidth - 20}px`; // 20px for padding
+            referencesContainer.style.width = `${rightWidth - 20}px`; // 20px for padding
+
+            // Store the new SVG width globally
+            window.currentSvgWidth = leftWidth;
+        }
+
+
         // END SVG Rendering and Event Handling
         //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 
         //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
         // SVG Zoom
         //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+        let lastPixelRatio = window.devicePixelRatio;
+
+        function checkZoom() {
+            const newPixelRatio = window.devicePixelRatio;
+            if (newPixelRatio !== lastPixelRatio) {
+                lastPixelRatio = newPixelRatio;
+                adjustSVGWidth();
+            }
+            requestAnimationFrame(checkZoom);
+        }
+
         function setupZoom() {
             zoom = d3.zoom()
                 .scaleExtent([0.4, 2])
@@ -1196,7 +1252,7 @@ Sampling strategies balance between diversity and quality of generated text. The
             svg.transition().duration(750).call(
                 zoom.transform,
                 d3.zoomIdentity,
-                d3.zoomTransform(svg.node()).invert([svgWidth / 2, svgHeight / 2])
+                d3.zoomTransform(svg.node()).invert([currentSvgWidth / 2, svgHeight / 2])
             );
         }
         // END SVG Zoom
@@ -1209,7 +1265,8 @@ Sampling strategies balance between diversity and quality of generated text. The
             navigationLayer.selectAll('.nav-button').remove();
             drawArrowButton('back-button', 5, 5, arrowPaths.back, navigateBack, undoNavigationHistory.length > 0);
             drawArrowButton('forward-button', 55, 5, arrowPaths.forward, navigateForward, redoNavigationHistory.length > 0);
-            drawArrowButton('reset-button', svgWidth - 45, 5, arrowPaths.reset, resetZoom, true);
+            drawArrowButton('reset-button', 105, 5, arrowPaths.reset, resetZoom, true);
+            // drawArrowButton('reset-button', currentSvgWidth - 100, 5, arrowPaths.reset, resetZoom, true);
         }
 
 
@@ -1495,9 +1552,18 @@ Sampling strategies balance between diversity and quality of generated text. The
         // Main
         //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
         window.onload = function () {
+            adjustSVGWidth();
             setupZoom();
             updateView();
             renderReferences();
+            checkZoom(); // Start checking for zoom changes
         }
+
+        let resizeTimer;
+        window.addEventListener('resize', function () {
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(adjustSVGWidth, 100);
+        });
+
     </script>
 </body>
