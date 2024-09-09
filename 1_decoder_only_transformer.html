@@ -1241,12 +1241,23 @@ Sampling strategies balance between diversity and quality of generated text. The
                 .attr("class", "content-group");
 
             // Store the initial transform
-            zoom.transform(svg, d3.zoomIdentity);
+            // zoom.transform(svg, d3.zoomIdentity);
+
+            // Apply initial zoom and pan
+            applyZoomAndPan(0.7, 100, 50);
         }
 
         function zoomed(event) {
             contentGroup.attr('transform', event.transform);
+            // logMessage(`Zoom: ${event.transform.k.toFixed(2)}, Pan: (${event.transform.x.toFixed(2)}, ${event.transform.y.toFixed(2)})`);
         }
+
+        function applyZoomAndPan(scale, x, y) {
+            const svg = d3.select("#svg");
+            const transform = d3.zoomIdentity.translate(x, y).scale(scale);
+            svg.call(zoom.transform, transform);
+        }
+
 
         function resetZoom() {
             svg.transition().duration(750).call(
@@ -1427,7 +1438,7 @@ Sampling strategies balance between diversity and quality of generated text. The
                 } else if (target.id === 'forward-button') {
                     content = "Navigate forward to the next view.";
                 } else if (target.id === 'reset-button') {
-                    content = "Reset zoom and pan to the initial position.";
+                    content = "Reset the zoom and pan states.";
                 }
             } else if (target.classList.contains('latex-label')) {
                 // content = target.dataset.info;
@@ -1557,6 +1568,7 @@ Sampling strategies balance between diversity and quality of generated text. The
             updateView();
             renderReferences();
             checkZoom(); // Start checking for zoom changes
+            applyZoomAndPan(.60, 30, 150)
         }
 
         let resizeTimer;
