@@ -455,7 +455,7 @@ For non-text data types, appropriate preprocessing steps would be applied before
         const x_embd_info = `$$x_{embd}$$ represents the embedded data that serves a the enriched input data for the transformer model.
 
 **About embedded input:**
-1. **Shape**: $$x_{embd}$$ has shape $$(d_{seq} \\times d_{model})$$, where $$d_{seq}$$ is the sequence length and $$d_{model}$$ is the embedding dimension.
+1. **Shape**: $$x_{embd}$$ has shape $$(d_{seq} \\times d_{embd})$$, where $$d_{seq}$$ is the sequence length and $$d_{embd}$$ is the embedding dimension.
 
 2. **Learned token embeddings**: The embedding matrix learns richer representations of tokens than just the token ID present in $$x_{tok}$$, capturing semantic meaning about the input tokens.
 
@@ -465,7 +465,7 @@ For non-text data types, appropriate preprocessing steps would be applied before
         const x_embd_link = "" // "x_embd"
         const tokenization_info = `Tokenization bridges the gap between human-readable text and the numerical input required by transformer models. The tokenizer converts raw text into a sequence of integers, or token IDs, which the model can then process. The tokenizer is constructed separately from the rest of the transformer, potentially using different data.
 
-**BPE** (Byte Pair Encoding) is a popular tokenization method that starts with individual characters and iteratively merges the most frequent pairs to form new tokens, while other approaches like WordPiece and SentencePiece offer alternative strategies.
+**BPE** (Byte Pair Encoding) is a popular tokenization method that starts with individual characters and iteratively merges the most frequent pairs to form new tokens, while other approaches like WordPiece and SentencePiece offer alternative tokenization strategies.
 
 **Some of the potential issues with tokenization**:
 1. **Out-of-vocabulary words**: Rare or unseen words may be split into suboptimal subwords.
@@ -477,7 +477,7 @@ For non-text data types, appropriate preprocessing steps would be applied before
         const token_embd_info = `Token embedding converts tokenized input into dense vector representations, allowing for the model to learn a richer representation for each token.
 
 **Key aspects of token embedding:**
-1. **Lookup table**: Each token is mapped to a unique vector in a high-dimensional space, (e.g., $$d_{model}=512$$, where $$d_{model}$$ is commonly used to refer to the embedding dimension). When $$x_{tok}$$ is one-hot encoded, it is expanded such that the index pertaining the the token ID is set to $$1,$$ and all others are set to $$0,$$ which leads to that index \"looking up\" its higher dimensional representation via matrix multiplication.
+1. **Lookup table**: Each token is mapped to a unique vector in a high-dimensional space, (e.g., $$d_{embd}=512$$, where $$d_{embd}$$ refers to the embedding dimension). When $$x_{tok}$$ is one-hot encoded, it is expanded such that the index pertaining the the token ID is set to $$1,$$ and all others are set to $$0,$$ which leads to that index \"looking up\" its higher dimensional representation via matrix multiplication.
 
 2. **Learned representations**: These embeddings are learned during the training process, capturing semantic and syntactic information about tokens.
 
@@ -486,7 +486,7 @@ For non-text data types, appropriate preprocessing steps would be applied before
 The embedding process can be represented as: 
 $$x_{embd} = x_{tok} \\cdot W_{embd} $$
 
-Where $$x_{tok}$$ is one-hot encoded from shape $$( d_{seq} \\times 1 )$$ to $$( d_{seq} \\times d_{vocab} )$$, and $$W_{embd}$$ is the embedding matrix of shape: $$( d_{vocab} \\times d_{model} )$$. The result $$x_{embd}$$ is shape $$( d_{seq} \\times d_{model} )$$.`;
+Where $$x_{tok}$$ is one-hot encoded from shape $$( d_{seq} \\times 1 )$$ to $$( d_{seq} \\times d_{vocab} )$$, and $$W_{embd}$$ is the embedding matrix of shape: $$( d_{vocab} \\times d_{embd} )$$. The result $$x_{embd}$$ is shape $$( d_{seq} \\times d_{embd} )$$.`;
 
         const token_embd_link = "" //"token_embedding"
         const pos_enc_info = `The self-attention mechanism in transformers is permutation-invariant, meaning it doesn't inherently consider the order of tokens. $$PE$$ adds information about the position of each token in the sequence.
@@ -498,7 +498,7 @@ Where $$x_{tok}$$ is one-hot encoded from shape $$( d_{seq} \\times 1 )$$ to $$(
 
 2. **Relative PE**: Encodes relative distances between tokens instead of absolute positions.
 
-3. **Rotary PE (RoPE)**: Applies rotation to query vector $$Q$$ and key matrix $$K$$ that are generated from the token embeddings.
+3. **Rotary PE (RoPE)**: Applies rotation to query vector $$Q$$ and key matrix $$K$$ that are generated from the token embeddings during the self-attention process.
 
 The choice of PE can significantly impact model performance and generalization ability, especially for tasks sensitive to token order or involving extrapolation to longer sequences.`;
         const pos_enc_link = "" // "position_encoding"
@@ -506,20 +506,18 @@ The choice of PE can significantly impact model performance and generalization a
         const attn_link = "attention"
         // const est_prob_dist_i = "position_encoding"
 
-        const logits_info = `Logits are the raw, unnormalized predictions output by the transformer model before the final softmax layer.
+        const logits_info = `Logits are the raw, unnormalized predictions that are output by the transformer model before the final softmax layer, representing the model's raw predictions for each token in the vocabulary.
 
 **Key points about logits:**
-1. **Definition**: Logits are the direct output of the final linear layer in the transformer, representing the model's raw predictions for each token in the vocabulary.
+1. **Shape**: The logits vector has length of $$d_{vocab}$$, where $$d_{vocab}$$ is the vocabulary size.
 
-2. **Shape**: The logits vector has length of $$d_{vocab}$$, where $$d_{vocab}$$ is the vocabulary size.
+2. **Interpretation**: Each value in the logits vector represents the model's unnormalized confidence for a particular token or class.
 
-3. **Interpretation**: Each value in the logits vector represents the model's unnormalized confidence for a particular token or class.
-
-4. **Temperature**: Before converting to probabilities, logits are often divided by a temperature parameter to control the randomness of the output distribution.
+3. **Temperature**: Before converting to probabilities, logits are often divided by a temperature parameter to control the randomness of the output distribution.
 
 The logits represent the model's raw decision space before it's constrained to a probability distribution, offering a view into the model's pre-normalized predictions.`;
 
-        const dropout_info = `Dropout is a regularization technique used to prevent overfitting in neural networks, including transformers.
+        const dropout_info = `Dropout is a regularization technique used to prevent overfitting in neural networks, including transformers. It can be used at different locations in the network, or excluded altogether.
 
 **Key points about dropout:**
 1. **Mechanism**: During training, randomly "drops out" (sets to zero) a proportion of neurons.
@@ -532,11 +530,9 @@ The logits represent the model's raw decision space before it's constrained to a
         const lin_prj_info = `The linear projection layer serves as the final transformation to recover the vocab size dimension, $$d_{vocab}$$, before the softmax operation to get next token probabilities.
 
 **About linear projection:**
-1. **Purpose**: It maps the output of the self-attention blocks to logits over the vocabulary size.
+1. **Purpose**: It maps the output of the self-attention blocks to logits of the vocabulary size.
 
-2. **Operation**: It's a simple matrix multiplication.
-
-3. **Weight tying**: In many implementations, $$W_{proj}$$ is often tied (shared) with the input embedding matrix, $$W_{embd}$$, which can improve performance and reduce the number of parameters.
+2. **Weight tying**: In many implementations, $$W_{proj}$$ is often tied (shared) with the input embedding matrix, $$W_{embd}$$, which can improve performance and reduce the number of parameters.
 
 The linear projection prepares the model's raw predictions (logits) for the final probability distribution over the vocabulary, which is then computed by the softmax function.`;
 
@@ -547,8 +543,8 @@ The linear projection prepares the model's raw predictions (logits) for the fina
    $$\\text{softmax}(z_i, T) = \\dfrac{e^{z_i/T}}{\\sum_{j=1}^K e^{z_j/T}}$$
 
    where $$K$$ is the number of classes (vocabulary size $$d_{vocab}$$ in this case). A temperature parameter $$T$$ can be applied to control the "sharpness" of the distribution.
-    - Lower T (< 1) makes distribution more peaked (less random)
-    - Higher T (> 1) makes distribution more uniform (more random)
+    - Lower T (<1) makes distribution more peaked (less random)
+    - Higher T (>1) makes distribution more uniform (more random)
 
 2. **Properties**: Output values are between $$0$$ and $$1$$; sum of all outputs equals $$1$$; preserves relative ordering of inputs
 
@@ -636,6 +632,9 @@ Sampling strategies balance between diversity and quality of generated text. The
             //     ],
             // },
             'attention': {
+                boxes: [
+                    
+                ],
                 textLabels: [
                     {
                         x: 50 + SINGLE_VECTOR_WIDTH + 40,
