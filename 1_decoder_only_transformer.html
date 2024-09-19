@@ -229,6 +229,7 @@
         const LATEX_LINK_HOVER_COLOR = "#00ffff";
         const LINK_COLOR = '#00ffff';
         const LATEX_LABEL_COLOR = "#ffffff";
+        const LATEX_SHAPE_LABEL_COLOR = "#555";
         const ARROW_COLOR = "#999";
         const POS_ENC_COLOR = "#333";
 
@@ -592,6 +593,22 @@ Sampling strategies balance between diversity and quality of generated text. The
 
 4. **Stopping criteria**: Generation typically continues until a stopping condition is met (e.g., max length, special end token).`;
 
+        // Self-Attention info
+        const x_embd_n_info = "TODO x embd n"
+        const x_embd_n_tilde_info = "TODO x embd n tilde"
+        const layernorm_info = "TODO layernorm"
+        const q_flat_info = "todo q flat"
+        const k_flat_info = "todo k flat"
+        const v_flat_info = "todo v flat"
+
+        const q_reshaped_info = "todo q rs"
+        const k_reshaped_info = "todo k rs"
+        const v_reshaped_info = "todo v rs"
+
+        const dot_w_q_info = "todo dot wq"
+        const dot_w_k_info = "todo dot wk"
+        const dot_w_v_info = "todo dot wv"
+        const reshape_and_transpose_info = "todo rshape and transpose info"
 
         const svgContent = {
             // 'root': [
@@ -631,22 +648,280 @@ Sampling strategies balance between diversity and quality of generated text. The
             //         },
             //     ],
             // },
-            'attention': {
+
+            // TODO add anchoredArrows
+            // 'attention': {
+            'root': {
                 boxes: [
+                    {
+                        x: 20, y: 340, text: '', width: SINGLE_VECTOR_WIDTH*4, height: SINGLE_VECTOR_HEIGHT / 2,
+                        info: x_embd_n_info,  opacity: 0.4
+                    },
+                    {
+                        x: 20 + MIN_SEP_HORIZONTAL, y: 340, text: '', width: SINGLE_VECTOR_WIDTH*4, height: SINGLE_VECTOR_HEIGHT / 2,
+                        info: x_embd_n_tilde_info,  opacity: 0.4
+                    },
+
+
+                    {
+                        x: 70 + 2*MIN_SEP_HORIZONTAL, y: 40, text: '', width: SINGLE_VECTOR_WIDTH*4, height: SINGLE_VECTOR_HEIGHT / 2,
+                        info: q_flat_info,  opacity: 0.4
+                    },
+                    {
+                        x: 70 + 2*MIN_SEP_HORIZONTAL, y: 340, text: '', width: SINGLE_VECTOR_WIDTH*4, height: SINGLE_VECTOR_HEIGHT / 2,
+                        info: k_flat_info,  opacity: 0.4
+                    },
+                    {
+                        x: 70 + 2*MIN_SEP_HORIZONTAL, y: 640, text: '', width: SINGLE_VECTOR_WIDTH*4, height: SINGLE_VECTOR_HEIGHT / 2,
+                        info: v_flat_info,  opacity: 0.4
+                    },
+
+                    // Q K V resized
+                    {
+                        x: 70 + 3*MIN_SEP_HORIZONTAL, y: 40, text: '', width: SINGLE_VECTOR_WIDTH*4/3, height: SINGLE_VECTOR_HEIGHT / 2,
+                        info: q_reshaped_info,  opacity: 0.4
+                    },
+                    {
+                        x: 95 + 3*MIN_SEP_HORIZONTAL, y: 25, text: '', width: SINGLE_VECTOR_WIDTH*4/3, height: SINGLE_VECTOR_HEIGHT / 2,
+                        info: q_reshaped_info,  opacity: 0.4
+                    },
+                    {
+                        x: 120 + 3*MIN_SEP_HORIZONTAL, y: 10, text: '', width: SINGLE_VECTOR_WIDTH*4/3, height: SINGLE_VECTOR_HEIGHT / 2,
+                        info: q_reshaped_info,  opacity: 0.4
+                    },
+
+                    {
+                        x: 70 + 3*MIN_SEP_HORIZONTAL, y: 340, text: '', width: SINGLE_VECTOR_WIDTH*4/3, height: SINGLE_VECTOR_HEIGHT / 2,
+                        info: k_reshaped_info,  opacity: 0.4
+                    },
+                    {
+                        x: 95 + 3*MIN_SEP_HORIZONTAL, y: 325, text: '', width: SINGLE_VECTOR_WIDTH*4/3, height: SINGLE_VECTOR_HEIGHT / 2,
+                        info: k_reshaped_info,  opacity: 0.4
+                    },
+                    {
+                        x: 120 + 3*MIN_SEP_HORIZONTAL, y: 310, text: '', width: SINGLE_VECTOR_WIDTH*4/3, height: SINGLE_VECTOR_HEIGHT / 2,
+                        info: k_reshaped_info,  opacity: 0.4
+                    },
+
+                    {
+                        x: 70 + 3*MIN_SEP_HORIZONTAL, y: 640, text: '', width: SINGLE_VECTOR_WIDTH*4/3, height: SINGLE_VECTOR_HEIGHT / 2,
+                        info: v_reshaped_info,  opacity: 0.4
+                    },
+                    {
+                        x: 95 + 3*MIN_SEP_HORIZONTAL, y: 625, text: '', width: SINGLE_VECTOR_WIDTH*4/3, height: SINGLE_VECTOR_HEIGHT / 2,
+                        info: v_reshaped_info,  opacity: 0.4
+                    },
+                    {
+                        x: 120 + 3*MIN_SEP_HORIZONTAL, y: 610, text: '', width: SINGLE_VECTOR_WIDTH*4/3, height: SINGLE_VECTOR_HEIGHT / 2,
+                        info: v_reshaped_info,  opacity: 0.4
+                    },
+                ],
+                latexLabels: [
+                    // x embed
+                    {
+                        x: 20 + (SINGLE_VECTOR_WIDTH*2), y: 430,
+                        text: 'x_{embd}^{(n)}',
+                        color: LATEX_LABEL_COLOR, width: SINGLE_LATEX_CHAR_WIDTH, height: SINGLE_LATEX_CHAR_HEIGHT,
+                        info: x_embd_n_info
+                    },
+                    {
+                        x: 20+MIN_SEP_HORIZONTAL + (SINGLE_VECTOR_WIDTH*2), y: 430,
+                        text: '\\tilde{x}_{embd}^{(n)}',
+                        color: LATEX_LABEL_COLOR, width: SINGLE_LATEX_CHAR_WIDTH, height: SINGLE_LATEX_CHAR_HEIGHT,
+                        info: x_embd_n_tilde_info,
+                    },
+                    {
+                        x: 20+(SINGLE_VECTOR_WIDTH*2), y: 310,
+                        text: '(d_{seq} \\times d_{embd})',
+                        color: LATEX_SHAPE_LABEL_COLOR, width: SINGLE_LATEX_CHAR_WIDTH*3, height: SINGLE_LATEX_CHAR_HEIGHT,
+                        info: x_embd_n_info
+                    },
+                    {
+                        x: 20+MIN_SEP_HORIZONTAL + (SINGLE_VECTOR_WIDTH*2), y: 310,
+                        text: '(d_{seq} \\times d_{embd})',
+                        color: LATEX_SHAPE_LABEL_COLOR, width: SINGLE_LATEX_CHAR_WIDTH*3, height: SINGLE_LATEX_CHAR_HEIGHT,
+                        info: x_embd_n_tilde_info,
+                    },
+                    // Q K V flat
+                    {
+                        x: 120 + 2*MIN_SEP_HORIZONTAL, y: 130,
+                        text: 'Q^{(n)}',
+                        color: LATEX_LABEL_COLOR, width: SINGLE_LATEX_CHAR_WIDTH, height: SINGLE_LATEX_CHAR_HEIGHT,
+                        info: q_flat_info,
+                    },
+                    {
+                        x: 120 + 2*MIN_SEP_HORIZONTAL, y: 430,
+                        text: 'K^{(n)}',
+                        color: LATEX_LABEL_COLOR, width: SINGLE_LATEX_CHAR_WIDTH, height: SINGLE_LATEX_CHAR_HEIGHT,
+                        info: k_flat_info,
+                    },
+                    {
+                        x: 120 + 2*MIN_SEP_HORIZONTAL, y: 730,
+                        text: 'V^{(n)}',
+                        color: LATEX_LABEL_COLOR, width: SINGLE_LATEX_CHAR_WIDTH, height: SINGLE_LATEX_CHAR_HEIGHT,
+                        info: v_flat_info,
+                    },
+
+                    {
+                        x: 120 + 2*MIN_SEP_HORIZONTAL, y: 10,
+                        text: '(d_{seq} \\times d_{embd})',
+                        color: LATEX_SHAPE_LABEL_COLOR, width: SINGLE_LATEX_CHAR_WIDTH*3, height: SINGLE_LATEX_CHAR_HEIGHT,
+                        info: q_flat_info
+                    },
+                    {
+                        x: 120 + 2*MIN_SEP_HORIZONTAL, y: 310,
+                        text: '(d_{seq} \\times d_{embd})',
+                        color: LATEX_SHAPE_LABEL_COLOR, width: SINGLE_LATEX_CHAR_WIDTH*3, height: SINGLE_LATEX_CHAR_HEIGHT,
+                        info: k_flat_info,
+                    },
+                    {
+                        x: 120 + 2*MIN_SEP_HORIZONTAL, y: 610,
+                        text: '(d_{seq} \\times d_{embd})',
+                        color: LATEX_SHAPE_LABEL_COLOR, width: SINGLE_LATEX_CHAR_WIDTH*3, height: SINGLE_LATEX_CHAR_HEIGHT,
+                        info: v_flat_info,
+                    },
+
+                    // Q K V prime
+                    {
+                        x: 120 + 3*MIN_SEP_HORIZONTAL, y: 130,
+                        text: '{Q\'}^{(n)}',
+                        color: LATEX_LABEL_COLOR, width: SINGLE_LATEX_CHAR_WIDTH, height: SINGLE_LATEX_CHAR_HEIGHT,
+                        info: q_reshaped_info,
+                    },
+                    {
+                        x: 120 + 3*MIN_SEP_HORIZONTAL, y: -20,
+                        text: '(d_{multihead} \\times d_{seq} \\times d_{qkv})',
+                        color: LATEX_SHAPE_LABEL_COLOR, width: SINGLE_LATEX_CHAR_WIDTH*6, height: SINGLE_LATEX_CHAR_HEIGHT,
+                        info: q_reshaped_info
+                    },
+                    {
+                        x: 120 + 3*MIN_SEP_HORIZONTAL, y: 430,
+                        text: '{K\'}^{(n)}',
+                        color: LATEX_LABEL_COLOR, width: SINGLE_LATEX_CHAR_WIDTH, height: SINGLE_LATEX_CHAR_HEIGHT,
+                        info: k_reshaped_info,
+                    },
+                    {
+                        x: 120 + 3*MIN_SEP_HORIZONTAL, y: 280,
+                        text: '(d_{multihead} \\times d_{seq} \\times d_{qkv})',
+                        color: LATEX_SHAPE_LABEL_COLOR, width: SINGLE_LATEX_CHAR_WIDTH*6, height: SINGLE_LATEX_CHAR_HEIGHT,
+                        info: k_reshaped_info
+                    },
+                    {
+                        x: 120 + 3*MIN_SEP_HORIZONTAL, y: 730,
+                        text: '{V\'}^{(n)}',
+                        color: LATEX_LABEL_COLOR, width: SINGLE_LATEX_CHAR_WIDTH, height: SINGLE_LATEX_CHAR_HEIGHT,
+                        info: v_reshaped_info,
+                    },
+                    {
+                        x: 120 + 3*MIN_SEP_HORIZONTAL, y: 580,
+                        text: '(d_{multihead} \\times d_{seq} \\times d_{qkv})',
+                        color: LATEX_SHAPE_LABEL_COLOR, width: SINGLE_LATEX_CHAR_WIDTH*6, height: SINGLE_LATEX_CHAR_HEIGHT,
+                        info: v_reshaped_info
+                    },
+
+                    // dot W_QKV
+                    {
+                        x:  2*MIN_SEP_HORIZONTAL - 10, y: 110,
+                        // text: '\\_ \\cdot W_{K}^{(n)}',
+                        text: '\\cdot \\ W_{Q}^{(n)}',
+                        color: 'black', width: SINGLE_LATEX_CHAR_WIDTH*2, height: SINGLE_LATEX_CHAR_HEIGHT,
+                        info: dot_w_q_info,
+                    },
+                    {
+                        x:  2*MIN_SEP_HORIZONTAL - 10, y: 410,
+                        // text: '\\_ \\cdot W_{K}^{(n)}',
+                        text: '\\cdot \\ W_{K}^{(n)}',
+                        color: LATEX_LABEL_COLOR, width: SINGLE_LATEX_CHAR_WIDTH*2, height: SINGLE_LATEX_CHAR_HEIGHT,
+                        info: dot_w_k_info,
+                    },
+                    {
+                        x:  2*MIN_SEP_HORIZONTAL - 10, y: 710,
+                        // text: '\\_ \\cdot W_{K}^{(n)}',
+                        text: '\\cdot \\ W_{V}^{(n)}',
+                        color: 'black', width: SINGLE_LATEX_CHAR_WIDTH*2, height: SINGLE_LATEX_CHAR_HEIGHT,
+                        info: dot_w_v_info,
+                    },
                     
+                ],
+                arrows: [
+                    {
+                        start: { x: 20 + 4*SINGLE_VECTOR_WIDTH, y: 440 },
+                        end: { x: 20 + MIN_SEP_HORIZONTAL, y: 440 },
+                        color: ARROW_COLOR,
+                        info: layernorm_info,
+                    },
+                    // {
+                    //     start: { x: 20 + 4*SINGLE_VECTOR_WIDTH + MIN_SEP_HORIZONTAL , y: 140 },
+                    //     end: { x: 20 + 2*SINGLE_VECTOR_WIDTH + 2*MIN_SEP_HORIZONTAL, y: 140 },
+                    //     color: ARROW_COLOR,
+                    //     info: dot_w_q_info,
+                    // },
+                    {
+                        start: { x: 20 + 4*SINGLE_VECTOR_WIDTH + MIN_SEP_HORIZONTAL , y: 440 },
+                        end: { x: 20 + 2*SINGLE_VECTOR_WIDTH + 2*MIN_SEP_HORIZONTAL, y: 440 },
+                        color: ARROW_COLOR,
+                        info: dot_w_k_info,
+                    },
+                    // {
+                    //     start: { x: 20 + 4*SINGLE_VECTOR_WIDTH + MIN_SEP_HORIZONTAL , y: 740 },
+                    //     end: { x: 20 + 2*SINGLE_VECTOR_WIDTH + 2*MIN_SEP_HORIZONTAL, y: 740 },
+                    //     color: ARROW_COLOR,
+                    //     info: dot_w_v_info,
+                    // },
+                    {
+                        start: { x: 3*MIN_SEP_HORIZONTAL -34, y: 140 },
+                        end: { x: 20 + 2*SINGLE_VECTOR_WIDTH + 3*MIN_SEP_HORIZONTAL, y: 140 },
+                        color: ARROW_COLOR,
+                        info: reshape_and_transpose_info,
+                    },
+                    {
+                        start: { x: 3*MIN_SEP_HORIZONTAL -34, y: 440 },
+                        end: { x: 20 + 2*SINGLE_VECTOR_WIDTH + 3*MIN_SEP_HORIZONTAL, y: 440 },
+                        color: ARROW_COLOR,
+                        info: reshape_and_transpose_info,
+                    },
+                    {
+                        start: { x: 3*MIN_SEP_HORIZONTAL -34, y: 740 },
+                        end: { x: 20 + 2*SINGLE_VECTOR_WIDTH + 3*MIN_SEP_HORIZONTAL, y: 740 },
+                        color: ARROW_COLOR,
+                        info: reshape_and_transpose_info,
+                    },
                 ],
                 textLabels: [
                     {
-                        x: 50 + SINGLE_VECTOR_WIDTH + 40,
-                        y: 130 + (SINGLE_VECTOR_HEIGHT / 2) - 10,
-                        text: '"I tried to pay attention, but attention paid me" - Lil Wayne',
+                        x: 125,
+                        y: 430,
+                        text: 'LayerNorm',
                         color: LATEX_LABEL_COLOR,
-                        info: "Self attention stuff goes here",
-                    }
+                        info: layernorm_info,
+                    },
+                    // reshape and transpose
+                    {
+                        x: 590,
+                        y: 130,
+                        text: 'reshape',
+                        color: LATEX_SHAPE_LABEL_COLOR,
+                        info: reshape_and_transpose_info,
+                    },
+                    {
+                        x: 590,
+                        y: 430,
+                        text: 'reshape',
+                        color: LATEX_SHAPE_LABEL_COLOR,
+                        info: reshape_and_transpose_info,
+                    },
+                    {
+                        x: 590,
+                        y: 730,
+                        text: 'reshape',
+                        color: LATEX_SHAPE_LABEL_COLOR,
+                        info: reshape_and_transpose_info,
+                    },
                 ]
 
             },
-            'root': {
+            // TODO make root again
+            'root_': {
                 boxes: [
                     {
                         x: 50, y: 130, text: '', width: SINGLE_VECTOR_WIDTH, height: SINGLE_VECTOR_HEIGHT * 2,
@@ -1243,7 +1518,7 @@ Sampling strategies balance between diversity and quality of generated text. The
             // zoom.transform(svg, d3.zoomIdentity);
 
             // Apply initial zoom and pan
-            applyZoomAndPan(0.7, 100, 50);
+            // applyZoomAndPan(0.7, 100, 50);
         }
 
         function zoomed(event) {
@@ -1568,6 +1843,10 @@ Sampling strategies balance between diversity and quality of generated text. The
             renderReferences();
             checkZoom(); // Start checking for zoom changes
             applyZoomAndPan(.60, 30, 150)
+
+            // zoom in effect on load to show there is more and zooming is a thing
+            // applyZoomAndPan(0.7, 100, 50);
+            // resetZoom();
         }
 
         let resizeTimer;
