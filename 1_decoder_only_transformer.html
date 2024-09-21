@@ -615,12 +615,13 @@ Sampling strategies balance between diversity and quality of generated text. The
         const mask_and_normalize_info = "todo mask_and_normalize_info"
         const sa_out_info = "todo sa_out_info"
         const sa_out_reshaped_info = "todo sa_out_reshaped_info"
+        const residual_connection_info = "todo residual_connection_info"
+        const qk_dot_product_info = "todo qk_dot_product_info"
+        const sa_dot_product_info = "todo sa_dot_product_info"
+        const reshape_sa_out_info = "todo reshape_sa_out_info"
+        const add_residual_info = "todo add_residual_info"
 
         const svgContent = {
-
-
-
-
             // 'attention': {
             'root': {
                 boxes: [
@@ -720,17 +721,17 @@ Sampling strategies balance between diversity and quality of generated text. The
                     },
 
                     {
-                        x: 2150 - SINGLE_LATEX_CHAR_WIDTH/2, y: 405,
+                        x: 2150 - SINGLE_LATEX_CHAR_WIDTH / 2, y: 405,
                         text: '',
                         opacity: 0.2,
-                        width: SINGLE_LATEX_CHAR_WIDTH, 
-                        height: SINGLE_LATEX_CHAR_HEIGHT, 
-                        info: layernorm_info
+                        width: SINGLE_LATEX_CHAR_WIDTH,
+                        height: SINGLE_LATEX_CHAR_HEIGHT,
+                        info: add_residual_info
                     },
                     {
-                        x: 2300, 
-                        y: 390, 
-                        text: 'Hidden Layer', 
+                        x: 2300,
+                        y: 390,
+                        text: 'Hidden Layer',
                         width: SINGLE_VECTOR_WIDTH * 4, height: SINGLE_VECTOR_WIDTH * 4,
                         info: layernorm_info, opacity: 0.4
                     },
@@ -739,12 +740,12 @@ Sampling strategies balance between diversity and quality of generated text. The
                         info: layernorm_info, opacity: 0.4
                     },
                     {
-                        x: 2700 - SINGLE_LATEX_CHAR_WIDTH/2, y: 405,
+                        x: 2700 - SINGLE_LATEX_CHAR_WIDTH / 2, y: 405,
                         text: '',
                         opacity: 0.2,
-                        width: SINGLE_LATEX_CHAR_WIDTH, 
-                        height: SINGLE_LATEX_CHAR_HEIGHT, 
-                        info: layernorm_info
+                        width: SINGLE_LATEX_CHAR_WIDTH,
+                        height: SINGLE_LATEX_CHAR_HEIGHT,
+                        info: add_residual_info
                     },
                 ],
                 triangles: [
@@ -911,53 +912,61 @@ Sampling strategies balance between diversity and quality of generated text. The
                         x: 1120, y: 130,
                         text: '(d_{nheads} \\times d_{seq} \\times d_{seq} )',
                         color: LATEX_SHAPE_LABEL_COLOR, width: SINGLE_LATEX_CHAR_WIDTH * 6, height: SINGLE_LATEX_CHAR_HEIGHT,
-                        info: v_reshaped_info
+                        info: affinities_info
                     },
                     {
                         x: 1520, y: 130,
                         text: '(d_{nheads} \\times d_{seq} \\times d_{seq} )',
                         color: LATEX_SHAPE_LABEL_COLOR, width: SINGLE_LATEX_CHAR_WIDTH * 6, height: SINGLE_LATEX_CHAR_HEIGHT,
-                        info: v_reshaped_info
+                        info: masked_affinities_info
                     },
 
                     {
                         x: 1800, y: 280,
                         text: '(d_{nheads} \\times d_{seq} \\times d_{headsize})',
                         color: LATEX_SHAPE_LABEL_COLOR, width: SINGLE_LATEX_CHAR_WIDTH * 6, height: SINGLE_LATEX_CHAR_HEIGHT,
-                        info: layernorm_info
+                        info: sa_out_info
                     },
                     {
                         x: 2000, y: 310,
                         text: '(d_{seq} \\times d_{embd})',
                         color: LATEX_SHAPE_LABEL_COLOR, width: SINGLE_LATEX_CHAR_WIDTH * 3, height: SINGLE_LATEX_CHAR_HEIGHT,
-                        info: layernorm_info,
+                        info: sa_out_reshaped_info,
                     },
                     {
                         x: 2000, y: 430,
                         text: '{out}_{SA}^{(n)}',
-                        color: LATEX_LABEL_COLOR, width: 2*SINGLE_LATEX_CHAR_WIDTH, height: SINGLE_LATEX_CHAR_HEIGHT,
-                        info: layernorm_info,
+                        color: LATEX_LABEL_COLOR, width: 2 * SINGLE_LATEX_CHAR_WIDTH, height: SINGLE_LATEX_CHAR_HEIGHT,
+                        info: sa_out_reshaped_info,
                     },
                     {
                         x: 2150, y: 422,
                         text: '\\boldsymbol{+}',
-                        width: SINGLE_LATEX_CHAR_WIDTH, height: SINGLE_LATEX_CHAR_HEIGHT, info: layernorm_info
+                        width: SINGLE_LATEX_CHAR_WIDTH, height: SINGLE_LATEX_CHAR_HEIGHT, 
+                        info: add_residual_info
                     },
                     {
                         x: 2550, y: 430,
                         text: '{out}_{MLP}^{(n)}',
-                        color: LATEX_LABEL_COLOR, width: 2*SINGLE_LATEX_CHAR_WIDTH, height: SINGLE_LATEX_CHAR_HEIGHT,
+                        color: LATEX_LABEL_COLOR, width: 2 * SINGLE_LATEX_CHAR_WIDTH, height: SINGLE_LATEX_CHAR_HEIGHT,
+                        info: layernorm_info,
+                    },
+                    {
+                        x: 2550, y: 310,
+                        text: '(d_{seq} \\times d_{embd})',
+                        color: LATEX_SHAPE_LABEL_COLOR, width: SINGLE_LATEX_CHAR_WIDTH * 3, height: SINGLE_LATEX_CHAR_HEIGHT,
                         info: layernorm_info,
                     },
                     {
                         x: 2700, y: 422,
                         text: '\\boldsymbol{+}',
-                        width: SINGLE_LATEX_CHAR_WIDTH, height: SINGLE_LATEX_CHAR_HEIGHT, info: layernorm_info
+                        width: SINGLE_LATEX_CHAR_WIDTH, height: SINGLE_LATEX_CHAR_HEIGHT, 
+                        info: add_residual_info
                     },
                     {
                         x: 2780, y: 422,
                         text: '\\boldsymbol{=} x_{embd}^{(n+1)}',
-                        width: SINGLE_LATEX_CHAR_WIDTH*3, height: SINGLE_LATEX_CHAR_HEIGHT, info: layernorm_info
+                        width: SINGLE_LATEX_CHAR_WIDTH * 3, height: SINGLE_LATEX_CHAR_HEIGHT, info: layernorm_info
                     },
                     // {
                     //     x: 1670, y: 422,
@@ -1036,14 +1045,14 @@ Sampling strategies balance between diversity and quality of generated text. The
                         y: 280,
                         text: 'dot product',
                         color: LATEX_LABEL_SECONDARY_COLOR,
-                        info: layernorm_info,
+                        info: qk_dot_product_info,
                     },
                     {
                         x: 780,
                         y: 430,
                         text: 'transpose',
                         color: LATEX_SHAPE_LABEL_COLOR,
-                        info: layernorm_info,
+                        info: qk_dot_product_info,
                     },
                     {
                         x: 1252,
@@ -1057,21 +1066,21 @@ Sampling strategies balance between diversity and quality of generated text. The
                         y: 430,
                         text: 'dot product',
                         color: LATEX_LABEL_SECONDARY_COLOR,
-                        info: layernorm_info,
+                        info: sa_dot_product_info,
                     },
                     {
                         x: 1850,
                         y: 420,
                         text: 'reshape',
                         color: LATEX_SHAPE_LABEL_COLOR,
-                        info: reshape_and_transpose_info,
+                        info: reshape_sa_out_info,
                     },
                     {
                         x: 80,
                         y: -80,
                         text: 'Residual Connection',
                         color: LATEX_SHAPE_LABEL_COLOR,
-                        info: layernorm_info,
+                        info: residual_connection_info,
                     },
 
                     {
@@ -1093,7 +1102,7 @@ Sampling strategies balance between diversity and quality of generated text. The
                         y: -80,
                         text: 'Residual Connection',
                         color: LATEX_SHAPE_LABEL_COLOR,
-                        info: layernorm_info,
+                        info: residual_connection_info,
                     },
                     {
                         x: 2405,
@@ -1146,7 +1155,7 @@ Sampling strategies balance between diversity and quality of generated text. The
                         color: ARROW_COLOR,
                         info: reshape_and_transpose_info,
                     },
-                    
+
                     // self attention
                     {
                         start: { x: 1250, y: 290 },
@@ -1159,13 +1168,13 @@ Sampling strategies balance between diversity and quality of generated text. The
                         start: { x: 1830, y: 430 },
                         end: { x: 1950, y: 430 },
                         color: ARROW_COLOR,
-                        info: layernorm_info,
+                        info: reshape_and_transpose_info,
                     },
                     {
                         start: { x: 2045, y: 430 },
                         end: { x: 2125, y: 430 },
                         color: ARROW_COLOR,
-                        info: layernorm_info,
+                        info: "Add with residual",
                     },
                     {
                         start: { x: 2175, y: 430 },
@@ -1200,7 +1209,7 @@ Sampling strategies balance between diversity and quality of generated text. The
                             },
                         ],
                         color: ARROW_COLOR,
-                        info: layernorm_info,
+                        info: dot_w_q_info,
                     },
                     {
                         segments: [
@@ -1214,7 +1223,7 @@ Sampling strategies balance between diversity and quality of generated text. The
                             },
                         ],
                         color: ARROW_COLOR,
-                        info: layernorm_info,
+                        info: dot_w_v_info,
                     },
                     // Token affinities transpose and dot product
                     {
@@ -1233,7 +1242,7 @@ Sampling strategies balance between diversity and quality of generated text. The
                             },
                         ],
                         color: ARROW_COLOR,
-                        info: layernorm_info,
+                        info: qk_dot_product_info,
                     },
                     {
                         segments: [
@@ -1251,7 +1260,7 @@ Sampling strategies balance between diversity and quality of generated text. The
                             },
                         ],
                         color: ARROW_COLOR,
-                        info: layernorm_info,
+                        info: qk_dot_product_info,
                     },
 
                     // self attention output
@@ -1273,7 +1282,7 @@ Sampling strategies balance between diversity and quality of generated text. The
                             },
                         ],
                         color: ARROW_COLOR,
-                        info: layernorm_info,
+                        info: sa_dot_product_info,
                     },
                     {
                         segments: [
@@ -1291,7 +1300,7 @@ Sampling strategies balance between diversity and quality of generated text. The
                             },
                         ],
                         color: ARROW_COLOR,
-                        info: layernorm_info,
+                        info: sa_dot_product_info,
                     },
                     {
                         segments: [
@@ -1309,7 +1318,7 @@ Sampling strategies balance between diversity and quality of generated text. The
                             },
                         ],
                         color: "#333",
-                        info: layernorm_info,
+                        info: residual_connection_info,
                     },
                     {
                         segments: [
@@ -1336,14 +1345,14 @@ Sampling strategies balance between diversity and quality of generated text. The
                             {
                                 start: { x: 2200, y: -70 },
                                 end: { x: 2700, y: -70 },
-                            },                   
+                            },
                             {
                                 start: { x: 2700, y: -70 },
                                 end: { x: 2700, y: 400 },
                             }
                         ],
                         color: "#333",
-                        info: layernorm_info,
+                        info: residual_connection_info,
                     },
                 ],
 
@@ -1604,7 +1613,9 @@ Sampling strategies balance between diversity and quality of generated text. The
                             .attr('height', item.height)
                             .attr('fill', RECT_FILL_COLOR)
                             .attr('stroke', RECT_STROKE_COLOR)
-                            .attr('opacity', item.opacity !== undefined ? item.opacity : 1);
+                            .attr('opacity', item.opacity !== undefined ? item.opacity : 1)
+                            .attr('data-info', item.info)
+                            .attr('data-link', item.link);
 
                         contentGroup.append('text')
                             .attr('x', item.x + item.width / 2)
@@ -1612,10 +1623,12 @@ Sampling strategies balance between diversity and quality of generated text. The
                             .attr('text-anchor', 'middle')
                             .attr('dominant-baseline', 'central')
                             .attr('fill', TEXT_COLOR)
-                            // .attr('opacity', item.opacity !== undefined ? item.opacity : 1)
-                            .text(item.text);
+                            .text(item.text)
+                            .attr('data-info', item.info)
+                            .attr('data-link', item.link);
                     });
                 }
+
 
                 // Render triangles
                 if (svgContent[view].triangles) {
@@ -1917,7 +1930,7 @@ Sampling strategies balance between diversity and quality of generated text. The
 
             // Draw the arrowhead
             arrowGroup.append('path')
-            .attr('d', `M${end.x},${end.y} L${end.x - arrowSize * Math.cos(angle - Math.PI / 6)},${end.y - arrowSize * Math.sin(angle - Math.PI / 6)} L${end.x - arrowSize * Math.cos(angle + Math.PI / 6)},${end.y - arrowSize * Math.sin(angle + Math.PI / 6)} Z`);
+                .attr('d', `M${end.x},${end.y} L${end.x - arrowSize * Math.cos(angle - Math.PI / 6)},${end.y - arrowSize * Math.sin(angle - Math.PI / 6)} L${end.x - arrowSize * Math.cos(angle + Math.PI / 6)},${end.y - arrowSize * Math.sin(angle + Math.PI / 6)} Z`);
 
             // arrowGroup.append('path')
             //     .attr('d', `M${end.x},${end.y} L${arrowX - arrowSize * Math.cos(angle - Math.PI / 6)},${arrowY - arrowSize * Math.sin(angle - Math.PI / 6)} L${arrowX - arrowSize * Math.cos(angle + Math.PI / 6)},${arrowY - arrowSize * Math.sin(angle + Math.PI / 6)} Z`);
@@ -2263,13 +2276,7 @@ Sampling strategies balance between diversity and quality of generated text. The
             } else if (target.classList.contains('text-label')) {
                 content = target.getAttribute('data-info');
             } else if (target.tagName === 'rect' || target.tagName === 'text') {
-                const item = svgContent[currentView].boxes.find(i =>
-                    i.x == target.getAttribute('x') ||
-                    (target.tagName === 'text' && i.x + i.width / 2 == target.getAttribute('x'))
-                );
-                if (item && item.info) {
-                    content = item.info;
-                }
+                content = target.getAttribute('data-info');
             } else if (target.classList.contains('triangle')) {
                 content = target.getAttribute('data-info') || "Triangle";
             } else if (target.tagName === 'line') {
@@ -2387,7 +2394,7 @@ Sampling strategies balance between diversity and quality of generated text. The
             updateView();
             renderReferences();
             checkZoom(); // Start checking for zoom changes
-            applyZoomAndPan(.50, -230, 150)
+            applyZoomAndPan(.30, 130, 150)
 
             // zoom in effect on load to show there is more and zooming is a thing
             // applyZoomAndPan(0.7, 100, 50);
