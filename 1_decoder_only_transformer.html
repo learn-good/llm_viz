@@ -229,8 +229,9 @@
         const LATEX_LINK_HOVER_COLOR = "#00ffff";
         const LINK_COLOR = '#00ffff';
         const LATEX_LABEL_COLOR = "#ffffff";
+        const LATEX_LABEL_SECONDARY_COLOR = "#777";
         const LATEX_SHAPE_LABEL_COLOR = "#555";
-        const ARROW_COLOR = "#999";
+        const ARROW_COLOR = "#444";
         const POS_ENC_COLOR = "#333";
 
 
@@ -609,290 +610,333 @@ Sampling strategies balance between diversity and quality of generated text. The
         const dot_w_k_info = "todo dot wk"
         const dot_w_v_info = "todo dot wv"
         const reshape_and_transpose_info = "todo rshape and transpose info"
+        const affinities_info = "todo affinities"
+        const masked_affinities_info = "todo masked affinities"
+        const mask_and_normalize_info = "todo mask_and_normalize_info"
+        const sa_out_info = "todo sa_out_info"
+        const sa_out_reshaped_info = "todo sa_out_reshaped_info"
 
         const svgContent = {
-            // 'root': [
-            //     // 0. Data preparation and tokenization
-            //     // 1. x_tokenized
-            //     // 2a. Positional Encoding
-            //     // 2b. Token Embedding (Tokenizer)
-            //     // 3. Dropout
-            //     // 4. LayerNorm
-            //     // 5. Repeated Self-Attention Blocks
-            //     // 6. Feed Forward MLP
-            //     // 7. Residual Connections 
-            //     // 8. Configurations (n_embd, block_size, activation fn, etc.)
-            // ],
-            // 'tokenization': {
-            //     boxes: [
-            //         {
-            //             x: 50 + MIN_SEP_HORIZONTAL, y: 130, text: 'tok', width: SINGLE_VECTOR_WIDTH, height: SINGLE_VECTOR_HEIGHT,
-            //             info: x_tok_info, link: x_tok_link, opacity: 0.4
-            //         },
-            //     ],
-            //     references: [
-            //         {
-            //             title: "\"Let's build the GPT Tokenizer\"",
-            //             authors: ["Andrej Karpathy"],
-            //             link: "https://www.youtube.com/watch?v=zduSFxRajkE",
-            //             info: "A detailed video tutorial on tokenization in GPT models",
-            //             refType: "YouTube"
-            //         }
-            //     ]
-            // },
-            // 'position_encoding': {
-            //     boxes: [
-            //         {
-            //             x: 50 + MIN_SEP_HORIZONTAL, y: 130, text: 'posemb', width: SINGLE_VECTOR_WIDTH, height: SINGLE_VECTOR_HEIGHT,
-            //             info: x_tok_info, link: x_tok_link, opacity: 0.4
-            //         },
-            //     ],
-            // },
 
-            // TODO add anchoredArrows
+
+
+
             // 'attention': {
             'root': {
                 boxes: [
                     {
-                        x: 20, y: 340, text: '', width: SINGLE_VECTOR_WIDTH*4, height: SINGLE_VECTOR_HEIGHT / 2,
-                        info: x_embd_n_info,  opacity: 0.4
+                        x: 20, y: 340, text: '', width: SINGLE_VECTOR_WIDTH * 4, height: SINGLE_VECTOR_HEIGHT / 2,
+                        info: x_embd_n_info, opacity: 0.4
                     },
                     {
-                        x: 20 + MIN_SEP_HORIZONTAL, y: 340, text: '', width: SINGLE_VECTOR_WIDTH*4, height: SINGLE_VECTOR_HEIGHT / 2,
-                        info: x_embd_n_tilde_info,  opacity: 0.4
+                        x: 20 + MIN_SEP_HORIZONTAL, y: 340, text: '', width: SINGLE_VECTOR_WIDTH * 4, height: SINGLE_VECTOR_HEIGHT / 2,
+                        info: x_embd_n_tilde_info, opacity: 0.4
                     },
 
 
                     {
-                        x: 70 + 2*MIN_SEP_HORIZONTAL, y: 40, text: '', width: SINGLE_VECTOR_WIDTH*4, height: SINGLE_VECTOR_HEIGHT / 2,
-                        info: q_flat_info,  opacity: 0.4
+                        x: 70 + 2 * MIN_SEP_HORIZONTAL, y: 40, text: '', width: SINGLE_VECTOR_WIDTH * 4, height: SINGLE_VECTOR_HEIGHT / 2,
+                        info: q_flat_info, opacity: 0.4
                     },
                     {
-                        x: 70 + 2*MIN_SEP_HORIZONTAL, y: 340, text: '', width: SINGLE_VECTOR_WIDTH*4, height: SINGLE_VECTOR_HEIGHT / 2,
-                        info: k_flat_info,  opacity: 0.4
+                        x: 70 + 2 * MIN_SEP_HORIZONTAL, y: 340, text: '', width: SINGLE_VECTOR_WIDTH * 4, height: SINGLE_VECTOR_HEIGHT / 2,
+                        info: k_flat_info, opacity: 0.4
                     },
                     {
-                        x: 70 + 2*MIN_SEP_HORIZONTAL, y: 640, text: '', width: SINGLE_VECTOR_WIDTH*4, height: SINGLE_VECTOR_HEIGHT / 2,
-                        info: v_flat_info,  opacity: 0.4
+                        x: 70 + 2 * MIN_SEP_HORIZONTAL, y: 640, text: '', width: SINGLE_VECTOR_WIDTH * 4, height: SINGLE_VECTOR_HEIGHT / 2,
+                        info: v_flat_info, opacity: 0.4
                     },
 
                     // Q K V resized
                     {
-                        x: 70 + 3*MIN_SEP_HORIZONTAL, y: 40, text: '', width: SINGLE_VECTOR_WIDTH*4/3, height: SINGLE_VECTOR_HEIGHT / 2,
-                        info: q_reshaped_info,  opacity: 0.4
+                        x: 70 + 3 * MIN_SEP_HORIZONTAL, y: 40, text: '', width: SINGLE_VECTOR_WIDTH * 4 / 3, height: SINGLE_VECTOR_HEIGHT / 2,
+                        info: q_reshaped_info, opacity: 0.4
                     },
                     {
-                        x: 95 + 3*MIN_SEP_HORIZONTAL, y: 25, text: '', width: SINGLE_VECTOR_WIDTH*4/3, height: SINGLE_VECTOR_HEIGHT / 2,
-                        info: q_reshaped_info,  opacity: 0.4
+                        x: 95 + 3 * MIN_SEP_HORIZONTAL, y: 25, text: '', width: SINGLE_VECTOR_WIDTH * 4 / 3, height: SINGLE_VECTOR_HEIGHT / 2,
+                        info: q_reshaped_info, opacity: 0.4
                     },
                     {
-                        x: 120 + 3*MIN_SEP_HORIZONTAL, y: 10, text: '', width: SINGLE_VECTOR_WIDTH*4/3, height: SINGLE_VECTOR_HEIGHT / 2,
-                        info: q_reshaped_info,  opacity: 0.4
-                    },
-
-                    {
-                        x: 70 + 3*MIN_SEP_HORIZONTAL, y: 340, text: '', width: SINGLE_VECTOR_WIDTH*4/3, height: SINGLE_VECTOR_HEIGHT / 2,
-                        info: k_reshaped_info,  opacity: 0.4
-                    },
-                    {
-                        x: 95 + 3*MIN_SEP_HORIZONTAL, y: 325, text: '', width: SINGLE_VECTOR_WIDTH*4/3, height: SINGLE_VECTOR_HEIGHT / 2,
-                        info: k_reshaped_info,  opacity: 0.4
-                    },
-                    {
-                        x: 120 + 3*MIN_SEP_HORIZONTAL, y: 310, text: '', width: SINGLE_VECTOR_WIDTH*4/3, height: SINGLE_VECTOR_HEIGHT / 2,
-                        info: k_reshaped_info,  opacity: 0.4
+                        x: 120 + 3 * MIN_SEP_HORIZONTAL, y: 10, text: '', width: SINGLE_VECTOR_WIDTH * 4 / 3, height: SINGLE_VECTOR_HEIGHT / 2,
+                        info: q_reshaped_info, opacity: 0.4
                     },
 
                     {
-                        x: 70 + 3*MIN_SEP_HORIZONTAL, y: 640, text: '', width: SINGLE_VECTOR_WIDTH*4/3, height: SINGLE_VECTOR_HEIGHT / 2,
-                        info: v_reshaped_info,  opacity: 0.4
+                        x: 70 + 3 * MIN_SEP_HORIZONTAL, y: 340, text: '', width: SINGLE_VECTOR_WIDTH * 4 / 3, height: SINGLE_VECTOR_HEIGHT / 2,
+                        info: k_reshaped_info, opacity: 0.4
                     },
                     {
-                        x: 95 + 3*MIN_SEP_HORIZONTAL, y: 625, text: '', width: SINGLE_VECTOR_WIDTH*4/3, height: SINGLE_VECTOR_HEIGHT / 2,
-                        info: v_reshaped_info,  opacity: 0.4
+                        x: 95 + 3 * MIN_SEP_HORIZONTAL, y: 325, text: '', width: SINGLE_VECTOR_WIDTH * 4 / 3, height: SINGLE_VECTOR_HEIGHT / 2,
+                        info: k_reshaped_info, opacity: 0.4
                     },
                     {
-                        x: 120 + 3*MIN_SEP_HORIZONTAL, y: 610, text: '', width: SINGLE_VECTOR_WIDTH*4/3, height: SINGLE_VECTOR_HEIGHT / 2,
-                        info: v_reshaped_info,  opacity: 0.4
+                        x: 120 + 3 * MIN_SEP_HORIZONTAL, y: 310, text: '', width: SINGLE_VECTOR_WIDTH * 4 / 3, height: SINGLE_VECTOR_HEIGHT / 2,
+                        info: k_reshaped_info, opacity: 0.4
+                    },
+
+                    {
+                        x: 70 + 3 * MIN_SEP_HORIZONTAL, y: 640, text: '', width: SINGLE_VECTOR_WIDTH * 4 / 3, height: SINGLE_VECTOR_HEIGHT / 2,
+                        info: v_reshaped_info, opacity: 0.4
+                    },
+                    {
+                        x: 95 + 3 * MIN_SEP_HORIZONTAL, y: 625, text: '', width: SINGLE_VECTOR_WIDTH * 4 / 3, height: SINGLE_VECTOR_HEIGHT / 2,
+                        info: v_reshaped_info, opacity: 0.4
+                    },
+                    {
+                        x: 120 + 3 * MIN_SEP_HORIZONTAL, y: 610, text: '', width: SINGLE_VECTOR_WIDTH * 4 / 3, height: SINGLE_VECTOR_HEIGHT / 2,
+                        info: v_reshaped_info, opacity: 0.4
+                    },
+
+                    // Affinities
+                    {
+                        x: 200 + 4 * MIN_SEP_HORIZONTAL, y: 190, text: '', width: SINGLE_VECTOR_HEIGHT / 2, height: SINGLE_VECTOR_HEIGHT / 2,
+                        info: affinities_info, opacity: 0.4
+                    },
+                    {
+                        x: 225 + 4 * MIN_SEP_HORIZONTAL, y: 175, text: '', width: SINGLE_VECTOR_HEIGHT / 2, height: SINGLE_VECTOR_HEIGHT / 2,
+                        info: affinities_info, opacity: 0.4
+                    },
+                    {
+                        x: 250 + 4 * MIN_SEP_HORIZONTAL, y: 160, text: '', width: SINGLE_VECTOR_HEIGHT / 2, height: SINGLE_VECTOR_HEIGHT / 2,
+                        info: affinities_info, opacity: 0.4
+                    },
+
+                    // Self attention output
+                    {
+                        x: 1750, y: 340, text: '', width: SINGLE_VECTOR_WIDTH * 4 / 3, height: SINGLE_VECTOR_HEIGHT / 2,
+                        info: sa_out_info, opacity: 0.4
+                    },
+                    {
+                        x: 1775, y: 325, text: '', width: SINGLE_VECTOR_WIDTH * 4 / 3, height: SINGLE_VECTOR_HEIGHT / 2,
+                        info: sa_out_info, opacity: 0.4
+                    },
+                    {
+                        x: 1800, y: 310, text: '', width: SINGLE_VECTOR_WIDTH * 4 / 3, height: SINGLE_VECTOR_HEIGHT / 2,
+                        info: sa_out_info, opacity: 0.4
+                    },
+                    {
+                        x: 1950, y: 340, text: '', width: SINGLE_VECTOR_WIDTH * 4, height: SINGLE_VECTOR_HEIGHT / 2,
+                        info: sa_out_reshaped_info, opacity: 0.4
+                    },
+
+                    {
+                        x: 2150 - SINGLE_LATEX_CHAR_WIDTH/2, y: 405,
+                        text: '',
+                        opacity: 0.2,
+                        width: SINGLE_LATEX_CHAR_WIDTH, 
+                        height: SINGLE_LATEX_CHAR_HEIGHT, 
+                        info: layernorm_info
                     },
                 ],
+                triangles: [
+                    {
+                        x1: 1400, y1: 190,
+                        x2: 1400, y2: 390,
+                        x3: 1600, y3: 390,
+                        color: RECT_FILL_COLOR,
+                        opacity: 0.4,
+                        info: masked_affinities_info,
+                    },
+                    {
+                        x1: 1425, y1: 175,
+                        x2: 1425, y2: 375,
+                        x3: 1625, y3: 375,
+                        color: RECT_FILL_COLOR,
+                        opacity: 0.4,
+                        info: masked_affinities_info,
+                    },
+                    {
+                        x1: 1450, y1: 160,
+                        x2: 1450, y2: 360,
+                        x3: 1650, y3: 360,
+                        color: RECT_FILL_COLOR,
+                        opacity: 0.4,
+                        info: masked_affinities_info,
+                    },
+                    // ... more triangles
+                ],
+
                 latexLabels: [
                     // x embed
                     {
-                        x: 20 + (SINGLE_VECTOR_WIDTH*2), y: 430,
+                        x: 20 + (SINGLE_VECTOR_WIDTH * 2), y: 430,
                         text: 'x_{embd}^{(n)}',
                         color: LATEX_LABEL_COLOR, width: SINGLE_LATEX_CHAR_WIDTH, height: SINGLE_LATEX_CHAR_HEIGHT,
                         info: x_embd_n_info
                     },
                     {
-                        x: 20+MIN_SEP_HORIZONTAL + (SINGLE_VECTOR_WIDTH*2), y: 430,
+                        x: 20 + MIN_SEP_HORIZONTAL + (SINGLE_VECTOR_WIDTH * 2), y: 430,
                         text: '\\tilde{x}_{embd}^{(n)}',
                         color: LATEX_LABEL_COLOR, width: SINGLE_LATEX_CHAR_WIDTH, height: SINGLE_LATEX_CHAR_HEIGHT,
                         info: x_embd_n_tilde_info,
                     },
                     {
-                        x: 20+(SINGLE_VECTOR_WIDTH*2), y: 310,
+                        x: 20 + (SINGLE_VECTOR_WIDTH * 2), y: 310,
                         text: '(d_{seq} \\times d_{embd})',
-                        color: LATEX_SHAPE_LABEL_COLOR, width: SINGLE_LATEX_CHAR_WIDTH*3, height: SINGLE_LATEX_CHAR_HEIGHT,
+                        color: LATEX_SHAPE_LABEL_COLOR, width: SINGLE_LATEX_CHAR_WIDTH * 3, height: SINGLE_LATEX_CHAR_HEIGHT,
                         info: x_embd_n_info
                     },
                     {
-                        x: 20+MIN_SEP_HORIZONTAL + (SINGLE_VECTOR_WIDTH*2), y: 310,
+                        x: 20 + MIN_SEP_HORIZONTAL + (SINGLE_VECTOR_WIDTH * 2), y: 310,
                         text: '(d_{seq} \\times d_{embd})',
-                        color: LATEX_SHAPE_LABEL_COLOR, width: SINGLE_LATEX_CHAR_WIDTH*3, height: SINGLE_LATEX_CHAR_HEIGHT,
+                        color: LATEX_SHAPE_LABEL_COLOR, width: SINGLE_LATEX_CHAR_WIDTH * 3, height: SINGLE_LATEX_CHAR_HEIGHT,
                         info: x_embd_n_tilde_info,
                     },
                     // Q K V flat
                     {
-                        x: 120 + 2*MIN_SEP_HORIZONTAL, y: 130,
+                        x: 120 + 2 * MIN_SEP_HORIZONTAL, y: 130,
                         text: 'Q^{(n)}',
                         color: LATEX_LABEL_COLOR, width: SINGLE_LATEX_CHAR_WIDTH, height: SINGLE_LATEX_CHAR_HEIGHT,
                         info: q_flat_info,
                     },
                     {
-                        x: 120 + 2*MIN_SEP_HORIZONTAL, y: 430,
+                        x: 120 + 2 * MIN_SEP_HORIZONTAL, y: 430,
                         text: 'K^{(n)}',
                         color: LATEX_LABEL_COLOR, width: SINGLE_LATEX_CHAR_WIDTH, height: SINGLE_LATEX_CHAR_HEIGHT,
                         info: k_flat_info,
                     },
                     {
-                        x: 120 + 2*MIN_SEP_HORIZONTAL, y: 730,
+                        x: 120 + 2 * MIN_SEP_HORIZONTAL, y: 730,
                         text: 'V^{(n)}',
                         color: LATEX_LABEL_COLOR, width: SINGLE_LATEX_CHAR_WIDTH, height: SINGLE_LATEX_CHAR_HEIGHT,
                         info: v_flat_info,
                     },
 
                     {
-                        x: 120 + 2*MIN_SEP_HORIZONTAL, y: 10,
+                        x: 120 + 2 * MIN_SEP_HORIZONTAL, y: 10,
                         text: '(d_{seq} \\times d_{embd})',
-                        color: LATEX_SHAPE_LABEL_COLOR, width: SINGLE_LATEX_CHAR_WIDTH*3, height: SINGLE_LATEX_CHAR_HEIGHT,
+                        color: LATEX_SHAPE_LABEL_COLOR, width: SINGLE_LATEX_CHAR_WIDTH * 3, height: SINGLE_LATEX_CHAR_HEIGHT,
                         info: q_flat_info
                     },
                     {
-                        x: 120 + 2*MIN_SEP_HORIZONTAL, y: 310,
+                        x: 120 + 2 * MIN_SEP_HORIZONTAL, y: 310,
                         text: '(d_{seq} \\times d_{embd})',
-                        color: LATEX_SHAPE_LABEL_COLOR, width: SINGLE_LATEX_CHAR_WIDTH*3, height: SINGLE_LATEX_CHAR_HEIGHT,
+                        color: LATEX_SHAPE_LABEL_COLOR, width: SINGLE_LATEX_CHAR_WIDTH * 3, height: SINGLE_LATEX_CHAR_HEIGHT,
                         info: k_flat_info,
                     },
                     {
-                        x: 120 + 2*MIN_SEP_HORIZONTAL, y: 610,
+                        x: 120 + 2 * MIN_SEP_HORIZONTAL, y: 610,
                         text: '(d_{seq} \\times d_{embd})',
-                        color: LATEX_SHAPE_LABEL_COLOR, width: SINGLE_LATEX_CHAR_WIDTH*3, height: SINGLE_LATEX_CHAR_HEIGHT,
+                        color: LATEX_SHAPE_LABEL_COLOR, width: SINGLE_LATEX_CHAR_WIDTH * 3, height: SINGLE_LATEX_CHAR_HEIGHT,
                         info: v_flat_info,
                     },
 
                     // Q K V prime
                     {
-                        x: 120 + 3*MIN_SEP_HORIZONTAL, y: 130,
+                        x: 120 + 3 * MIN_SEP_HORIZONTAL, y: 130,
                         text: '{Q\'}^{(n)}',
                         color: LATEX_LABEL_COLOR, width: SINGLE_LATEX_CHAR_WIDTH, height: SINGLE_LATEX_CHAR_HEIGHT,
                         info: q_reshaped_info,
                     },
                     {
-                        x: 120 + 3*MIN_SEP_HORIZONTAL, y: -20,
-                        text: '(d_{multihead} \\times d_{seq} \\times d_{qkv})',
-                        color: LATEX_SHAPE_LABEL_COLOR, width: SINGLE_LATEX_CHAR_WIDTH*6, height: SINGLE_LATEX_CHAR_HEIGHT,
+                        x: 120 + 3 * MIN_SEP_HORIZONTAL, y: -20,
+                        text: '(d_{nheads} \\times d_{seq} \\times d_{headsize})',
+                        color: LATEX_SHAPE_LABEL_COLOR, width: SINGLE_LATEX_CHAR_WIDTH * 6, height: SINGLE_LATEX_CHAR_HEIGHT,
                         info: q_reshaped_info
                     },
                     {
-                        x: 120 + 3*MIN_SEP_HORIZONTAL, y: 430,
+                        x: 120 + 3 * MIN_SEP_HORIZONTAL, y: 430,
                         text: '{K\'}^{(n)}',
                         color: LATEX_LABEL_COLOR, width: SINGLE_LATEX_CHAR_WIDTH, height: SINGLE_LATEX_CHAR_HEIGHT,
                         info: k_reshaped_info,
                     },
                     {
-                        x: 120 + 3*MIN_SEP_HORIZONTAL, y: 280,
-                        text: '(d_{multihead} \\times d_{seq} \\times d_{qkv})',
-                        color: LATEX_SHAPE_LABEL_COLOR, width: SINGLE_LATEX_CHAR_WIDTH*6, height: SINGLE_LATEX_CHAR_HEIGHT,
+                        x: 120 + 3 * MIN_SEP_HORIZONTAL, y: 280,
+                        text: '(d_{nheads} \\times d_{seq} \\times d_{headsize})',
+                        color: LATEX_SHAPE_LABEL_COLOR, width: SINGLE_LATEX_CHAR_WIDTH * 6, height: SINGLE_LATEX_CHAR_HEIGHT,
                         info: k_reshaped_info
                     },
                     {
-                        x: 120 + 3*MIN_SEP_HORIZONTAL, y: 730,
+                        x: 120 + 3 * MIN_SEP_HORIZONTAL, y: 730,
                         text: '{V\'}^{(n)}',
                         color: LATEX_LABEL_COLOR, width: SINGLE_LATEX_CHAR_WIDTH, height: SINGLE_LATEX_CHAR_HEIGHT,
                         info: v_reshaped_info,
                     },
                     {
-                        x: 120 + 3*MIN_SEP_HORIZONTAL, y: 580,
-                        text: '(d_{multihead} \\times d_{seq} \\times d_{qkv})',
-                        color: LATEX_SHAPE_LABEL_COLOR, width: SINGLE_LATEX_CHAR_WIDTH*6, height: SINGLE_LATEX_CHAR_HEIGHT,
+                        x: 120 + 3 * MIN_SEP_HORIZONTAL, y: 580,
+                        text: '(d_{nheads} \\times d_{seq} \\times d_{headsize})',
+                        color: LATEX_SHAPE_LABEL_COLOR, width: SINGLE_LATEX_CHAR_WIDTH * 6, height: SINGLE_LATEX_CHAR_HEIGHT,
                         info: v_reshaped_info
                     },
 
                     // dot W_QKV
                     {
-                        x:  2*MIN_SEP_HORIZONTAL - 10, y: 110,
+                        x: 2 * MIN_SEP_HORIZONTAL - 10, y: 110,
                         // text: '\\_ \\cdot W_{K}^{(n)}',
                         text: '\\cdot \\ W_{Q}^{(n)}',
-                        color: 'black', width: SINGLE_LATEX_CHAR_WIDTH*2, height: SINGLE_LATEX_CHAR_HEIGHT,
+                        color: LATEX_LABEL_SECONDARY_COLOR, width: SINGLE_LATEX_CHAR_WIDTH * 2, height: SINGLE_LATEX_CHAR_HEIGHT,
                         info: dot_w_q_info,
                     },
                     {
-                        x:  2*MIN_SEP_HORIZONTAL - 10, y: 410,
+                        x: 2 * MIN_SEP_HORIZONTAL - 10, y: 410,
                         // text: '\\_ \\cdot W_{K}^{(n)}',
                         text: '\\cdot \\ W_{K}^{(n)}',
-                        color: LATEX_LABEL_COLOR, width: SINGLE_LATEX_CHAR_WIDTH*2, height: SINGLE_LATEX_CHAR_HEIGHT,
+                        color: LATEX_LABEL_SECONDARY_COLOR, width: SINGLE_LATEX_CHAR_WIDTH * 2, height: SINGLE_LATEX_CHAR_HEIGHT,
                         info: dot_w_k_info,
                     },
                     {
-                        x:  2*MIN_SEP_HORIZONTAL - 10, y: 710,
+                        x: 2 * MIN_SEP_HORIZONTAL - 10, y: 710,
                         // text: '\\_ \\cdot W_{K}^{(n)}',
                         text: '\\cdot \\ W_{V}^{(n)}',
-                        color: 'black', width: SINGLE_LATEX_CHAR_WIDTH*2, height: SINGLE_LATEX_CHAR_HEIGHT,
+                        color: LATEX_LABEL_SECONDARY_COLOR, width: SINGLE_LATEX_CHAR_WIDTH * 2, height: SINGLE_LATEX_CHAR_HEIGHT,
                         info: dot_w_v_info,
                     },
-                    
-                ],
-                arrows: [
+                    // {
+                    //     x: 880, 
+                    //     y: 290, 
+                    //     text: '{Q\'}^{(n)} \\cdot ({K\'}^{(n)})^\\mathbf{T}', 
+                    //     color: LATEX_LABEL_COLOR,
+                    //     info: layernorm_info, 
+                    // },
                     {
-                        start: { x: 20 + 4*SINGLE_VECTOR_WIDTH, y: 440 },
-                        end: { x: 20 + MIN_SEP_HORIZONTAL, y: 440 },
-                        color: ARROW_COLOR,
+                        x: 1120, y: 130,
+                        text: '(d_{nheads} \\times d_{seq} \\times d_{seq} )',
+                        color: LATEX_SHAPE_LABEL_COLOR, width: SINGLE_LATEX_CHAR_WIDTH * 6, height: SINGLE_LATEX_CHAR_HEIGHT,
+                        info: v_reshaped_info
+                    },
+                    {
+                        x: 1520, y: 130,
+                        text: '(d_{nheads} \\times d_{seq} \\times d_{seq} )',
+                        color: LATEX_SHAPE_LABEL_COLOR, width: SINGLE_LATEX_CHAR_WIDTH * 6, height: SINGLE_LATEX_CHAR_HEIGHT,
+                        info: v_reshaped_info
+                    },
+
+                    {
+                        x: 1800, y: 280,
+                        text: '(d_{nheads} \\times d_{seq} \\times d_{headsize})',
+                        color: LATEX_SHAPE_LABEL_COLOR, width: SINGLE_LATEX_CHAR_WIDTH * 6, height: SINGLE_LATEX_CHAR_HEIGHT,
+                        info: layernorm_info
+                    },
+                    {
+                        x: 2000, y: 310,
+                        text: '(d_{seq} \\times d_{embd})',
+                        color: LATEX_SHAPE_LABEL_COLOR, width: SINGLE_LATEX_CHAR_WIDTH * 3, height: SINGLE_LATEX_CHAR_HEIGHT,
                         info: layernorm_info,
                     },
-                    // {
-                    //     start: { x: 20 + 4*SINGLE_VECTOR_WIDTH + MIN_SEP_HORIZONTAL , y: 140 },
-                    //     end: { x: 20 + 2*SINGLE_VECTOR_WIDTH + 2*MIN_SEP_HORIZONTAL, y: 140 },
-                    //     color: ARROW_COLOR,
-                    //     info: dot_w_q_info,
-                    // },
                     {
-                        start: { x: 20 + 4*SINGLE_VECTOR_WIDTH + MIN_SEP_HORIZONTAL , y: 440 },
-                        end: { x: 20 + 2*SINGLE_VECTOR_WIDTH + 2*MIN_SEP_HORIZONTAL, y: 440 },
-                        color: ARROW_COLOR,
-                        info: dot_w_k_info,
+                        x: 2000, y: 430,
+                        text: '{out}_{SA}^{(n)}',
+                        color: LATEX_LABEL_COLOR, width: 2*SINGLE_LATEX_CHAR_WIDTH, height: SINGLE_LATEX_CHAR_HEIGHT,
+                        info: layernorm_info,
+                    },
+                    {
+                        x: 2150, y: 422,
+                        text: '\\boldsymbol{+}',
+                        width: SINGLE_LATEX_CHAR_WIDTH, height: SINGLE_LATEX_CHAR_HEIGHT, info: layernorm_info
                     },
                     // {
-                    //     start: { x: 20 + 4*SINGLE_VECTOR_WIDTH + MIN_SEP_HORIZONTAL , y: 740 },
-                    //     end: { x: 20 + 2*SINGLE_VECTOR_WIDTH + 2*MIN_SEP_HORIZONTAL, y: 740 },
-                    //     color: ARROW_COLOR,
-                    //     info: dot_w_v_info,
+                    //     x: 1670, y: 422,
+                    //     text: '\\boldsymbol{\\cdot}',
+                    //     color: LATEX_LABEL_SECONDARY_COLOR,
+                    //     width: SINGLE_LATEX_CHAR_WIDTH, height: SINGLE_LATEX_CHAR_HEIGHT, 
                     // },
-                    {
-                        start: { x: 3*MIN_SEP_HORIZONTAL -34, y: 140 },
-                        end: { x: 20 + 2*SINGLE_VECTOR_WIDTH + 3*MIN_SEP_HORIZONTAL, y: 140 },
-                        color: ARROW_COLOR,
-                        info: reshape_and_transpose_info,
-                    },
-                    {
-                        start: { x: 3*MIN_SEP_HORIZONTAL -34, y: 440 },
-                        end: { x: 20 + 2*SINGLE_VECTOR_WIDTH + 3*MIN_SEP_HORIZONTAL, y: 440 },
-                        color: ARROW_COLOR,
-                        info: reshape_and_transpose_info,
-                    },
-                    {
-                        start: { x: 3*MIN_SEP_HORIZONTAL -34, y: 740 },
-                        end: { x: 20 + 2*SINGLE_VECTOR_WIDTH + 3*MIN_SEP_HORIZONTAL, y: 740 },
-                        color: ARROW_COLOR,
-                        info: reshape_and_transpose_info,
-                    },
                 ],
                 textLabels: [
                     {
                         x: 125,
                         y: 430,
                         text: 'LayerNorm',
-                        color: LATEX_LABEL_COLOR,
+                        color: LATEX_LABEL_SECONDARY_COLOR,
                         info: layernorm_info,
                     },
                     // reshape and transpose
@@ -917,7 +961,284 @@ Sampling strategies balance between diversity and quality of generated text. The
                         color: LATEX_SHAPE_LABEL_COLOR,
                         info: reshape_and_transpose_info,
                     },
-                ]
+                    // {
+                    //     x: 590,
+                    //     y: 160,
+                    //     text: 'transpose',
+                    //     color: LATEX_SHAPE_LABEL_COLOR,
+                    //     info: reshape_and_transpose_info,
+                    // },
+                    // {
+                    //     x: 590,
+                    //     y: 460,
+                    //     text: 'transpose',
+                    //     color: LATEX_SHAPE_LABEL_COLOR,
+                    //     info: reshape_and_transpose_info,
+                    // },
+                    // {
+                    //     x: 590,
+                    //     y: 760,
+                    //     text: 'transpose',
+                    //     color: LATEX_SHAPE_LABEL_COLOR,
+                    //     info: reshape_and_transpose_info,
+                    // },
+                    {
+                        x: 260 + 4 * MIN_SEP_HORIZONTAL,
+                        y: 290,
+                        text: 'Token Affinities',
+                        color: LATEX_LABEL_COLOR,
+                        info: affinities_info,
+                    },
+                    {
+                        x: 220 + 6 * MIN_SEP_HORIZONTAL,
+                        y: 290,
+                        text: 'Self-Attention Weights',
+                        color: LATEX_LABEL_COLOR,
+                        info: affinities_info,
+                    },
+                    {
+                        x: 905,
+                        y: 280,
+                        text: 'dot product',
+                        color: LATEX_LABEL_SECONDARY_COLOR,
+                        info: layernorm_info,
+                    },
+                    {
+                        x: 780,
+                        y: 430,
+                        text: 'transpose',
+                        color: LATEX_SHAPE_LABEL_COLOR,
+                        info: layernorm_info,
+                    },
+                    {
+                        x: 1252,
+                        y: 280,
+                        text: 'mask and normalize',
+                        color: LATEX_LABEL_SECONDARY_COLOR,
+                        info: mask_and_normalize_info,
+                    },
+                    {
+                        x: 1580,
+                        y: 430,
+                        text: 'dot product',
+                        color: LATEX_LABEL_SECONDARY_COLOR,
+                        info: layernorm_info,
+                    },
+                    {
+                        x: 1850,
+                        y: 420,
+                        text: 'reshape',
+                        color: LATEX_SHAPE_LABEL_COLOR,
+                        info: reshape_and_transpose_info,
+                    },
+                    {
+                        x: 80,
+                        y: -80,
+                        text: 'Residual Connection',
+                        color: LATEX_SHAPE_LABEL_COLOR,
+                        info: layernorm_info,
+                    },
+                    
+                ],
+                arrows: [
+                    {
+                        start: { x: 20 + 4 * SINGLE_VECTOR_WIDTH, y: 440 },
+                        end: { x: 20 + MIN_SEP_HORIZONTAL, y: 440 },
+                        color: ARROW_COLOR,
+                        info: layernorm_info,
+                    },
+                    // {
+                    //     start: { x: 20 + 4*SINGLE_VECTOR_WIDTH + MIN_SEP_HORIZONTAL , y: 140 },
+                    //     end: { x: 20 + 2*SINGLE_VECTOR_WIDTH + 2*MIN_SEP_HORIZONTAL, y: 140 },
+                    //     color: ARROW_COLOR,
+                    //     info: dot_w_q_info,
+                    // },
+                    {
+                        start: { x: 20 + 4 * SINGLE_VECTOR_WIDTH + MIN_SEP_HORIZONTAL, y: 440 },
+                        end: { x: 20 + 2 * SINGLE_VECTOR_WIDTH + 2 * MIN_SEP_HORIZONTAL, y: 440 },
+                        color: ARROW_COLOR,
+                        info: dot_w_k_info,
+                    },
+                    // {
+                    //     start: { x: 20 + 4*SINGLE_VECTOR_WIDTH + MIN_SEP_HORIZONTAL , y: 740 },
+                    //     end: { x: 20 + 2*SINGLE_VECTOR_WIDTH + 2*MIN_SEP_HORIZONTAL, y: 740 },
+                    //     color: ARROW_COLOR,
+                    //     info: dot_w_v_info,
+                    // },
+                    {
+                        start: { x: 3 * MIN_SEP_HORIZONTAL - 34, y: 140 },
+                        end: { x: 20 + 2 * SINGLE_VECTOR_WIDTH + 3 * MIN_SEP_HORIZONTAL, y: 140 },
+                        color: ARROW_COLOR,
+                        info: reshape_and_transpose_info,
+                    },
+                    {
+                        start: { x: 3 * MIN_SEP_HORIZONTAL - 34, y: 440 },
+                        end: { x: 20 + 2 * SINGLE_VECTOR_WIDTH + 3 * MIN_SEP_HORIZONTAL, y: 440 },
+                        color: ARROW_COLOR,
+                        info: reshape_and_transpose_info,
+                    },
+                    {
+                        start: { x: 3 * MIN_SEP_HORIZONTAL - 34, y: 740 },
+                        end: { x: 20 + 2 * SINGLE_VECTOR_WIDTH + 3 * MIN_SEP_HORIZONTAL, y: 740 },
+                        color: ARROW_COLOR,
+                        info: reshape_and_transpose_info,
+                    },
+                    
+                    // self attention
+                    {
+                        start: { x: 1250, y: 290 },
+                        end: { x: 1400, y: 290 },
+                        color: ARROW_COLOR,
+                        info: mask_and_normalize_info,
+                    },
+
+                    {
+                        start: { x: 1830, y: 430 },
+                        end: { x: 1950, y: 430 },
+                        color: ARROW_COLOR,
+                        info: layernorm_info,
+                    },
+                    {
+                        start: { x: 2045, y: 430 },
+                        end: { x: 2125, y: 430 },
+                        color: ARROW_COLOR,
+                        info: layernorm_info,
+                    },
+                    {
+                        start: { x: 2175, y: 430 },
+                        end: { x: 2300, y: 430 },
+                        color: ARROW_COLOR,
+                        info: layernorm_info,
+                    },
+                ],
+                anchoredArrows: [
+                    {
+                        // W_Q, W_V
+                        segments: [
+                            {
+                                start: { x: 20 + MIN_SEP_HORIZONTAL + 2 * SINGLE_VECTOR_WIDTH, y: 340 },
+                                end: { x: 20 + MIN_SEP_HORIZONTAL + 2 * SINGLE_VECTOR_WIDTH, y: 140 }
+                            },
+                            {
+                                start: { x: 20 + MIN_SEP_HORIZONTAL + 2 * SINGLE_VECTOR_WIDTH, y: 140 },
+                                end: { x: 20 + 2 * MIN_SEP_HORIZONTAL + 2 * SINGLE_VECTOR_WIDTH, y: 140 }
+                            },
+                        ],
+                        color: ARROW_COLOR,
+                        info: layernorm_info,
+                    },
+                    {
+                        segments: [
+                            {
+                                start: { x: 20 + MIN_SEP_HORIZONTAL + 2 * SINGLE_VECTOR_WIDTH, y: 540 },
+                                end: { x: 20 + MIN_SEP_HORIZONTAL + 2 * SINGLE_VECTOR_WIDTH, y: 740 }
+                            },
+                            {
+                                start: { x: 20 + MIN_SEP_HORIZONTAL + 2 * SINGLE_VECTOR_WIDTH, y: 740 },
+                                end: { x: 20 + 2 * MIN_SEP_HORIZONTAL + 2 * SINGLE_VECTOR_WIDTH, y: 740 }
+                            },
+                        ],
+                        color: ARROW_COLOR,
+                        info: layernorm_info,
+                    },
+                    // Token affinities transpose and dot product
+                    {
+                        segments: [
+                            {
+                                start: { x: 750, y: 140 },
+                                end: { x: 900, y: 140 }
+                            },
+                            {
+                                start: { x: 900, y: 140 },
+                                end: { x: 900, y: 290 }
+                            },
+                            {
+                                start: { x: 900, y: 290 },
+                                end: { x: 1000, y: 290 }
+                            },
+                        ],
+                        color: ARROW_COLOR,
+                        info: layernorm_info,
+                    },
+                    {
+                        segments: [
+                            {
+                                start: { x: 750, y: 440 },
+                                end: { x: 900, y: 440 }
+                            },
+                            {
+                                start: { x: 900, y: 440 },
+                                end: { x: 900, y: 290 }
+                            },
+                            {
+                                start: { x: 900, y: 290 },
+                                end: { x: 1000, y: 290 }
+                            },
+                        ],
+                        color: ARROW_COLOR,
+                        info: layernorm_info,
+                    },
+
+                    // self attention output
+                    // x: 220 + 6 * MIN_SEP_HORIZONTAL,
+                    // y: 290, 
+                    {
+                        segments: [
+                            {
+                                start: { x: 1575, y: 290 },
+                                end: { x: 1670, y: 290 }
+                            },
+                            {
+                                start: { x: 1670, y: 290 },
+                                end: { x: 1670, y: 430 }
+                            },
+                            {
+                                start: { x: 1670, y: 430 },
+                                end: { x: 1750, y: 430 }
+                            },
+                        ],
+                        color: ARROW_COLOR,
+                        info: layernorm_info,
+                    },
+                    {
+                        segments: [
+                            {
+                                start: { x: 750, y: 740 },
+                                end: { x: 1670, y: 740 }
+                            },
+                            {
+                                start: { x: 1670, y: 740 },
+                                end: { x: 1670, y: 430 }
+                            },
+                            {
+                                start: { x: 1670, y: 430 },
+                                end: { x: 1750, y: 430 }
+                            },
+                        ],
+                        color: ARROW_COLOR,
+                        info: layernorm_info,
+                    },
+                    {
+                        segments: [
+                            {
+                                start: { x: 70, y: 340 },
+                                end: { x: 70, y: -70 }
+                            },
+                            {
+                                start: { x: 70, y: -70 },
+                                end: { x: 2150, y: -70 }
+                            },
+                            {
+                                start: { x: 2150, y: -70 },
+                                end: { x: 2150, y: 405 }
+                            },
+                        ],
+                        color: "#333",
+                        info: layernorm_info,
+                    },
+                ],
+
+
 
             },
             // TODO make root again
@@ -1187,10 +1508,34 @@ Sampling strategies balance between diversity and quality of generated text. The
                     });
                 }
 
+                // Render triangles
+                if (svgContent[view].triangles) {
+                    svgContent[view].triangles.forEach(triangle => {
+                        drawTriangle(
+                            triangle.x1, triangle.y1,
+                            triangle.x2, triangle.y2,
+                            triangle.x3, triangle.y3,
+                            triangle.color,
+                            triangle.info,
+                            triangle.link,
+                            triangle.opacity
+                        );
+                    });
+                }
+
                 // Render directed arrow connections
                 if (svgContent[view].arrows) {
                     svgContent[view].arrows.forEach(arrow => {
                         const arrowElement = drawArrow(arrow.start, arrow.end, arrow.color);
+                        arrowElement.attr('data-info', arrow.info)
+                            .attr('data-link', arrow.link);
+                    });
+                }
+
+                // Render anchoredArrows
+                if (svgContent[view].anchoredArrows) {
+                    svgContent[view].anchoredArrows.forEach(arrow => {
+                        const arrowElement = drawAnchoredArrow(arrow.segments, arrow.color);
                         arrowElement.attr('data-info', arrow.info)
                             .attr('data-link', arrow.link);
                     });
@@ -1278,6 +1623,24 @@ Sampling strategies balance between diversity and quality of generated text. The
                 });
             }
 
+            // Add listeners to triangles
+            if (svgContent[view].triangles) {
+                contentLayer.selectAll('.triangle').each(function () {
+                    const triangle = d3.select(this);
+                    const link = triangle.attr('data-link');
+                    addDefaultEventListeners(triangle.node(), link);
+                    if (link) {
+                        const originalFill = triangle.attr('fill');
+                        triangle.on('mouseover', function () {
+                            triangle.attr('fill', LINK_COLOR);
+                        })
+                            .on('mouseout', function () {
+                                triangle.attr('fill', originalFill);
+                            });
+                    }
+                });
+            }
+
             // Add listeners to latex labels
             if (svgContent[view].latexLabels) {
                 contentLayer.selectAll('.latex-label').each(function () {
@@ -1315,6 +1678,23 @@ Sampling strategies balance between diversity and quality of generated text. The
             // Add listeners to arrows
             if (svgContent[view].arrows) {
                 contentLayer.selectAll('.arrow').each(function () {
+                    const arrow = d3.select(this);
+                    const link = arrow.attr('data-link');
+                    addDefaultEventListeners(arrow.node(), link);
+                    if (link) {
+                        const originalColor = arrow.attr('stroke');
+                        arrow.on('mouseover', function () {
+                            arrow.attr('stroke', LINK_COLOR).attr('fill', LINK_COLOR);
+                        })
+                            .on('mouseout', function () {
+                                arrow.attr('stroke', originalColor).attr('fill', originalColor);
+                            });
+                    }
+                });
+            }
+
+            if (svgContent[view].anchoredArrows) {
+                contentLayer.selectAll('.anchored-arrow').each(function () {
                     const arrow = d3.select(this);
                     const link = arrow.attr('data-link');
                     addDefaultEventListeners(arrow.node(), link);
@@ -1384,6 +1764,26 @@ Sampling strategies balance between diversity and quality of generated text. The
         }
 
 
+        function drawTriangle(x1, y1, x2, y2, x3, y3, color, info, link, opacity = 1) {
+            const points = [
+                [x1, y1],
+                [x2, y2],
+                [x3, y3]
+            ];
+
+            const triangle = contentGroup.append('polygon')
+                .attr('points', points.map(p => p.join(',')).join(' '))
+                .attr('fill', color)
+                .attr('stroke', RECT_STROKE_COLOR)
+                .attr('class', 'triangle')
+                .attr('data-info', info)
+                .attr('data-link', link)
+                .attr('opacity', opacity);
+
+            return triangle;
+        }
+
+
         function drawArrow(start, end, color) {
             const arrowSize = 10;
             const angle = Math.atan2(end.y - start.y, end.x - start.x);
@@ -1408,10 +1808,44 @@ Sampling strategies balance between diversity and quality of generated text. The
 
             // Draw the arrowhead
             arrowGroup.append('path')
-                .attr('d', `M${end.x},${end.y} L${arrowX - arrowSize * Math.cos(angle - Math.PI / 6)},${arrowY - arrowSize * Math.sin(angle - Math.PI / 6)} L${arrowX - arrowSize * Math.cos(angle + Math.PI / 6)},${arrowY - arrowSize * Math.sin(angle + Math.PI / 6)} Z`);
+            .attr('d', `M${end.x},${end.y} L${end.x - arrowSize * Math.cos(angle - Math.PI / 6)},${end.y - arrowSize * Math.sin(angle - Math.PI / 6)} L${end.x - arrowSize * Math.cos(angle + Math.PI / 6)},${end.y - arrowSize * Math.sin(angle + Math.PI / 6)} Z`);
+
+            // arrowGroup.append('path')
+            //     .attr('d', `M${end.x},${end.y} L${arrowX - arrowSize * Math.cos(angle - Math.PI / 6)},${arrowY - arrowSize * Math.sin(angle - Math.PI / 6)} L${arrowX - arrowSize * Math.cos(angle + Math.PI / 6)},${arrowY - arrowSize * Math.sin(angle + Math.PI / 6)} Z`);
 
             return arrowGroup;
         }
+
+        function drawAnchoredArrow(segments, color) {
+            const arrowSize = 10;
+            const path = d3.path();
+
+            segments.forEach((segment, index) => {
+                if (index === 0) {
+                    path.moveTo(segment.start.x, segment.start.y);
+                }
+                path.lineTo(segment.end.x, segment.end.y);
+            });
+
+            const lastSegment = segments[segments.length - 1];
+            const angle = Math.atan2(lastSegment.end.y - lastSegment.start.y, lastSegment.end.x - lastSegment.start.x);
+
+            const arrowGroup = contentGroup.append('g')
+                .attr('class', 'anchored-arrow')
+                .attr('stroke', color)
+                .attr('fill', color);
+
+            arrowGroup.append('path')
+                .attr('d', path.toString())
+                .attr('fill', 'none')
+                .attr('stroke-width', 2);
+
+            arrowGroup.append('path')
+                .attr('d', `M${lastSegment.end.x},${lastSegment.end.y} L${lastSegment.end.x - arrowSize * Math.cos(angle - Math.PI / 6)},${lastSegment.end.y - arrowSize * Math.sin(angle - Math.PI / 6)} L${lastSegment.end.x - arrowSize * Math.cos(angle + Math.PI / 6)},${lastSegment.end.y - arrowSize * Math.sin(angle + Math.PI / 6)} Z`);
+
+            return arrowGroup;
+        }
+
 
 
         function drawSeparator(separator) {
@@ -1503,7 +1937,7 @@ Sampling strategies balance between diversity and quality of generated text. The
 
         function setupZoom() {
             zoom = d3.zoom()
-                .scaleExtent([0.4, 2])
+                .scaleExtent([0.25, 2])
                 .on('zoom', zoomed);
 
             const svg = d3.select("#svg")
@@ -1704,7 +2138,7 @@ Sampling strategies balance between diversity and quality of generated text. The
                 }
             } else if (target.classList.contains('custom-path')) {
                 content = target.getAttribute('data-info') || "Custom path";
-            } else if (target.classList.contains('arrow')) {
+            } else if (target.classList.contains('arrow') || target.classList.contains('anchored-arrow')) {
                 content = target.getAttribute('data-info') || "Arrow connection";
             } else if (target.classList.contains('nav-button')) {
                 if (target.id === 'back-button') {
@@ -1727,6 +2161,8 @@ Sampling strategies balance between diversity and quality of generated text. The
                 if (item && item.info) {
                     content = item.info;
                 }
+            } else if (target.classList.contains('triangle')) {
+                content = target.getAttribute('data-info') || "Triangle";
             } else if (target.tagName === 'line') {
                 content = target.getAttribute('data-info') || "Separator";
             }
@@ -1842,7 +2278,7 @@ Sampling strategies balance between diversity and quality of generated text. The
             updateView();
             renderReferences();
             checkZoom(); // Start checking for zoom changes
-            applyZoomAndPan(.60, 30, 150)
+            applyZoomAndPan(.50, 30, 150)
 
             // zoom in effect on load to show there is more and zooming is a thing
             // applyZoomAndPan(0.7, 100, 50);
