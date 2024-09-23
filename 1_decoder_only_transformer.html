@@ -715,13 +715,11 @@ $$\\text{affinities (not yet normalized)} = Q'^{(n)} \\cdot (K'^{(n)})^T$$
 
 **Computation**: $$\\text{affinities} = \\frac{Q'^{(n)} \\cdot (K'^{(n)})^T}{\\text{headsize}^{1/2}}$$
 
-**Shape**: $$(\\text{nheads} \\times \\text{seqlen} \\times \\text{seqlen})$$
-
 **Purpose**: The dot product computes the similarity (or affinity) between each query and all keys. These affinities determine how much attention each token should pay to every other token in the sequence.
 
 **Normalization with** $$\\text{headsize}^{1/2}$$: 
 - The affinities are typically scaled by the square root of the head size, $$\\text{headsize}^{1/2}$$.
-- **Why** $$\\text{headsize}^{1/2}$$?: When computing the dot product of two vectors, the expected magnitude of the result grows with the dimensionality of the vectors. Specifically, if the elements of the vectors are independent and identically distributed with mean $$0$$ and variance $$1$$, the dot product of two such vectors of dimension $$\(d\)$$ will have a variance of $$\(d\)$$. Therefore, to keep the scale of the dot product independent of the dimensionality, we divide by the square root of the head size, which is the dimensionality of the vectors in this context. This scaling ensures that the values in the affinities matrix remain in a manageable range, leading to more stable gradients and better training dynamics.`;
+- **Why** $$\\text{sqrt(headsize)}$$?: When computing the dot product of two vectors, the expected magnitude of the result grows with the dimensionality of the vectors. Specifically, if the elements of the vectors are independent and identically distributed with mean $$0$$ and variance $$1$$, the dot product of two such vectors of dimension $$\(d\)$$ will have a variance of $$\(d\)$$. Therefore, to keep the scale of the dot product independent of the dimensionality, we divide by the square root of the head size, which is the dimensionality of the vectors in this context. This scaling ensures that the values in the affinities matrix remain in a manageable range, leading to more stable gradients and better training dynamics.`;
 
         const mask_and_normalize_info = `The mask and normalize step ensures that the model attends to the appropriate tokens and that the attention scores are properly scaled.
 
