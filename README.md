@@ -1,1 +1,1 @@
-WIP
+Interactive visualization of the decoder-only transformer
