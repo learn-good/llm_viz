@@ -824,13 +824,7 @@ Common choices for nonlinearity include ReLU (original attention paper), GELU (G
 
         const ff_MLP_info = `The second linear transformation in the feedforward Multi-Layer Perceptron (MLP) projects the data back to the original embedding dimension.
 
-**Purpose**: Maps the expanded hidden layer back to the model's embedding dimension.
-
-**Dimensionality**: Reduces the dimensionality from the expanded hidden layer (e.g., 4x $$d_{embd}$$) back to $$d_{embd}$$.
-
-**Importance:**
-- Allows the model to synthesize the expanded representations into a form compatible with the rest of the network.
-- Plays a crucial role in the model's ability to learn complex, non-linear relationships in the data.
+**Purpose**: Maps the expanded hidden layer back to the model's embedding dimension. Reduces the dimensionality from the expanded hidden layer (e.g., $$ 4 d_{embd}$$) back to $$d_{embd}$$.
 
 This transformation, combined with the preceding non-linear activation, enables the feedforward MLP to introduce non-linearity and increase the model's overall expressiveness.`;
 
