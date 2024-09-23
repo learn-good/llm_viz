@@ -644,7 +644,6 @@ These transformations allow the model to project the input into different subspa
 
 The superscript $$(n)$$ indicates that these are for the $$n$$-th attention layer, as each layer has its own set of learned weight matrices.`;
 
-        
         const q_flat_info = `$$Q^{(n)}$$ represents the Query matrix for the $$n$$-th attention layer. It is derived from the input embeddings and is used to compute attention scores.
 
 **Computation**: $$Q^{(n)} = x_{embd}^{(n)} \\cdot W_Q^{(n)}$$, where $$W_Q^{(n)}$$ is the learned weight matrix for queries.
@@ -670,7 +669,6 @@ The superscript $$(n)$$ indicates that these are for the $$n$$-th attention laye
 **Multi-head attention**: Like $$Q^{(n)}$$ and $$K^{(n)}$$, $$V^{(n)}$$ is often split into multiple independent heads for parallel processing.
 
 The attention mechanism uses $$Q^{(n)}$$, $$K^{(n)}$$, and $$V^{(n)}$$ together to compute weighted sums of the values, where the weights are determined by the compatibility between queries and keys.`;
-
 
         const reshape_and_transpose_info = `We perform reshape and transpose operations to prepare the Query $$(Q)$$, Key $$(K)$$, and Value $$(V)$$ matrices for multi-head attention, shaping data in a format that's optimized for the multi-head attention mechanism, allowing each head to operate independently and in parallel.
 
@@ -750,7 +748,7 @@ A large negative value (e.g., $$-\\infty$$) is added to the attention scores of 
 
 **Normalization**: After masking, the softmax function is applied to convert the masked affinities into a probability distribution, ensuring that the sum of attention weights for each token is $$1$$.`;
 
-const sa_dot_product_info = `The self-attention dot product operation combines the attention weights with the Value matrix to produce the final self-attention output.
+        const sa_dot_product_info = `The self-attention dot product operation combines the attention weights with the Value matrix to produce the final self-attention output.
 
 **Computation**: $$ \\text{softmax}(\\frac{Q'^{(n)} \\cdot (K'^{(n)})^T}{\\text{headsize}^{1/2}}) \\cdot V'^{(n)}$$
 
@@ -797,11 +795,11 @@ This reshaping allows the model to integrate information from all attention head
 
 This reshaped output encapsulates the contextual information gathered by the self-attention mechanism, allowing subsequent layers to further process and refine the token representations.`;
 
-        // TODO FIX - it should not be headsize^1/2 for norm, but instead 
         const residual_connection_info = `Residual connections, also known as skip connections, are a key feature in many deep neural network architectures, including transformers. They allow the network to bypass one or more layers, providing a direct route for information and gradients to flow through the network.
 
 **Key aspects of residual connections:**
-1. **Formula**: For a given layer with input $$x$$ and output $$F(x)$$, the residual connection adds the input to the output: $$y = F(x) + x$$
+1. **Formula**: For a given layer with input $$x$$ and output $$F(x)$$, the residual connection adds the input to the output: 
+$$y = F(x) + x$$
 2. **Gradient flow**: They help mitigate the vanishing gradient problem by providing a direct path for gradients to flow backward through the network.
 3. **Information preservation**: Allow the network to easily learn identity mappings, preserving important features from earlier layers.
 4. **Deeper networks**: Enable the training of much deeper networks by addressing degradation problems that occur in very deep architectures.
