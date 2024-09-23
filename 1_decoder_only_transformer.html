@@ -265,7 +265,7 @@
                 title: "llm.c",
                 authors: ["Andrej Karpathy", "Github contributors"],
                 link: "https://github.com/karpathy/llm.c",
-                info: "TODO",
+                info: "\"LLMs in simple, pure C/CUDA with no need for 245MB of PyTorch or 107MB of cPython. Current focus is on pretraining, in particular reproducing the GPT-2 and GPT-3 miniseries, along with a parallel PyTorch reference implementation in train_gpt2.py.\"",
                 refType: "Github"
             },
             {
@@ -443,7 +443,7 @@ For non-text data types, appropriate preprocessing steps would be applied before
         const x_raw_link = "" // "x_raw"
         const x_tok_info = `The tokenized input $$x_{tok}$$ serves as the starting point for the transformer's processing, capturing the structure and content of the input text in a format that is usable by the neural network.
 
-**Vocabulary size**: Tokens are drawn from a fixed vocabulary, e.g. \`vocab_size\` $$ = \\text{vocabsize} = 64128$$.
+**Vocabulary size**: Tokens are drawn from a fixed vocabulary, e.g. $$\\text{vocabsize} = 64128$$.
 
 **Special tokens**: These include tokens like \`[START]\`, \`[END]\`, \`[PAD]\`, \`[UNK]\` for start of sequence, end of sequence, padding, and unknown words respectively.
 
@@ -501,24 +501,22 @@ Where $$x_{tok}$$ is one-hot encoded from shape $$( \\text{seqlen} \\times 1 )$$
 
 The choice of PE can significantly impact model performance and generalization ability, especially for tasks sensitive to token order or involving extrapolation to longer sequences.`;
         const pos_enc_link = "" // "position_encoding"
-        const attn_info = `The successive applications of self-attention blocks form the core of the transformer architecture. Each block processes the input sequence, allowing the model to capture complex relationships between tokens. **Click for a more nuanced breakdown of multi-headed self-attention**.
+        const attn_info = `The successive applications of self-attention blocks form the core of the transformer architecture. Each block processes the input sequence, allowing the model to capture complex relationships between tokens. **Click for a more detailed breakdown**.
 
 **Stacking multiple blocks:**
 - The output of one block becomes the input to the next.
 - Each successive layer can capture increasingly complex and abstract relationships in the token sequences.
 
 **Key advantages:**
-- Parallelization: All positions are processed simultaneously.
 - Long-range dependencies: Can capture relationships between distant tokens.
 - Contextual understanding: Each token's representation is influenced by the entire sequence.
 
 The number of attention blocks significantly impacts the model's capacity and computational requirements. Deeper models (more blocks) can potentially capture more complex patterns but require more computational resources.`;
         const attn_link = "successive-self-attention"
-        // const est_prob_dist_i = "position_encoding"
 
         const logits_info = `Logits are the raw, unnormalized predictions that are output by the transformer model before the final softmax layer, representing the model's raw predictions for each token in the vocabulary.
 
-**Shape**: The logits vector has length of $$\\text{vocabsize}$$, where $$\\text{vocabsize}$$ is the vocabulary size.
+**Shape**: The logits vector has length of $$\\text{vocabsize}$$.
 
 **Interpretation**: Each value in the logits vector represents the model's unnormalized confidence for a particular token or class.
 
@@ -548,7 +546,7 @@ The linear projection prepares the model's raw predictions (logits) for the fina
 **Formula and Temperature**: For input vector $$z$$, the softmax function is defined as:
    $$\\text{softmax}(z_i, T) = \\dfrac{e^{z_i/T}}{\\sum_{j=1}^K e^{z_j/T}}$$
 
-   where $$K$$ is the number of classes (vocabulary size $$\\text{vocabsize}$$ in this case). A temperature parameter $$T$$ can be applied to control the "sharpness" of the distribution.
+   where $$K$$ is the number of classes ($$\\text{vocabsize}$$ in this case). A temperature parameter $$T$$ can be applied to control the "sharpness" of the distribution.
     - Lower T (<1) makes distribution more peaked (less random)
     - Higher T (>1) makes distribution more uniform (more random)
 
@@ -630,28 +628,226 @@ The quality and richness of these embeddings at each layer are crucial for the m
 
 **Impact**: LayerNorm helps the model train faster and generalizes better by ensuring that the scale of activations remains roughly consistent across different layers and during training.`;
 
+        const dot_w_info = `The dot product operation with weight matrices $$W_Q^{(n)}$$, $$W_K^{(n)}$$, and $$W_V^{(n)}$$ transforms the input embeddings into query, key, and value representations respectively.
+
+**Weight Matrices:**
+1. $$W_Q^{(n)}$$: Query weight matrix
+2. $$W_K^{(n)}$$: Key weight matrix
+3. $$W_V^{(n)}$$: Value weight matrix
+
+**Operations:**
+- $$Q^{(n)} = x_{embd}^{(n)} \\cdot W_Q^{(n)}$$
+- $$K^{(n)} = x_{embd}^{(n)} \\cdot W_K^{(n)}$$
+- $$V^{(n)} = x_{embd}^{(n)} \\cdot W_V^{(n)}$$
+
+These transformations allow the model to project the input into different subspaces, enabling it to attend to different aspects of the input when computing self-attention.
+
+The superscript $$(n)$$ indicates that these are for the $$n$$-th attention layer, as each layer has its own set of learned weight matrices.`;
+
         
-        const q_flat_info = "todo q flat"
-        const k_flat_info = "todo k flat"
-        const v_flat_info = "todo v flat"
+        const q_flat_info = `$$Q^{(n)}$$ represents the Query matrix for the $$n$$-th attention layer. It is derived from the input embeddings and is used to compute attention scores.
 
-        const q_reshaped_info = "todo q rs"
-        const k_reshaped_info = "todo k rs"
-        const v_reshaped_info = "todo v rs"
+**Computation**: $$Q^{(n)} = x_{embd}^{(n)} \\cdot W_Q^{(n)}$$, where $$W_Q^{(n)}$$ is the learned weight matrix for queries.
 
-        const dot_w_info = "todo dot w"
-        const reshape_and_transpose_info = "todo rshape and transpose info"
-        const affinities_info = "todo affinities"
-        const masked_affinities_info = "todo masked affinities"
-        const mask_and_normalize_info = "todo mask_and_normalize_info"
-        const sa_out_info = "todo sa_out_info"
-        const sa_out_reshaped_info = "todo sa_out_reshaped_info"
-        const residual_connection_info = "todo residual_connection_info"
-        const qk_dot_product_info = "todo qk_dot_product_info"
-        const sa_dot_product_info = "todo sa_dot_product_info"
-        const reshape_sa_out_info = "todo reshape_sa_out_info"
-        const add_residual_info = "todo add_residual_info"
-        const layernorm_ff_info = "todo layernorm_ff_info"
+**Role in attention**: Each row of $$Q^{(n)}$$ represents a query vector for a token in the sequence. These query vectors are used to compute how much attention each token should pay to other tokens in the sequence.
+
+**Multi-head attention**: In practice, $$Q^{(n)}$$ is often split into multiple independent heads, each focusing on different aspects of the input.`;
+
+        const k_flat_info = `$$K^{(n)}$$ represents the Key matrix for the $$n$$-th attention layer. It is derived from the input embeddings and is used to compute attention scores.
+
+**Computation**: $$K^{(n)} = x_{embd}^{(n)} \\cdot W_K^{(n)}$$, where $$W_K^{(n)}$$ is the learned weight matrix for keys.
+
+**Role in attention**: Each row of $$K^{(n)}$$ represents a key vector for a token in the sequence. These key vectors are used to determine how relevant each token is to the queries.
+
+**Multi-head attention**: Like $$Q^{(n)}$$, $$K^{(n)}$$ is often split into multiple independent heads for parallel processing.`;
+
+        const v_flat_info = `$$V^{(n)}$$ represents the Value matrix for the $$n$$-th attention layer. It is derived from the input embeddings and contains the actual content that will be aggregated by the attention mechanism.
+
+**Computation**: $$V^{(n)} = x_{embd}^{(n)} \\cdot W_V^{(n)}$$, where $$W_V^{(n)}$$ is the learned weight matrix for values.
+
+**Role in attention**: Each row of $$V^{(n)}$$ represents a value vector for a token in the sequence. These value vectors contain the information that will be weighted and summed based on the attention scores.
+
+**Multi-head attention**: Like $$Q^{(n)}$$ and $$K^{(n)}$$, $$V^{(n)}$$ is often split into multiple independent heads for parallel processing.
+
+The attention mechanism uses $$Q^{(n)}$$, $$K^{(n)}$$, and $$V^{(n)}$$ together to compute weighted sums of the values, where the weights are determined by the compatibility between queries and keys.`;
+
+
+        const reshape_and_transpose_info = `We perform reshape and transpose operations to prepare the Query $$(Q)$$, Key $$(K)$$, and Value $$(V)$$ matrices for multi-head attention, shaping data in a format that's optimized for the multi-head attention mechanism, allowing each head to operate independently and in parallel.
+
+**Reshape:**
+First, we reshape the matrices from $$(\\text{seqlen} \\times d_{embd})$$ to $$(\\text{seqlen} \\times \\text{nheads} \\times \\text{headsize})$$, where: $$\\text{seqlen}$$ is the sequence length, $$\\text{nheads}$$ is the number of attention heads, and $$\\text{headsize}$$ is $$d_{embd} / \\text{nheads}$$.
+This reshaping splits the embedding dimension into separate heads, allowing each head to focus on different aspects of the input.
+
+**Transpose:**
+After reshaping, we transpose the matrices to $$(\\text{nheads} \\times \\text{seqlen} \\times \\text{headsize})$$. By moving the $$\\text{nheads}$$ dimension to the front, we can treat each head as a separate item in a batch. In the subsequent steps, we need to perform matrix multiplications between $$Q$$, $$K$$, and $$V$$. The transposition ensures that these matrices are in the correct shape for these operations.`;
+        
+        const q_reshaped_info = `$$Q'^{(n)}$$ represents the reshaped and transposed Query matrix for the $$n$$-th attention layer, prepared for multi-head attention.
+
+**Purpose**: This transformed matrix enables parallel processing of multiple attention heads, each focusing on different aspects of the input sequence.
+
+**Multi-head Attention**: By splitting the embedding dimension into multiple heads, the model can capture diverse relationships and interactions within the input sequence.`;
+
+        const k_reshaped_info = `$$K'^{(n)}$$ represents the reshaped and transposed Key matrix for the $$n$$-th attention layer, prepared for multi-head attention.
+
+**Purpose**: This transformed matrix enables parallel processing of multiple attention heads, each focusing on different aspects of the input sequence.
+
+**Multi-head Attention**: By splitting the embedding dimension into multiple heads, the model can capture diverse relationships and interactions within the input sequence.`;
+
+        const v_reshaped_info = `$$V'^{(n)}$$ represents the reshaped and transposed Value matrix for the $$n$$-th attention layer, prepared for multi-head attention.
+
+**Purpose**: This transformed matrix  enables parallel processing of multiple attention heads, each focusing on different aspects of the input sequence.
+
+**Multi-head Attention**: By splitting the embedding dimension into multiple heads, the model can capture diverse relationships and interactions within the input sequence.`;
+
+        const qk_dot_product_info = `The dot product of the Query matrix $$Q'^{(n)}$$ and the transposed Key matrix $$(K'^{(n)})^T$$ results in the affinities matrix is then used to compute the attention weights, which are applied to the Value matrix $$V'^{(n)}$$ to produce the self-attention output.
+
+**Computation**:
+$$\\text{affinities (not yet normalized)} = Q'^{(n)} \\cdot (K'^{(n)})^T$$
+
+**Shape**: 
+- $$Q'^{(n)}$$ has shape $$(\\text{nheads} \\times \\text{seqlen} \\times \\text{headsize})$$
+- $$(K'^{(n)})^T$$ has shape $$(\\text{nheads} \\times \\text{headsize} \\times \\text{seqlen})$$
+- The resulting affinities matrix has shape $$(\\text{nheads} \\times \\text{seqlen} \\times \\text{seqlen})$$
+
+**Purpose**: 
+- The dot product computes the similarity (or affinity) between each query and all keys.
+- These affinities determine how much attention each token should pay to every other token in the sequence.`;
+
+        const affinities_info = `The affinities matrix represents the raw attention scores between each pair of tokens in the sequence, computed as the dot product of the Query and Key matrices.
+
+**Computation**: $$\\text{affinities} = \\frac{Q'^{(n)} \\cdot (K'^{(n)})^T}{\\text{headsize}^{1/2}}$$
+
+**Shape**: $$(\\text{nheads} \\times \\text{seqlen} \\times \\text{seqlen})$$
+
+**Purpose**: The dot product computes the similarity (or affinity) between each query and all keys. These affinities determine how much attention each token should pay to every other token in the sequence.
+
+**Normalization with** $$\\text{headsize}^{1/2}$$: 
+- The affinities are typically scaled by the square root of the head size, $$\\text{headsize}^{1/2}$$.
+- **Why** $$\\text{headsize}^{1/2}$$?: When computing the dot product of two vectors, the expected magnitude of the result grows with the dimensionality of the vectors. Specifically, if the elements of the vectors are independent and identically distributed with mean $$0$$ and variance $$1$$, the dot product of two such vectors of dimension $$\(d\)$$ will have a variance of $$\(d\)$$. Therefore, to keep the scale of the dot product independent of the dimensionality, we divide by the square root of the head size, which is the dimensionality of the vectors in this context. This scaling ensures that the values in the affinities matrix remain in a manageable range, leading to more stable gradients and better training dynamics.`;
+
+        const mask_and_normalize_info = `The mask and normalize step ensures that the model attends to the appropriate tokens and that the attention scores are properly scaled.
+
+**Masking**:
+1. **Purpose**: Prevents the model from attending to certain positions, such as future tokens in a sequence (causal masking) or padding tokens.
+
+2. **Implementation**: Typically involves adding a large negative value (e.g., $$-\\infty$$) to the attention scores of masked positions before applying the softmax function, effectively setting their attention weights to zero.
+
+**Normalization**:
+1. **Purpose**: Converts the raw attention scores into a probability distribution, ensuring that the sum of attention weights for each token is 1.
+
+2. **Softmax Function**: Applied to the masked attention scores to achieve normalization.`;
+
+        const masked_affinities_info = `The masked affinities matrix represents the attention scores after applying a mask to prevent the model from attending to certain positions, such as future tokens in a sequence (causal masking) or padding tokens.
+
+**Purpose**: 
+1. **Causal Masking**: Ensures that the model only attends to previous tokens in the sequence, preventing information leakage from future tokens during training.
+2. **Padding Masking**: Prevents the model from attending to padding tokens, which are used to ensure that all sequences in a batch have the same length.
+
+**Implementation**: 
+A large negative value (e.g., $$-\\infty$$) is added to the attention scores of masked positions before applying the softmax function. This effectively sets their attention weights to zero.
+
+**Shape**: The masked affinities matrix has the same shape as the affinities matrix: $$(\\text{nheads} \\times \\text{seqlen} \\times \\text{seqlen})$$.
+
+**Normalization**: After masking, the softmax function is applied to convert the masked affinities into a probability distribution, ensuring that the sum of attention weights for each token is $$1$$.`;
+
+const sa_dot_product_info = `The self-attention dot product operation combines the attention weights with the Value matrix to produce the final self-attention output.
+
+**Computation**: $$ \\text{softmax}(\\frac{Q'^{(n)} \\cdot (K'^{(n)})^T}{\\text{headsize}^{1/2}}) \\cdot V'^{(n)}$$
+
+**Steps**:
+1. **Dot Product of Queries and Keys**: Compute the raw attention scores by taking the dot product of the Query matrix $$Q'^{(n)}$$ and the transposed Key matrix $$(K'^{(n)})^T$$.
+
+2. **Scaling**: Scale the raw attention scores by the square root of head size, $$\\text{headsize}^{1/2}$$, to maintain stable gradients.
+
+3. **Softmax**: Apply the softmax function to the scaled attention scores to obtain the attention weights, ensuring they sum to $$1$$.
+
+4. **Weighted Sum**: Multiply the attention weights by the Value matrix $$V'^{(n)}$$ to get the final self-attention output.`;
+
+        const sa_out_info =`This self-attention output represents the result of applying the attention mechanism to the input embeddings.
+
+**Computation**: $$\\text{softmax}(\\frac{Q'^{(n)} \\cdot (K'^{(n)})^T}{\\text{headsize}^{1/2}}) \\cdot V'^{(n)}$$
+
+**Key points**:
+1. Each token's representation now contains information from other relevant tokens in the sequence.
+2. The output maintains the same dimensionality as the input, allowing for stacking of multiple attention layers.
+3. Different attention heads may focus on different aspects of the relationships between tokens.
+
+This output captures complex dependencies and relationships within the input sequence, allowing the model to process context-dependent information effectively.`;
+
+        const reshape_sa_out_info = `The reshape operation on the self-attention output prepares the output for further processing in the transformer architecture.
+
+**Purpose**: To combine the information from all attention heads and match the original input embedding dimension.
+
+**Process**:
+1. Concatenate the outputs from all attention heads.
+2. Reshape the concatenated output to match the input embedding dimension.
+
+**Shape transformation**:
+From: $$(\\text{nheads} \\times \\text{seqlen} \\times \\text{headsize})$$
+To: $$(\\text{seqlen} \\times d_{embd})$$, where $$d_{embd} = \\text{nheads} * \\text{headsize}$$
+
+This reshaping allows the model to integrate information from all attention heads while maintaining a consistent tensor shape throughout the network.`;
+
+        const sa_out_reshaped_info = `$$out_{SA}^{(n)}$$ represents the reshaped output of the self-attention mechanism, ready for further processing in the transformer layer.
+
+**Key aspects**:
+1. Combines information from all attention heads into a single representation for each token.
+2. Maintains the sequence length dimension, preserving the order of tokens.
+3. Matches the dimensionality of the input embeddings, allowing for residual connections and further layer processing.
+
+This reshaped output encapsulates the contextual information gathered by the self-attention mechanism, allowing subsequent layers to further process and refine the token representations.`;
+
+        // TODO FIX - it should not be headsize^1/2 for norm, but instead 
+        const residual_connection_info = `Residual connections, also known as skip connections, are a key feature in many deep neural network architectures, including transformers. They allow the network to bypass one or more layers, providing a direct route for information and gradients to flow through the network.
+
+**Key aspects of residual connections:**
+1. **Formula**: For a given layer with input $$x$$ and output $$F(x)$$, the residual connection adds the input to the output: $$y = F(x) + x$$
+2. **Gradient flow**: They help mitigate the vanishing gradient problem by providing a direct path for gradients to flow backward through the network.
+3. **Information preservation**: Allow the network to easily learn identity mappings, preserving important features from earlier layers.
+4. **Deeper networks**: Enable the training of much deeper networks by addressing degradation problems that occur in very deep architectures.
+
+Residual connections are crucial for the performance and trainability of deep transformer models, allowing them to effectively process and integrate information across many layers.`;
+
+        const add_residual_info = "Addition to connect the residual path with the main path. This allows information to flow directly from earlier layers, helping with gradient flow and preserving important features.";
+        const layernorm_ff_MLP_info = `This step represents the Layer Normalization (LayerNorm) followed by the Feed-Forward Multi-Layer Perceptron (FF MLP) in a transformer block.
+
+Common choices for nonlinearity include ReLU (original attention paper), GELU (GPT2), and SiLU (Llama 3.1)`;
+
+        const hidden_layer_MLP_info = `The hidden layer in the Multi-Layer Perceptron (MLP) part of the transformer block performs non-linear transformations on the input data.
+
+**Key aspects:**
+1. **Dimensionality**: Often larger than the input dimension (e.g., 4 times larger).
+
+2. **Activation Function**: Typically uses non-linear activations like ReLU, GELU, or SiLU.
+
+3. **Purpose**: Allows the model to learn complex, non-linear relationships in the data.`;
+
+        const ff_MLP_info = `The second linear transformation in the feedforward Multi-Layer Perceptron (MLP) projects the data back to the original embedding dimension.
+
+**Purpose**: Maps the expanded hidden layer back to the model's embedding dimension.
+
+**Dimensionality**: Reduces the dimensionality from the expanded hidden layer (e.g., 4x $$d_{embd}$$) back to $$d_{embd}$$.
+
+**Importance:**
+- Allows the model to synthesize the expanded representations into a form compatible with the rest of the network.
+- Plays a crucial role in the model's ability to learn complex, non-linear relationships in the data.
+
+This transformation, combined with the preceding non-linear activation, enables the feedforward MLP to introduce non-linearity and increase the model's overall expressiveness.`;
+
+        const out_MLP_info = `$$out_{MLP}^{(n)}$$ represents the output of the Multi-Layer Perceptron (MLP) in the $$n$$-th transformer block.
+
+**Key aspects:**
+1. **Shape**: Maintains the shape $$(\\text{seqlen} \\times d_{embd})$$, matching the input dimension.
+
+2. **Function**: Increases the model's capacity to learn complex patterns.
+
+3. **Intuition**: Acts as a "computation" step after the self-attention "communication" step. Alternates with self-attention layers, creating a pattern of "communicate, then compute" that is repeated throughout the network.
+
+4. **Residual connection**: The MLP output is typically added to its input via a residual connection, helping with gradient flow in deep networks.
+
+The MLP layer, alternating with self-attention layers, forms the core of the transformer architecture, allowing the model to capture both local and global dependencies in the input sequence.`;
+
+        const x_emb_n_plus_one_info = `$$x_{embd}^{(n+1)}$$ represents the embedded input for the next multi-headed self-attention block (or the final output if this is the last block) in the transformer model.`;
 
         const svgContent = {
             'successive-self-attention': {
@@ -765,11 +961,11 @@ The quality and richness of these embeddings at each layer are crucial for the m
                         y: 390,
                         text: 'Hidden Layer',
                         width: SINGLE_VECTOR_WIDTH * 4, height: SINGLE_VECTOR_WIDTH * 4,
-                        info: layernorm_info, opacity: 0.4
+                        info: hidden_layer_MLP_info, opacity: 0.4
                     },
                     {
                         x: 2500, y: 340, text: '', width: SINGLE_VECTOR_WIDTH * 4, height: SINGLE_VECTOR_HEIGHT / 2,
-                        info: layernorm_info, opacity: 0.4
+                        info: out_MLP_info, opacity: 0.4
                     },
                     {
                         x: 2700 - SINGLE_LATEX_CHAR_WIDTH / 2, y: 405,
@@ -981,13 +1177,13 @@ The quality and richness of these embeddings at each layer are crucial for the m
                         x: 2550, y: 430,
                         text: '{out}_{MLP}^{(n)}',
                         color: LATEX_LABEL_COLOR, width: 2 * SINGLE_LATEX_CHAR_WIDTH, height: SINGLE_LATEX_CHAR_HEIGHT,
-                        info: layernorm_info,
+                        info: out_MLP_info,
                     },
                     {
                         x: 2550, y: 310,
                         text: '(\\text{seqlen} \\times d_{embd})',
                         color: LATEX_SHAPE_LABEL_COLOR, width: SINGLE_LATEX_CHAR_WIDTH * 3, height: SINGLE_LATEX_CHAR_HEIGHT,
-                        info: layernorm_info,
+                        info: out_MLP_info,
                     },
                     {
                         x: 2700, y: 422,
@@ -998,7 +1194,7 @@ The quality and richness of these embeddings at each layer are crucial for the m
                     {
                         x: 2780, y: 422,
                         text: '\\boldsymbol{=} x_{embd}^{(n+1)}',
-                        width: SINGLE_LATEX_CHAR_WIDTH * 3, height: SINGLE_LATEX_CHAR_HEIGHT, info: layernorm_info
+                        width: SINGLE_LATEX_CHAR_WIDTH * 2, height: SINGLE_LATEX_CHAR_HEIGHT, info: x_emb_n_plus_one_info
                     },
                     // {
                     //     x: 1670, y: 422,
@@ -1070,7 +1266,7 @@ The quality and richness of these embeddings at each layer are crucial for the m
                         y: 290,
                         text: 'Self-Attention Weights',
                         color: LATEX_LABEL_COLOR,
-                        info: affinities_info,
+                        info: masked_affinities_info,
                     },
                     {
                         x: 905,
@@ -1120,14 +1316,14 @@ The quality and richness of these embeddings at each layer are crucial for the m
                         y: 450,
                         text: 'LayerNorm,',
                         color: LATEX_SHAPE_LABEL_COLOR,
-                        info: layernorm_ff_info,
+                        info: layernorm_ff_MLP_info,
                     },
                     {
                         x: 2185,
                         y: 470,
                         text: 'FF, nonlinearity',
                         color: LATEX_SHAPE_LABEL_COLOR,
-                        info: layernorm_ff_info,
+                        info: layernorm_ff_MLP_info,
                     },
                     {
                         x: 2210,
@@ -1141,7 +1337,7 @@ The quality and richness of these embeddings at each layer are crucial for the m
                         y: 450,
                         text: 'feedforward',
                         color: LATEX_SHAPE_LABEL_COLOR,
-                        info: layernorm_info,
+                        info: ff_MLP_info,
                     },
                 ],
                 arrows: [
@@ -1206,25 +1402,25 @@ The quality and richness of these embeddings at each layer are crucial for the m
                         start: { x: 2045, y: 430 },
                         end: { x: 2125, y: 430 },
                         color: ARROW_COLOR,
-                        info: "Add with residual",
+                        info: "Combine with residual connection",
                     },
                     {
                         start: { x: 2175, y: 430 },
                         end: { x: 2300, y: 430 },
                         color: ARROW_COLOR,
-                        info: layernorm_ff_info,
+                        info: layernorm_ff_MLP_info,
                     },
                     {
                         start: { x: 2395, y: 430 },
                         end: { x: 2500, y: 430 },
                         color: ARROW_COLOR,
-                        info: layernorm_info,
+                        info: ff_MLP_info,
                     },
                     {
                         start: { x: 2595, y: 430 },
                         end: { x: 2675, y: 430 },
                         color: ARROW_COLOR,
-                        info: layernorm_info,
+                        info: "Combine with residual connection",
                     },
                 ],
                 anchoredArrows: [
