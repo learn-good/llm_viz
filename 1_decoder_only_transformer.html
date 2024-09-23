@@ -443,27 +443,25 @@ For non-text data types, appropriate preprocessing steps would be applied before
         const x_raw_link = "" // "x_raw"
         const x_tok_info = `The tokenized input $$x_{tok}$$ serves as the starting point for the transformer's processing, capturing the structure and content of the input text in a format that is usable by the neural network.
 
-**About tokenized data:**
-1. **Vocabulary size**: Tokens are drawn from a fixed vocabulary, e.g. \`vocab_size\` $$ = d_{vocab} = 64128$$.
+**Vocabulary size**: Tokens are drawn from a fixed vocabulary, e.g. \`vocab_size\` $$ = \\text{vocabsize} = 64128$$.
 
-2. **Special tokens**: These include tokens like \`[START]\`, \`[END]\`, \`[PAD]\`, \`[UNK]\` for start of sequence, end of sequence, padding, and unknown words respectively.
+**Special tokens**: These include tokens like \`[START]\`, \`[END]\`, \`[PAD]\`, \`[UNK]\` for start of sequence, end of sequence, padding, and unknown words respectively.
 
-3. **Subword tokenization**: Most modern tokenizers (e.g., BPE, WordPiece, SentencePiece) use subword units.
+**Subword tokenization**: Most modern tokenizers (e.g., BPE, WordPiece, SentencePiece) use subword units.
 
-4. **Sequence length**: Tokenized sequences are typically padded or truncated to a fixed length (e.g., 512 or 4096 tokens). We will refer to this number as $$d_{seq}$$.
+**Sequence length**: Tokenized sequences are typically padded or truncated to a fixed length (e.g., 512 or 4096 tokens). We will refer to this number as $$\\text{seqlen}$$.
 
-5. **Token IDs**: Each token is represented by a unique integer ID, which is used as input to the embedding layer.`
+**Token IDs**: Each token is represented by a unique integer ID, which is used as input to the embedding layer.`
         const x_tok_link = "" //"x_tok"
         const x_embd_info = `$$x_{embd}$$ represents the embedded data that serves a the enriched input data for the transformer model.
 
-**About embedded input:**
-1. **Shape**: $$x_{embd}$$ has shape $$(d_{seq} \\times d_{embd})$$, where $$d_{seq}$$ is the sequence length and $$d_{embd}$$ is the embedding dimension.
+**Shape**: $$x_{embd}$$ has shape $$(\\text{seqlen} \\times d_{embd})$$, where $$\\text{seqlen}$$ is the sequence length and $$d_{embd}$$ is the embedding dimension.
 
-2. **Learned token embeddings**: The embedding matrix learns richer representations of tokens than just the token ID present in $$x_{tok}$$, capturing semantic meaning about the input tokens.
+**Learned token embeddings**: The embedding matrix learns richer representations of tokens than just the token ID present in $$x_{tok}$$, capturing semantic meaning about the input tokens.
 
-3. **Input to attention layers**: $$x_{embd} + PE$$ serves as the initial input to the self-attention mechanism in the transformer, where $$PE$$ is the positional encoding used to capture information about a token's position in the sequence.
+**Input to attention layers**: $$x_{embd} + PE$$ serves as the initial input to the self-attention mechanism in the transformer, where $$PE$$ is the positional encoding used to capture information about a token's position in the sequence.
 
-4. **Why do we need to add positional encoding?**: The self-attention mechanism in transformers is permutation-invariant, meaning it treats the input as a set rather than a sequence. There are many approaches to address this limitation, such as absolute (pictured), relative, and rotary position embeddings.`;
+**Why do we need to add positional encoding?**: The self-attention mechanism in transformers is permutation-invariant, meaning it treats the input as a set rather than a sequence. There are many approaches to address this limitation, such as absolute (pictured), relative, and rotary position embeddings.`;
         const x_embd_link = "" // "x_embd"
         const tokenization_info = `Tokenization bridges the gap between human-readable text and the numerical input required by transformer models. The tokenizer converts raw text into a sequence of integers, or token IDs, which the model can then process. The tokenizer is constructed separately from the rest of the transformer, potentially using different data.
 
@@ -478,17 +476,16 @@ For non-text data types, appropriate preprocessing steps would be applied before
         const tokenization_link = "" // "tokenization"
         const token_embd_info = `Token embedding converts tokenized input into dense vector representations, allowing for the model to learn a richer representation for each token.
 
-**Key aspects of token embedding:**
-1. **Lookup table**: Each token is mapped to a unique vector in a high-dimensional space, (e.g., $$d_{embd}=512$$, where $$d_{embd}$$ refers to the embedding dimension). When $$x_{tok}$$ is one-hot encoded, it is expanded such that the index pertaining the the token ID is set to $$1,$$ and all others are set to $$0,$$ which leads to that index \"looking up\" its higher dimensional representation via matrix multiplication.
+**Lookup table**: Each token is mapped to a unique vector in a high-dimensional space, (e.g., $$d_{embd}=512$$, where $$d_{embd}$$ refers to the embedding dimension). When $$x_{tok}$$ is one-hot encoded, it is expanded such that the index pertaining the the token ID is set to $$1,$$ and all others are set to $$0,$$ which leads to that index \"looking up\" its higher dimensional representation via matrix multiplication.
 
-2. **Learned representations**: These embeddings are learned during the training process, capturing semantic and syntactic information about tokens.
+**Learned representations**: These embeddings are learned during the training process, capturing semantic and syntactic information about tokens.
 
-3. **Weight tying**: The embedding matrix is often shared with the final linear projection layer in the model's output, reducing the number of parameters and improving generalization. The intuition is that the process of generating a word (output) should be closely related to the process of understanding a word (input).
+**Weight tying**: The embedding matrix is often shared with the final linear projection layer in the model's output, reducing the number of parameters and improving generalization. The intuition is that the process of generating a word (output) should be closely related to the process of understanding a word (input).
 
 The embedding process can be represented as: 
 $$x_{embd} = x_{tok} \\cdot W_{embd} $$
 
-Where $$x_{tok}$$ is one-hot encoded from shape $$( d_{seq} \\times 1 )$$ to $$( d_{seq} \\times d_{vocab} )$$, and $$W_{embd}$$ is the embedding matrix of shape: $$( d_{vocab} \\times d_{embd} )$$. The result $$x_{embd}$$ is shape $$( d_{seq} \\times d_{embd} )$$.`;
+Where $$x_{tok}$$ is one-hot encoded from shape $$( \\text{seqlen} \\times 1 )$$ to $$( \\text{seqlen} \\times \\text{vocabsize} )$$, and $$W_{embd}$$ is the embedding matrix of shape: $$( \\text{vocabsize} \\times d_{embd} )$$. The result $$x_{embd}$$ is shape $$( \\text{seqlen} \\times d_{embd} )$$.`;
 
         const token_embd_link = "" //"token_embedding"
         const pos_enc_info = `The self-attention mechanism in transformers is permutation-invariant, meaning it doesn't inherently consider the order of tokens. $$PE$$ adds information about the position of each token in the sequence.
@@ -504,65 +501,71 @@ Where $$x_{tok}$$ is one-hot encoded from shape $$( d_{seq} \\times 1 )$$ to $$(
 
 The choice of PE can significantly impact model performance and generalization ability, especially for tasks sensitive to token order or involving extrapolation to longer sequences.`;
         const pos_enc_link = "" // "position_encoding"
-        const attn_info = "todo";
-        const attn_link = "attention"
+        const attn_info = `The successive applications of self-attention blocks form the core of the transformer architecture. Each block processes the input sequence, allowing the model to capture complex relationships between tokens. **Click for a more nuanced breakdown of multi-headed self-attention**.
+
+**Stacking multiple blocks:**
+- The output of one block becomes the input to the next.
+- Each successive layer can capture increasingly complex and abstract relationships in the token sequences.
+
+**Key advantages:**
+- Parallelization: All positions are processed simultaneously.
+- Long-range dependencies: Can capture relationships between distant tokens.
+- Contextual understanding: Each token's representation is influenced by the entire sequence.
+
+The number of attention blocks significantly impacts the model's capacity and computational requirements. Deeper models (more blocks) can potentially capture more complex patterns but require more computational resources.`;
+        const attn_link = "successive-self-attention"
         // const est_prob_dist_i = "position_encoding"
 
         const logits_info = `Logits are the raw, unnormalized predictions that are output by the transformer model before the final softmax layer, representing the model's raw predictions for each token in the vocabulary.
 
-**Key points about logits:**
-1. **Shape**: The logits vector has length of $$d_{vocab}$$, where $$d_{vocab}$$ is the vocabulary size.
+**Shape**: The logits vector has length of $$\\text{vocabsize}$$, where $$\\text{vocabsize}$$ is the vocabulary size.
 
-2. **Interpretation**: Each value in the logits vector represents the model's unnormalized confidence for a particular token or class.
+**Interpretation**: Each value in the logits vector represents the model's unnormalized confidence for a particular token or class.
 
-3. **Temperature**: Before converting to probabilities, logits are often divided by a temperature parameter to control the randomness of the output distribution.
+**Temperature**: Before converting to probabilities, logits are often divided by a temperature parameter to control the randomness of the output distribution.
 
 The logits represent the model's raw decision space before it's constrained to a probability distribution, offering a view into the model's pre-normalized predictions.`;
 
         const dropout_info = `Dropout is a regularization technique used to prevent overfitting in neural networks, including transformers. It can be used at different locations in the network, or excluded altogether.
 
-**Key points about dropout:**
-1. **Mechanism**: During training, randomly "drops out" (sets to zero) a proportion of neurons.
+**Mechanism**: During training, randomly "drops out" (sets to zero) a proportion of neurons.
 
-2. **Purpose**: Reduces co-adaptation between neurons, forcing the network to learn more robust features.
+**Purpose**: Reduces co-adaptation between neurons, forcing the network to learn more robust features.
 
-3. **Original paper**: The "Attention Is All You Need" paper used dropout in several places, including after the attention and feedforward layers, and in the embedding layers.
+**Original paper**: The "Attention Is All You Need" paper used dropout in several places, including after the attention and feedforward layers, and in the embedding layers.
 
 **Important note**: While dropout was used in the original transformer and is common in many models, it's not always necessary. For example, the Llama 3 family of models doesn't use dropout at all, demonstrating that high-performing models can be built without this technique.`;
-        const lin_prj_info = `The linear projection layer serves as the final transformation to recover the vocab size dimension, $$d_{vocab}$$, before the softmax operation to get next token probabilities.
+        const lin_prj_info = `The linear projection layer serves as the final transformation to recover the vocab size dimension, $$\\text{vocabsize}$$, before the softmax operation to get next token probabilities.
 
-**About linear projection:**
-1. **Purpose**: It maps the output of the self-attention blocks to logits of the vocabulary size.
+**Purpose**: It maps the output of the self-attention blocks to logits of the vocabulary size.
 
-2. **Weight tying**: In many implementations, $$W_{proj}$$ is often tied (shared) with the input embedding matrix, $$W_{embd}$$, which can improve performance and reduce the number of parameters.
+**Weight tying**: In many implementations, $$W_{proj}$$ is often tied (shared) with the input embedding matrix, $$W_{embd}$$, which can improve performance and reduce the number of parameters.
 
 The linear projection prepares the model's raw predictions (logits) for the final probability distribution over the vocabulary, which is then computed by the softmax function.`;
 
         const softmax_info = `The softmax function is applied to the logits to produce a probability distribution over the vocabulary for the next token.
 
-**About softmax:**
-1. **Formula and Temperature**: For input vector $$z$$, the softmax function is defined as:
+**Formula and Temperature**: For input vector $$z$$, the softmax function is defined as:
    $$\\text{softmax}(z_i, T) = \\dfrac{e^{z_i/T}}{\\sum_{j=1}^K e^{z_j/T}}$$
 
-   where $$K$$ is the number of classes (vocabulary size $$d_{vocab}$$ in this case). A temperature parameter $$T$$ can be applied to control the "sharpness" of the distribution.
+   where $$K$$ is the number of classes (vocabulary size $$\\text{vocabsize}$$ in this case). A temperature parameter $$T$$ can be applied to control the "sharpness" of the distribution.
     - Lower T (<1) makes distribution more peaked (less random)
     - Higher T (>1) makes distribution more uniform (more random)
 
-2. **Properties**: Output values are between $$0$$ and $$1$$; sum of all outputs equals $$1$$; preserves relative ordering of inputs
+**Properties**: Output values are between $$0$$ and $$1$$; sum of all outputs equals $$1$$; preserves relative ordering of inputs
 
-3. **Numerical Stability and Optimization**: Softmax is often implemented with a "max trick" to prevent overflow. There is also an \"online\" version that allows for carrying out the computation with fewer memory accesses, resulting in faster performance (Milakov et al., 2018).`;
+**Numerical Stability and Optimization**: Softmax is often implemented with a "max trick" to prevent overflow. There is also an \"online\" version that allows for carrying out the computation with fewer memory accesses, resulting in faster performance (Milakov et al., 2018).`;
 
         const pos_encoding_arrows_info = "Apply positional encoding to embedded input $$x_{embd}$$ via addition (only if using the original positional encoding schema, else add $$0$$ to $$x_{embd}$$)";
         const addition_info = "Addition, if using the original positional encoding proposed but the original \"Attention is All You Need\" paper. Otherwise you can think of this as just a pass through connection for $$x_{embd}$$, or addition with $$0$$ if you'd prefer."
 
         const est_prob_dist_info = `The estimated probability distribution $$\\hat{P}( x_{tok}^{(t+1)} | x_{tok}^{(...t)} )$$ represents the model's predicted probability distribution for the next token given the previous tokens in the sequence.
 
-**Key points:**
-1. **Shape**: A vector of length $$d_{vocab}$$, where each element corresponds to a token in the vocabulary.
+**Shape**: A vector of length $$\\text{vocabsize}$$, where each element corresponds to a token in the vocabulary.
 
-2. **Interpretation**: The value at vector index $$i$$ represents the model's estimated probability that the $$i$$-th token in the vocabulary will be the next token in the sequence.
+**Interpretation**: The value at vector index $$i$$ represents the model's estimated probability that the $$i$$-th token in the vocabulary will be the next token in the sequence.
 
-3. **Sampling**: During text generation, the next token is typically sampled from this distribution, allowing for controlled randomness in the output.`;
+**Sampling**: During text generation, the next token is typically sampled from this distribution, allowing for controlled randomness in the output.`;
 
         const sampling_info = `Sampling is the process of selecting the next token based on the probability distribution output by the model.
 
@@ -583,21 +586,51 @@ Sampling strategies balance between diversity and quality of generated text. The
 
         const x_tok_t_plus_1_info = `$$x_{tok}^{(t+1)}$$ represents the next token in the sequence, sampled from the probability distribution output by the model.
 
-**Key points:**
-1. **Sampling process**: This token is chosen based on the probability distribution $$\\hat{P}( x_{tok}^{(t+1)} | x_{tok}^{(...t)} )$$ using a sampling strategy (e.g., greedy, top-k, top-p).
+**Sampling process**: This token is chosen based on the probability distribution $$\\hat{P}( x_{tok}^{(t+1)} | x_{tok}^{(...t)} )$$ using a sampling strategy (e.g., greedy, top-k, top-p).
 
-2. **Token ID**: It's an integer corresponding to a token in the model's vocabulary.
+**Token ID**: It's an integer corresponding to a token in the model's vocabulary.
 
-3. **Auto-regressive nature**: 
+**Auto-regressive nature**: 
    - In training: The model learns to predict $$x_{tok}^{(t+1)}$$ given $$x_{tok}^{(...t)}$$. This next token is known from the training data.
    - In inference: The predicted token becomes part of the input for the next iteration.
 
-4. **Stopping criteria**: Generation typically continues until a stopping condition is met (e.g., max length, special end token).`;
+**Stopping criteria**: Generation typically continues until a stopping condition is met (e.g., max length, special end token).`;
 
-        // Self-Attention info
-        const x_embd_n_info = "TODO x embd n"
-        const x_embd_n_tilde_info = "TODO x embd n tilde"
-        const layernorm_info = "TODO layernorm"
+        // Repeated Self-Attention info
+        const x_embd_n_info = `$$x_{embd}^{(n)}$$ represents the embedded input data at the $$n$$th attention block of the transformer model.
+
+**Content**: It contains the learned representations of the input tokens, updated by the previous layers of the transformer.
+
+**Layer progression**: As $$n$$ increases, $$x_{embd}^{(n)}$$ captures increasingly abstract and context-aware representations of the input.
+
+**Role in the transformer:**
+- Carries forward the learned representations through the depth of the model.
+- Allows for the gradual refinement of token representations based on their context within the sequence.
+
+The quality and richness of these embeddings at each layer are crucial for the model's overall performance in understanding and generating text.`;
+        
+        const layernorm_info = `Layer Normalization (LayerNorm) is a technique used in transformer architectures to stabilize the hidden state dynamics in deep networks, reducing internal covariate shift and accelerating training by allowing higher learning rates.
+
+**How LayerNorm works in transformers**: 
+1. In a transformer, each token in a sequence is represented by a vector of features.
+2. LayerNorm is applied independently to each token's feature vector: Calculate the mean and variance across all features of the token, normalize the features using these statistics, and apply learnable scale $$\\gamma$$ and shift $$\\beta$$ parameters.
+3. This process is repeated in parallel for every token in the sequence and for every sequence in the batch.
+
+**Formula**: For a token's feature vector $$x$$, LayerNorm is defined as:
+   $$\\text{LayerNorm}(x) = \\dfrac{x - E[x]}{(\\text{Var}[x] + \\epsilon)^{1/2}} \\cdot \\gamma + \\beta$$
+   where $$E[x]$$ is the mean and $$\\text{Var}[x]$$ is the variance, $$\\gamma$$ and $$\\beta$$ are learnable parameters, and $$\\epsilon$$ is a small constant for numerical stability.
+
+**Variants**: Some models use variations like RMSNorm (Root Mean Square Layer Normalization) which simplifies the standard LayerNorm by removing the mean-centering step.`;
+
+    const x_embd_n_tilde_info = `$$\\tilde{x}_{embd}^{(n)}$$ represents the normalized input embeddings at the $$n$$th self-attention block of the transformer model, after applying Layer Normalization.
+
+**Characteristics**:
+- Normalized: Each feature dimension has approximately zero mean and unit variance across the batch.
+- Scale and shift: The $$\\gamma$$ and $$\\beta$$ parameters or LayerNorm allow the network to undo the normalization if needed.
+
+**Impact**: LayerNorm helps the model train faster and generalizes better by ensuring that the scale of activations remains roughly consistent across different layers and during training.`;
+
+        
         const q_flat_info = "todo q flat"
         const k_flat_info = "todo k flat"
         const v_flat_info = "todo v flat"
@@ -606,9 +639,7 @@ Sampling strategies balance between diversity and quality of generated text. The
         const k_reshaped_info = "todo k rs"
         const v_reshaped_info = "todo v rs"
 
-        const dot_w_q_info = "todo dot wq"
-        const dot_w_k_info = "todo dot wk"
-        const dot_w_v_info = "todo dot wv"
+        const dot_w_info = "todo dot w"
         const reshape_and_transpose_info = "todo rshape and transpose info"
         const affinities_info = "todo affinities"
         const masked_affinities_info = "todo masked affinities"
@@ -620,9 +651,10 @@ Sampling strategies balance between diversity and quality of generated text. The
         const sa_dot_product_info = "todo sa_dot_product_info"
         const reshape_sa_out_info = "todo reshape_sa_out_info"
         const add_residual_info = "todo add_residual_info"
+        const layernorm_ff_info = "todo layernorm_ff_info"
 
         const svgContent = {
-            'attention': {
+            'successive-self-attention': {
             // 'root': {
                 boxes: [
                     {
@@ -792,13 +824,13 @@ Sampling strategies balance between diversity and quality of generated text. The
                     },
                     {
                         x: 20 + (SINGLE_VECTOR_WIDTH * 2), y: 310,
-                        text: '(d_{seq} \\times d_{embd})',
+                        text: '(\\text{seqlen} \\times d_{embd})',
                         color: LATEX_SHAPE_LABEL_COLOR, width: SINGLE_LATEX_CHAR_WIDTH * 3, height: SINGLE_LATEX_CHAR_HEIGHT,
                         info: x_embd_n_info
                     },
                     {
                         x: 20 + MIN_SEP_HORIZONTAL + (SINGLE_VECTOR_WIDTH * 2), y: 310,
-                        text: '(d_{seq} \\times d_{embd})',
+                        text: '(\\text{seqlen} \\times d_{embd})',
                         color: LATEX_SHAPE_LABEL_COLOR, width: SINGLE_LATEX_CHAR_WIDTH * 3, height: SINGLE_LATEX_CHAR_HEIGHT,
                         info: x_embd_n_tilde_info,
                     },
@@ -824,19 +856,19 @@ Sampling strategies balance between diversity and quality of generated text. The
 
                     {
                         x: 120 + 2 * MIN_SEP_HORIZONTAL, y: 10,
-                        text: '(d_{seq} \\times d_{embd})',
+                        text: '(\\text{seqlen} \\times d_{embd})',
                         color: LATEX_SHAPE_LABEL_COLOR, width: SINGLE_LATEX_CHAR_WIDTH * 3, height: SINGLE_LATEX_CHAR_HEIGHT,
                         info: q_flat_info
                     },
                     {
                         x: 120 + 2 * MIN_SEP_HORIZONTAL, y: 310,
-                        text: '(d_{seq} \\times d_{embd})',
+                        text: '(\\text{seqlen} \\times d_{embd})',
                         color: LATEX_SHAPE_LABEL_COLOR, width: SINGLE_LATEX_CHAR_WIDTH * 3, height: SINGLE_LATEX_CHAR_HEIGHT,
                         info: k_flat_info,
                     },
                     {
                         x: 120 + 2 * MIN_SEP_HORIZONTAL, y: 610,
-                        text: '(d_{seq} \\times d_{embd})',
+                        text: '(\\text{seqlen} \\times d_{embd})',
                         color: LATEX_SHAPE_LABEL_COLOR, width: SINGLE_LATEX_CHAR_WIDTH * 3, height: SINGLE_LATEX_CHAR_HEIGHT,
                         info: v_flat_info,
                     },
@@ -850,7 +882,7 @@ Sampling strategies balance between diversity and quality of generated text. The
                     },
                     {
                         x: 120 + 3 * MIN_SEP_HORIZONTAL, y: -20,
-                        text: '(d_{nheads} \\times d_{seq} \\times d_{headsize})',
+                        text: '(\\text{nheads} \\times \\text{seqlen} \\times \\text{headsize})',
                         color: LATEX_SHAPE_LABEL_COLOR, width: SINGLE_LATEX_CHAR_WIDTH * 6, height: SINGLE_LATEX_CHAR_HEIGHT,
                         info: q_reshaped_info
                     },
@@ -862,7 +894,7 @@ Sampling strategies balance between diversity and quality of generated text. The
                     },
                     {
                         x: 120 + 3 * MIN_SEP_HORIZONTAL, y: 280,
-                        text: '(d_{nheads} \\times d_{seq} \\times d_{headsize})',
+                        text: '(\\text{nheads} \\times \\text{seqlen} \\times \\text{headsize})',
                         color: LATEX_SHAPE_LABEL_COLOR, width: SINGLE_LATEX_CHAR_WIDTH * 6, height: SINGLE_LATEX_CHAR_HEIGHT,
                         info: k_reshaped_info
                     },
@@ -874,7 +906,7 @@ Sampling strategies balance between diversity and quality of generated text. The
                     },
                     {
                         x: 120 + 3 * MIN_SEP_HORIZONTAL, y: 580,
-                        text: '(d_{nheads} \\times d_{seq} \\times d_{headsize})',
+                        text: '(\\text{nheads} \\times \\text{seqlen} \\times \\text{headsize})',
                         color: LATEX_SHAPE_LABEL_COLOR, width: SINGLE_LATEX_CHAR_WIDTH * 6, height: SINGLE_LATEX_CHAR_HEIGHT,
                         info: v_reshaped_info
                     },
@@ -885,21 +917,21 @@ Sampling strategies balance between diversity and quality of generated text. The
                         // text: '\\_ \\cdot W_{K}^{(n)}',
                         text: '\\cdot \\ W_{Q}^{(n)}',
                         color: LATEX_LABEL_SECONDARY_COLOR, width: SINGLE_LATEX_CHAR_WIDTH * 2, height: SINGLE_LATEX_CHAR_HEIGHT,
-                        info: dot_w_q_info,
+                        info: dot_w_info,
                     },
                     {
                         x: 2 * MIN_SEP_HORIZONTAL - 10, y: 410,
                         // text: '\\_ \\cdot W_{K}^{(n)}',
                         text: '\\cdot \\ W_{K}^{(n)}',
                         color: LATEX_LABEL_SECONDARY_COLOR, width: SINGLE_LATEX_CHAR_WIDTH * 2, height: SINGLE_LATEX_CHAR_HEIGHT,
-                        info: dot_w_k_info,
+                        info: dot_w_info,
                     },
                     {
                         x: 2 * MIN_SEP_HORIZONTAL - 10, y: 710,
                         // text: '\\_ \\cdot W_{K}^{(n)}',
                         text: '\\cdot \\ W_{V}^{(n)}',
                         color: LATEX_LABEL_SECONDARY_COLOR, width: SINGLE_LATEX_CHAR_WIDTH * 2, height: SINGLE_LATEX_CHAR_HEIGHT,
-                        info: dot_w_v_info,
+                        info: dot_w_info,
                     },
                     // {
                     //     x: 880, 
@@ -910,26 +942,26 @@ Sampling strategies balance between diversity and quality of generated text. The
                     // },
                     {
                         x: 1120, y: 130,
-                        text: '(d_{nheads} \\times d_{seq} \\times d_{seq} )',
+                        text: '(\\text{nheads} \\times \\text{seqlen} \\times \\text{seqlen} )',
                         color: LATEX_SHAPE_LABEL_COLOR, width: SINGLE_LATEX_CHAR_WIDTH * 6, height: SINGLE_LATEX_CHAR_HEIGHT,
                         info: affinities_info
                     },
                     {
                         x: 1520, y: 130,
-                        text: '(d_{nheads} \\times d_{seq} \\times d_{seq} )',
+                        text: '(\\text{nheads} \\times \\text{seqlen} \\times \\text{seqlen} )',
                         color: LATEX_SHAPE_LABEL_COLOR, width: SINGLE_LATEX_CHAR_WIDTH * 6, height: SINGLE_LATEX_CHAR_HEIGHT,
                         info: masked_affinities_info
                     },
 
                     {
                         x: 1800, y: 280,
-                        text: '(d_{nheads} \\times d_{seq} \\times d_{headsize})',
+                        text: '(\\text{nheads} \\times \\text{seqlen} \\times \\text{headsize})',
                         color: LATEX_SHAPE_LABEL_COLOR, width: SINGLE_LATEX_CHAR_WIDTH * 6, height: SINGLE_LATEX_CHAR_HEIGHT,
                         info: sa_out_info
                     },
                     {
                         x: 2000, y: 310,
-                        text: '(d_{seq} \\times d_{embd})',
+                        text: '(\\text{seqlen} \\times d_{embd})',
                         color: LATEX_SHAPE_LABEL_COLOR, width: SINGLE_LATEX_CHAR_WIDTH * 3, height: SINGLE_LATEX_CHAR_HEIGHT,
                         info: sa_out_reshaped_info,
                     },
@@ -953,7 +985,7 @@ Sampling strategies balance between diversity and quality of generated text. The
                     },
                     {
                         x: 2550, y: 310,
-                        text: '(d_{seq} \\times d_{embd})',
+                        text: '(\\text{seqlen} \\times d_{embd})',
                         color: LATEX_SHAPE_LABEL_COLOR, width: SINGLE_LATEX_CHAR_WIDTH * 3, height: SINGLE_LATEX_CHAR_HEIGHT,
                         info: layernorm_info,
                     },
@@ -1062,7 +1094,7 @@ Sampling strategies balance between diversity and quality of generated text. The
                         info: mask_and_normalize_info,
                     },
                     {
-                        x: 1580,
+                        x: 1570,
                         y: 430,
                         text: 'dot product',
                         color: LATEX_LABEL_SECONDARY_COLOR,
@@ -1088,14 +1120,14 @@ Sampling strategies balance between diversity and quality of generated text. The
                         y: 450,
                         text: 'LayerNorm,',
                         color: LATEX_SHAPE_LABEL_COLOR,
-                        info: layernorm_info,
+                        info: layernorm_ff_info,
                     },
                     {
                         x: 2185,
                         y: 470,
                         text: 'FF, nonlinearity',
                         color: LATEX_SHAPE_LABEL_COLOR,
-                        info: layernorm_info,
+                        info: layernorm_ff_info,
                     },
                     {
                         x: 2210,
@@ -1129,7 +1161,7 @@ Sampling strategies balance between diversity and quality of generated text. The
                         start: { x: 20 + 4 * SINGLE_VECTOR_WIDTH + MIN_SEP_HORIZONTAL, y: 440 },
                         end: { x: 20 + 2 * SINGLE_VECTOR_WIDTH + 2 * MIN_SEP_HORIZONTAL, y: 440 },
                         color: ARROW_COLOR,
-                        info: dot_w_k_info,
+                        info: dot_w_info,
                     },
                     // {
                     //     start: { x: 20 + 4*SINGLE_VECTOR_WIDTH + MIN_SEP_HORIZONTAL , y: 740 },
@@ -1180,7 +1212,7 @@ Sampling strategies balance between diversity and quality of generated text. The
                         start: { x: 2175, y: 430 },
                         end: { x: 2300, y: 430 },
                         color: ARROW_COLOR,
-                        info: layernorm_info,
+                        info: layernorm_ff_info,
                     },
                     {
                         start: { x: 2395, y: 430 },
@@ -1209,7 +1241,7 @@ Sampling strategies balance between diversity and quality of generated text. The
                             },
                         ],
                         color: ARROW_COLOR,
-                        info: dot_w_q_info,
+                        info: dot_w_info,
                     },
                     {
                         segments: [
@@ -1223,7 +1255,7 @@ Sampling strategies balance between diversity and quality of generated text. The
                             },
                         ],
                         color: ARROW_COLOR,
-                        info: dot_w_v_info,
+                        info: dot_w_info,
                     },
                     // Token affinities transpose and dot product
                     {
@@ -1270,14 +1302,14 @@ Sampling strategies balance between diversity and quality of generated text. The
                         segments: [
                             {
                                 start: { x: 1575, y: 290 },
-                                end: { x: 1670, y: 290 }
+                                end: { x: 1660, y: 290 }
                             },
                             {
-                                start: { x: 1670, y: 290 },
-                                end: { x: 1670, y: 430 }
+                                start: { x: 1660, y: 290 },
+                                end: { x: 1660, y: 430 }
                             },
                             {
-                                start: { x: 1670, y: 430 },
+                                start: { x: 1660, y: 430 },
                                 end: { x: 1750, y: 430 }
                             },
                         ],
@@ -1288,14 +1320,14 @@ Sampling strategies balance between diversity and quality of generated text. The
                         segments: [
                             {
                                 start: { x: 750, y: 740 },
-                                end: { x: 1670, y: 740 }
+                                end: { x: 1660, y: 740 }
                             },
                             {
-                                start: { x: 1670, y: 740 },
-                                end: { x: 1670, y: 430 }
+                                start: { x: 1660, y: 740 },
+                                end: { x: 1660, y: 430 }
                             },
                             {
-                                start: { x: 1670, y: 430 },
+                                start: { x: 1660, y: 430 },
                                 end: { x: 1750, y: 430 }
                             },
                         ],
