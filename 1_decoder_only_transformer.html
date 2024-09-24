@@ -515,7 +515,7 @@ Where $$x_{tok}$$ is one-hot encoded from shape $$( \\text{seqlen} \\times 1 )$$
 
 2. **Relative PE**: Encodes relative distances between tokens instead of absolute positions.
 
-3. **Rotary PE (RoPE)**: Applies rotation to query vector $$Q$$ and key matrix $$K$$ that are generated from the token embeddings during the self-attention process.
+3. **Rotary PE (RoPE)**: Applies rotation to query vector $$Q$$ and key matrix $$K$$ that are generated from the token embeddings during the self-attention process. This can enable longer context windows and is commonly used in SOTA models.
 
 The choice of PE can significantly impact model performance and generalization ability, especially for tasks sensitive to token order or involving extrapolation to longer sequences.`;
         const pos_enc_link = "" // "position_encoding"
