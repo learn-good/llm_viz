@@ -406,6 +406,24 @@
                 info: "This paper presents FlashAttention, an IO-aware exact attention algorithm that uses tiling to reduce memory access and increase efficiency in transformer models.",
                 refType: "arXiv"
             },
+            {
+                title: "Efficiently Scaling Transformer Inference",
+                authors: [
+                    "Reiner Pope",
+                    "Sholto Douglas",
+                    "Aakanksha Chowdhery",
+                    "Jacob Devlin",
+                    "James Bradbury",
+                    "Anselm Levskaya",
+                    "Jonathan Heek",
+                    "Kefan Xiao",
+                    "Shivani Agrawal",
+                    "Jeff Dean"
+                ],
+                link: "https://arxiv.org/abs/2211.05102",
+                info: "The paper that introduces the KV Cache, a technique to optimize transformer inference by caching key and value tensors from previous tokens, significantly reducing computation time for autoregressive generation.",
+                refType: "arXiv"
+            }
         ]
 
         //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
@@ -490,7 +508,7 @@ Where $$x_{tok}$$ is one-hot encoded from shape $$( \\text{seqlen} \\times 1 )$$
         const token_embd_link = "" //"token_embedding"
         const pos_enc_info = `The self-attention mechanism in transformers is permutation-invariant, meaning it doesn't inherently consider the order of tokens. $$PE$$ adds information about the position of each token in the sequence.
 
-        The original sinusoidal $$PE$$ (Vaswani et al., 2017) uses sine and cosine functions of different frequencies to create unique encodings for each position. This is one version of an absolute position encoding, where the encoding is based solely on the absolute position of the input.
+        The original sinusoidal $$PE$$ uses sine and cosine functions of different frequencies to create unique encodings for each position. This is one version of an absolute position encoding, where the encoding is based solely on the absolute position of the input.
 
 **Alternative approaches:**
 1. **Learned PE**: Trainable embeddings for each position.
@@ -552,10 +570,10 @@ The linear projection prepares the model's raw predictions (logits) for the fina
 
 **Properties**: Output values are between $$0$$ and $$1$$; sum of all outputs equals $$1$$; preserves relative ordering of inputs
 
-**Numerical Stability and Optimization**: Softmax is often implemented with a "max trick" to prevent overflow. There is also an \"online\" version that allows for carrying out the computation with fewer memory accesses, resulting in faster performance (Milakov et al., 2018).`;
+**Numerical Stability and Optimization**: Softmax is often implemented with a "max trick" to prevent overflow. There is also an \"online\" version that allows for carrying out the computation with fewer memory accesses, resulting in faster performance.`;
 
         const pos_encoding_arrows_info = "Apply positional encoding to embedded input $$x_{embd}$$ via addition (only if using the original positional encoding schema, else add $$0$$ to $$x_{embd}$$)";
-        const addition_info = "Addition, if using the original positional encoding proposed but the original \"Attention is All You Need\" paper. Otherwise you can think of this as just a pass through connection for $$x_{embd}$$, or addition with $$0$$ if you'd prefer."
+        const addition_info = "Addition, if using the original positional encoding proposed but the original \"Attention is All You Need\" paper. Otherwise you can think of this as just a pass through connection for $$x_{embd}$$, or addition with $$0$$."
 
         const est_prob_dist_info = `The estimated probability distribution $$\\hat{P}( x_{tok}^{(t+1)} | x_{tok}^{(...t)} )$$ represents the model's predicted probability distribution for the next token given the previous tokens in the sequence.
 
@@ -606,7 +624,7 @@ Sampling strategies balance between diversity and quality of generated text. The
 - Allows for the gradual refinement of token representations based on their context within the sequence.
 
 The quality and richness of these embeddings at each layer are crucial for the model's overall performance in understanding and generating text.`;
-        
+
         const layernorm_info = `Layer Normalization (LayerNorm) is a technique used in transformer architectures to stabilize the hidden state dynamics in deep networks, reducing internal covariate shift and accelerating training by allowing higher learning rates.
 
 **How LayerNorm works in transformers**: 
@@ -620,7 +638,7 @@ The quality and richness of these embeddings at each layer are crucial for the m
 
 **Variants**: Some models use variations like RMSNorm (Root Mean Square Layer Normalization) which simplifies the standard LayerNorm by removing the mean-centering step.`;
 
-    const x_embd_n_tilde_info = `$$\\tilde{x}_{embd}^{(n)}$$ represents the normalized input embeddings at the $$n$$th self-attention block of the transformer model, after applying Layer Normalization.
+        const x_embd_n_tilde_info = `$$\\tilde{x}_{embd}^{(n)}$$ represents the normalized input embeddings at the $$n$$th self-attention block of the transformer model, after applying Layer Normalization.
 
 **Characteristics**:
 - Normalized: Each feature dimension has approximately zero mean and unit variance across the batch.
@@ -658,7 +676,9 @@ The superscript $$(n)$$ indicates that these are for the $$n$$-th attention laye
 
 **Role in attention**: Each row of $$K^{(n)}$$ represents a key vector for a token in the sequence. These key vectors are used to determine how relevant each token is to the queries.
 
-**Multi-head attention**: Like $$Q^{(n)}$$, $$K^{(n)}$$ is often split into multiple independent heads for parallel processing.`;
+**Multi-head attention**: Like $$Q^{(n)}$$, $$K^{(n)}$$ is often split into multiple independent heads for parallel processing.
+
+**Optimization Note:** During inference, key $$K^{(n)}$$ and value $$V^{(n)}$$ matrices are often cached and reused for subsequent tokens in a process called KV caching. This optimization significantly speeds up text generation by avoiding redundant computations.`;
 
         const v_flat_info = `$$V^{(n)}$$ represents the Value matrix for the $$n$$-th attention layer. It is derived from the input embeddings and contains the actual content that will be aggregated by the attention mechanism.
 
@@ -668,36 +688,38 @@ The superscript $$(n)$$ indicates that these are for the $$n$$-th attention laye
 
 **Multi-head attention**: Like $$Q^{(n)}$$ and $$K^{(n)}$$, $$V^{(n)}$$ is often split into multiple independent heads for parallel processing.
 
-The attention mechanism uses $$Q^{(n)}$$, $$K^{(n)}$$, and $$V^{(n)}$$ together to compute weighted sums of the values, where the weights are determined by the compatibility between queries and keys.`;
+The attention mechanism uses the reshaped tensors $$Q'^{(n)}$$, $$K'^{(n)}$$, and $$V'^{(n)}$$ together to compute weighted sums of the values, where the weights are determined by the compatibility between queries and keys.
 
-        const reshape_and_transpose_info = `We perform reshape and transpose operations to prepare the Query $$(Q)$$, Key $$(K)$$, and Value $$(V)$$ matrices for multi-head attention, shaping data in a format that's optimized for the multi-head attention mechanism, allowing each head to operate independently and in parallel.
+**Optimization Note:** During inference, $$K^{(n)}$$ and $$V^{(n)}$$ are often cached and reused for subsequent tokens in a process called KV caching. This optimization significantly speeds up text generation by avoiding redundant computations.`;
+
+        const reshape_and_transpose_info = `We perform reshape and transpose operations to prepare the Query $$(Q')$$, Key $$(K')$$, and Value $$(V')$$ tensors for multi-head attention, shaping data in a format that's optimized for the multi-head attention mechanism, allowing each head to operate independently and in parallel.
 
 **Reshape:**
-First, we reshape the matrices from $$(\\text{seqlen} \\times d_{embd})$$ to $$(\\text{seqlen} \\times \\text{nheads} \\times \\text{headsize})$$, where: $$\\text{seqlen}$$ is the sequence length, $$\\text{nheads}$$ is the number of attention heads, and $$\\text{headsize}$$ is $$d_{embd} / \\text{nheads}$$.
+First, we reshape the matrices from $$(\\text{seqlen} \\times d_{embd})$$ to tensors of shape $$(\\text{seqlen} \\times \\text{nheads} \\times \\text{headsize})$$, where: $$\\text{seqlen}$$ is the sequence length, $$\\text{nheads}$$ is the number of attention heads, and $$\\text{headsize}$$ is $$d_{embd} / \\text{nheads}$$.
 This reshaping splits the embedding dimension into separate heads, allowing each head to focus on different aspects of the input.
 
 **Transpose:**
-After reshaping, we transpose the matrices to $$(\\text{nheads} \\times \\text{seqlen} \\times \\text{headsize})$$. By moving the $$\\text{nheads}$$ dimension to the front, we can treat each head as a separate item in a batch. In the subsequent steps, we need to perform matrix multiplications between $$Q$$, $$K$$, and $$V$$. The transposition ensures that these matrices are in the correct shape for these operations.`;
-        
-        const q_reshaped_info = `$$Q'^{(n)}$$ represents the reshaped and transposed Query matrix for the $$n$$-th attention layer, prepared for multi-head attention.
+After reshaping, we transpose the tensors to $$(\\text{nheads} \\times \\text{seqlen} \\times \\text{headsize})$$. By moving the $$\\text{nheads}$$ dimension to the front, we can treat each head as a separate item in a batch. In the subsequent steps, we need to perform tensor multiplications between $$Q'$$, $$K'$$, and $$V'$$. The transposition ensures that these tensors are in the correct shape for these operations.`;
 
-**Purpose**: This transformed matrix enables parallel processing of multiple attention heads, each focusing on different aspects of the input sequence.
+        const q_reshaped_info = `$$Q'^{(n)}$$ represents the reshaped and transposed Query tensor for the $$n$$-th attention layer, prepared for multi-head attention.
 
-**Multi-head Attention**: By splitting the embedding dimension into multiple heads, the model can capture diverse relationships and interactions within the input sequence.`;
-
-        const k_reshaped_info = `$$K'^{(n)}$$ represents the reshaped and transposed Key matrix for the $$n$$-th attention layer, prepared for multi-head attention.
-
-**Purpose**: This transformed matrix enables parallel processing of multiple attention heads, each focusing on different aspects of the input sequence.
+**Purpose**: This transformed tensor enables parallel processing of multiple attention heads, each focusing on different aspects of the input sequence.
 
 **Multi-head Attention**: By splitting the embedding dimension into multiple heads, the model can capture diverse relationships and interactions within the input sequence.`;
 
-        const v_reshaped_info = `$$V'^{(n)}$$ represents the reshaped and transposed Value matrix for the $$n$$-th attention layer, prepared for multi-head attention.
+        const k_reshaped_info = `$$K'^{(n)}$$ represents the reshaped and transposed Key tensor for the $$n$$-th attention layer, prepared for multi-head attention.
 
-**Purpose**: This transformed matrix  enables parallel processing of multiple attention heads, each focusing on different aspects of the input sequence.
+**Purpose**: This transformed tensor enables parallel processing of multiple attention heads, each focusing on different aspects of the input sequence.
 
 **Multi-head Attention**: By splitting the embedding dimension into multiple heads, the model can capture diverse relationships and interactions within the input sequence.`;
 
-        const qk_dot_product_info = `The dot product of the Query matrix $$Q'^{(n)}$$ and the transposed Key matrix $$(K'^{(n)})^T$$ results in the affinities matrix is then used to compute the attention weights, which are applied to the Value matrix $$V'^{(n)}$$ to produce the self-attention output.
+        const v_reshaped_info = `$$V'^{(n)}$$ represents the reshaped and transposed Value tensor for the $$n$$-th attention layer, prepared for multi-head attention.
+
+**Purpose**: This transformed tensor enables parallel processing of multiple attention heads, each focusing on different aspects of the input sequence.
+
+**Multi-head Attention**: By splitting the embedding dimension into multiple heads, the model can capture diverse relationships and interactions within the input sequence.`;
+
+        const qk_dot_product_info = `The dot product of the Query tensor $$Q'^{(n)}$$ and the transposed Key tensor $$(K'^{(n)})^T$$ results in the affinities tensor is then used to compute the attention weights, which are applied to the Value tensor $$V'^{(n)}$$ to produce the self-attention output.
 
 **Computation**:
 $$\\text{affinities (not yet normalized)} = Q'^{(n)} \\cdot (K'^{(n)})^T$$
@@ -705,21 +727,21 @@ $$\\text{affinities (not yet normalized)} = Q'^{(n)} \\cdot (K'^{(n)})^T$$
 **Shape**: 
 - $$Q'^{(n)}$$ has shape $$(\\text{nheads} \\times \\text{seqlen} \\times \\text{headsize})$$
 - $$(K'^{(n)})^T$$ has shape $$(\\text{nheads} \\times \\text{headsize} \\times \\text{seqlen})$$
-- The resulting affinities matrix has shape $$(\\text{nheads} \\times \\text{seqlen} \\times \\text{seqlen})$$
+- The resulting affinities tensor has shape $$(\\text{nheads} \\times \\text{seqlen} \\times \\text{seqlen})$$
 
 **Purpose**: 
 - The dot product computes the similarity (or affinity) between each query and all keys.
 - These affinities determine how much attention each token should pay to every other token in the sequence.`;
 
-        const affinities_info = `The affinities matrix represents the raw attention scores between each pair of tokens in the sequence, computed as the dot product of the Query and Key matrices.
+        const affinities_info = `The affinities tensor represents the raw attention scores between each pair of tokens in the sequence, computed as the dot product of the Query and Key tensors.
 
-**Computation**: $$\\text{affinities} = \\frac{Q'^{(n)} \\cdot (K'^{(n)})^T}{\\text{headsize}^{1/2}}$$
+**Computation**: $$\\text{affinities} = \\frac{Q'^{(n)} \\cdot ({K'}^{(n)})^T}{\\text{headsize}^{1/2}}$$
 
 **Purpose**: The dot product computes the similarity (or affinity) between each query and all keys. These affinities determine how much attention each token should pay to every other token in the sequence.
 
 **Normalization with** $$\\text{headsize}^{1/2}$$: 
 - The affinities are typically scaled by the square root of the head size, $$\\text{headsize}^{1/2}$$.
-- **Why** $$\\text{sqrt(headsize)}$$?: When computing the dot product of two vectors, the expected magnitude of the result grows with the dimensionality of the vectors. Specifically, if the elements of the vectors are independent and identically distributed with mean $$0$$ and variance $$1$$, the dot product of two such vectors of dimension $$\(d\)$$ will have a variance of $$\(d\)$$. Therefore, to keep the scale of the dot product independent of the dimensionality, we divide by the square root of the head size, which is the dimensionality of the vectors in this context. This scaling ensures that the values in the affinities matrix remain in a manageable range, leading to more stable gradients and better training dynamics.`;
+- **Why** $$\\text{sqrt(headsize)}$$?: When computing the dot product of two vectors, the expected magnitude of the result grows with the dimensionality of the vectors. Specifically, if the elements of the vectors are independent and identically distributed with mean $$0$$ and variance $$1$$, the dot product of two such vectors of dimension $$\(d\)$$ will have a variance of $$\(d\)$$. Therefore, to keep the scale of the dot product independent of the dimensionality, we divide by the square root of the head size, which is the dimensionality of the vectors in this context. This scaling ensures that the values in the affinities tensor remain in a manageable range, leading to more stable gradients and better training dynamics.`;
 
         const mask_and_normalize_info = `The mask and normalize step ensures that the model attends to the appropriate tokens and that the attention scores are properly scaled.
 
@@ -733,7 +755,7 @@ $$\\text{affinities (not yet normalized)} = Q'^{(n)} \\cdot (K'^{(n)})^T$$
 
 2. **Softmax Function**: Applied to the masked attention scores to achieve normalization.`;
 
-        const masked_affinities_info = `The masked affinities matrix represents the attention scores after applying a mask to prevent the model from attending to certain positions, such as future tokens in a sequence (causal masking) or padding tokens.
+        const masked_affinities_info = `The masked affinities tensor represents the attention scores after applying a mask to prevent the model from attending to certain positions, such as future tokens in a sequence (causal masking) or padding tokens.
 
 **Purpose**: 
 1. **Causal Masking**: Ensures that the model only attends to previous tokens in the sequence, preventing information leakage from future tokens during training.
@@ -742,24 +764,24 @@ $$\\text{affinities (not yet normalized)} = Q'^{(n)} \\cdot (K'^{(n)})^T$$
 **Implementation**: 
 A large negative value (e.g., $$-\\infty$$) is added to the attention scores of masked positions before applying the softmax function. This effectively sets their attention weights to zero.
 
-**Shape**: The masked affinities matrix has the same shape as the affinities matrix: $$(\\text{nheads} \\times \\text{seqlen} \\times \\text{seqlen})$$.
+**Shape**: The masked affinities tensor has the same shape as the affinities tensor: $$(\\text{nheads} \\times \\text{seqlen} \\times \\text{seqlen})$$.
 
 **Normalization**: After masking, the softmax function is applied to convert the masked affinities into a probability distribution, ensuring that the sum of attention weights for each token is $$1$$.`;
 
-        const sa_dot_product_info = `The self-attention dot product operation combines the attention weights with the Value matrix to produce the final self-attention output.
+        const sa_dot_product_info = `The self-attention dot product operation combines the attention weights with the Value tensor to produce the final self-attention output.
 
 **Computation**: $$ \\text{softmax}(\\frac{Q'^{(n)} \\cdot (K'^{(n)})^T}{\\text{headsize}^{1/2}}) \\cdot V'^{(n)}$$
 
 **Steps**:
-1. **Dot Product of Queries and Keys**: Compute the raw attention scores by taking the dot product of the Query matrix $$Q'^{(n)}$$ and the transposed Key matrix $$(K'^{(n)})^T$$.
+1. **Dot Product of Queries and Keys**: Compute the raw attention scores by taking the dot product of the Query tensor $$Q'^{(n)}$$ and the transposed Key tensor $$(K'^{(n)})^T$$.
 
 2. **Scaling**: Scale the raw attention scores by the square root of head size, $$\\text{headsize}^{1/2}$$, to maintain stable gradients.
 
 3. **Softmax**: Apply the softmax function to the scaled attention scores to obtain the attention weights, ensuring they sum to $$1$$.
 
-4. **Weighted Sum**: Multiply the attention weights by the Value matrix $$V'^{(n)}$$ to get the final self-attention output.`;
+4. **Weighted Sum**: Multiply the attention weights by the Value tensor $$V'^{(n)}$$ to get the final self-attention output.`;
 
-        const sa_out_info =`This self-attention output represents the result of applying the attention mechanism to the input embeddings.
+        const sa_out_info = `This self-attention output represents the result of applying the attention mechanism to the input embeddings.
 
 **Computation**: $$\\text{softmax}(\\frac{Q'^{(n)} \\cdot (K'^{(n)})^T}{\\text{headsize}^{1/2}}) \\cdot V'^{(n)}$$
 
@@ -768,7 +790,9 @@ A large negative value (e.g., $$-\\infty$$) is added to the attention scores of 
 2. The output maintains the same dimensionality as the input, allowing for stacking of multiple attention layers.
 3. Different attention heads may focus on different aspects of the relationships between tokens.
 
-This output captures complex dependencies and relationships within the input sequence, allowing the model to process context-dependent information effectively.`;
+This output captures complex dependencies and relationships within the input sequence, allowing the model to process context-dependent information effectively.
+
+**Optimization Note**: In practice, this value is computed by combining the calculation of the affinities matrix, masking, normalization, and dot product with $$V'^{(n)}$$ into a kernel fusion operation, known as FlashAttention.`;
 
         const reshape_sa_out_info = `The reshape operation on the self-attention output prepares the output for further processing in the transformer architecture.
 
@@ -831,7 +855,7 @@ This transformation, combined with the preceding non-linear activation, enables 
 
 2. **Function**: Increases the model's capacity to learn complex patterns.
 
-3. **Intuition**: Acts as a "computation" step after the self-attention "communication" step. Alternates with self-attention layers, creating a pattern of "communicate, then compute" that is repeated throughout the network.
+3. **Intuition**: Represents the output of a "computation" step after the self-attention "communication" step. Alternates with self-attention layers, creating a pattern of "communicate, then compute" that is repeated throughout the network.
 
 4. **Residual connection**: The MLP output is typically added to its input via a residual connection, helping with gradient flow in deep networks.
 
@@ -841,7 +865,7 @@ The MLP layer, alternating with self-attention layers, forms the core of the tra
 
         const svgContent = {
             'successive-self-attention': {
-            // 'root': {
+                // 'root': {
                 boxes: [
                     {
                         x: 20, y: 340, text: '', width: SINGLE_VECTOR_WIDTH * 4, height: SINGLE_VECTOR_HEIGHT / 2,
@@ -1062,7 +1086,7 @@ The MLP layer, alternating with self-attention layers, forms the core of the tra
                     // Q K V prime
                     {
                         x: 120 + 3 * MIN_SEP_HORIZONTAL, y: 130,
-                        text: '{Q\'}^{(n)}',
+                        text: 'Q\'^{(n)}',
                         color: LATEX_LABEL_COLOR, width: SINGLE_LATEX_CHAR_WIDTH, height: SINGLE_LATEX_CHAR_HEIGHT,
                         info: q_reshaped_info,
                     },
@@ -1074,7 +1098,7 @@ The MLP layer, alternating with self-attention layers, forms the core of the tra
                     },
                     {
                         x: 120 + 3 * MIN_SEP_HORIZONTAL, y: 430,
-                        text: '{K\'}^{(n)}',
+                        text: 'K\'^{(n)}',
                         color: LATEX_LABEL_COLOR, width: SINGLE_LATEX_CHAR_WIDTH, height: SINGLE_LATEX_CHAR_HEIGHT,
                         info: k_reshaped_info,
                     },
@@ -1086,7 +1110,7 @@ The MLP layer, alternating with self-attention layers, forms the core of the tra
                     },
                     {
                         x: 120 + 3 * MIN_SEP_HORIZONTAL, y: 730,
-                        text: '{V\'}^{(n)}',
+                        text: 'V\'^{(n)}',
                         color: LATEX_LABEL_COLOR, width: SINGLE_LATEX_CHAR_WIDTH, height: SINGLE_LATEX_CHAR_HEIGHT,
                         info: v_reshaped_info,
                     },
@@ -1122,7 +1146,7 @@ The MLP layer, alternating with self-attention layers, forms the core of the tra
                     // {
                     //     x: 880, 
                     //     y: 290, 
-                    //     text: '{Q\'}^{(n)} \\cdot ({K\'}^{(n)})^\\mathbf{T}', 
+                    //     text: 'Q'^{(n)} \\cdot (K'^{(n)})^\\mathbf{T}', 
                     //     color: LATEX_LABEL_COLOR,
                     //     info: layernorm_info, 
                     // },
@@ -1160,7 +1184,7 @@ The MLP layer, alternating with self-attention layers, forms the core of the tra
                     {
                         x: 2150, y: 422,
                         text: '\\boldsymbol{+}',
-                        width: SINGLE_LATEX_CHAR_WIDTH, height: SINGLE_LATEX_CHAR_HEIGHT, 
+                        width: SINGLE_LATEX_CHAR_WIDTH, height: SINGLE_LATEX_CHAR_HEIGHT,
                         info: add_residual_info
                     },
                     {
@@ -1178,7 +1202,7 @@ The MLP layer, alternating with self-attention layers, forms the core of the tra
                     {
                         x: 2700, y: 422,
                         text: '\\boldsymbol{+}',
-                        width: SINGLE_LATEX_CHAR_WIDTH, height: SINGLE_LATEX_CHAR_HEIGHT, 
+                        width: SINGLE_LATEX_CHAR_WIDTH, height: SINGLE_LATEX_CHAR_HEIGHT,
                         info: add_residual_info
                     },
                     {
